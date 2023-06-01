@@ -1,7 +1,7 @@
-name: ci
+name: pub2dockerhub
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
     inputs:
       build_folder:
         description: 'From which folder, the Dockerfiles will be built'  
