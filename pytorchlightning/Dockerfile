@@ -2,14 +2,6 @@
 FROM pytorchlightning/pytorch_lightning:base-cuda-py3.8-torch2.0-cuda11.7.1
 
 # Install JupyterLab and its dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    python3-pip \
-    nodejs \
-    npm && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip3 install --no-cache-dir jupyterlab Cython simpletransformers nltk bioc torchinfo imbalanced-learn \
-    medspacy medspacy_io scikit-learn jupytext pandas tqdm tensorboard pytest\
 
 RUN pip install --no-cache-dir setuptools wheel jupyterlab Cython simpletransformers nltk bioc torchinfo imbalanced-learn \
     medspacy medspacy_io scikit-learn jupytext pandas tqdm tensorboard pytest\
