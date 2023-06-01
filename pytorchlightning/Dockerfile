@@ -2,10 +2,7 @@
 FROM pytorchlightning/pytorch_lightning:base-cuda-py3.8-torch2.0-cuda11.7.1
 
 # Install JupyterLab and its dependencies
-
-
-RUN pip install --no-cache-dir setuptools wheel jupyterlab Cython simpletransformers nltk bioc torchinfo imbalanced-learn \
-    medspacy medspacy_io scikit-learn jupytext pandas tqdm tensorboard pytest\
+RUN pip install setuptools wheel jupyterlab Cython simpletransformers nltk bioc torchinfo imbalanced-learn medspacy medspacy_io scikit-learn jupytext pandas tqdm tensorboard pytest
 
 # Set the default working directory to /app
 WORKDIR /app
