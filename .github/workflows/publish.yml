@@ -31,10 +31,11 @@ jobs:
         run: |
           pwd
           ls
+          cd pytorchlightning
 
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ${{ github.event.inputs.install_prerelease }}/
+          context: .
           push: true
           tags: brokenjade/pytorchlightning:latest
