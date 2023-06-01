@@ -11,6 +11,9 @@ RUN apt-get update && \
     pip3 install --no-cache-dir jupyterlab Cython simpletransformers nltk bioc torchinfo imbalanced-learn \
     medspacy medspacy_io scikit-learn jupytext pandas tqdm tensorboard pytest\
 
+RUN pip install --no-cache-dir setuptools wheel jupyterlab Cython simpletransformers nltk bioc torchinfo imbalanced-learn \
+    medspacy medspacy_io scikit-learn jupytext pandas tqdm tensorboard pytest\
+
 # Set the default working directory to /app
 WORKDIR /app
 
