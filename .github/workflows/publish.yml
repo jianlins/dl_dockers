@@ -9,7 +9,7 @@ on:
         required: false
         default: 'pytorchlightning'
       tag:
-          description: 'Customize omage tag'  
+          description: 'Customize image tag'  
           type: string   
           required: false
           default: 'latest'
