@@ -8,6 +8,11 @@ on:
         type: string   
         required: false
         default: 'pytorchlightning'
+      tag:
+          description: 'Customize omage tag'  
+          type: string   
+          required: false
+          default: 'latest'
 
 jobs:
   docker:
@@ -44,6 +49,6 @@ jobs:
         with:
           context: "{{defaultContext}}:${{ github.event.inputs.build_folder }}"
           push: true
-          tags: brokenjade/pytorchlightning:latest
+          tags: brokenjade/pytorchlightning:${{ github.event.inputs.tag }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
