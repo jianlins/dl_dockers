@@ -1,2 +1,2 @@
 FROM scratch
-RUN echo "hello world"
+RUN ls -l
