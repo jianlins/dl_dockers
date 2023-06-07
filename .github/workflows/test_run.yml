@@ -1,4 +1,4 @@
-name: testpub
+name: test_run
 
 on:
   workflow_dispatch:
