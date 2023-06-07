@@ -44,8 +44,8 @@ jobs:
           ls
           cd ${{ github.event.inputs.build_folder }}
           docker login --username ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker build -t brokenjade/${{ github.event.inputs.build_folder }} .
-          docker image tag brokenjade/${{ github.event.inputs.build_folder }} brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+          docker build -t brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
+          docker images
           docker image push brokenjade/${{ github.event.inputs.build_folder }}
 
 
