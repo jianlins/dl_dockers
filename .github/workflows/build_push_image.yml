@@ -51,3 +51,13 @@ jobs:
           docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
           docker images
           docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+
+      - name: Save image as a tar for later use 💾
+        run: docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} -o /tmp/${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}.tar
+        shell: bash
+      - name: Upload image as artifact 💾
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}
+          path: /tmp/${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}.tar
+          retention-days: 3
