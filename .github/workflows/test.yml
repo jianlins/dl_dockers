@@ -49,6 +49,6 @@ jobs:
         with:
           context: "{{defaultContext}}:${{ github.event.inputs.build_folder }}"
           push: true
-          tags: brokenjade/helloworld:${{ github.event.inputs.tag }}
+          tags: brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
