@@ -54,11 +54,7 @@ jobs:
 
 
 
-    #   - name: Build and push
-    #     uses: docker/build-push-action@v2
-    #     with:
-    #       context: "{{defaultContext}}:${{ github.event.inputs.build_folder }}"
-    #       push: true
-    #       tags: brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
-    #       cache-from: type=local,src=/tmp/.buildx-cache
-    #       cache-to: type=local,dest=/tmp/.buildx-cache-new
+      - name: test run
+        run:
+          docker rmi ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
+          docker run ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
