@@ -1,2 +1,2 @@
-FROM scratch
-CMD ["./hello"]
+FROM alpine
+echo "hello world"
