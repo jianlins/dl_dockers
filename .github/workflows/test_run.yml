@@ -32,5 +32,4 @@ jobs:
 
       - name: test run
         run:
-          docker rmi ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
           docker run ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
