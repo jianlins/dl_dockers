@@ -1,0 +1,36 @@
+name: testpub
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_folder:
+        description: 'From which folder, the Dockerfiles will be built'  
+        type: string   
+        required: false
+        default: 'helloworld'
+      tag:
+          description: 'Customize image tag'  
+          type: string   
+          required: false
+          default: 'latest'
+      hub_username:
+        description: 'Docker hub username'  
+        type: string   
+        required: false
+        default: 'brokenjade'
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2.5.0
+
+      - name: test run
+        run:
+          docker rmi ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+          docker run ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
