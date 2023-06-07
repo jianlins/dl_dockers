@@ -38,23 +38,24 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    #   - name: Check location
-    #     run: |
-    #       pwd
-    #       ls
-    #       cd ${{ github.event.inputs.build_folder }}
-    #       docker login --username ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-    #       docker build -t brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
+      - name: Build and publish
+        run: |
+          pwd
+          ls
+          cd ${{ github.event.inputs.build_folder }}
+          docker login --username ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          docker build -t brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
+          docker image push brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
 
 
 
 
 
-      - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: "{{defaultContext}}:${{ github.event.inputs.build_folder }}"
-          push: true
-          tags: brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+    #   - name: Build and push
+    #     uses: docker/build-push-action@v2
+    #     with:
+    #       context: "{{defaultContext}}:${{ github.event.inputs.build_folder }}"
+    #       push: true
+    #       tags: brokenjade/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+    #       cache-from: type=local,src=/tmp/.buildx-cache
+    #       cache-to: type=local,dest=/tmp/.buildx-cache-new
