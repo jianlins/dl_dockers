@@ -1,2 +1,2 @@
 FROM alpine
-echo "hello world"
+RUN echo "hello world"
