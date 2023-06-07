@@ -44,6 +44,7 @@ jobs:
           ls
           cd pytorchlightning
 
+    # this action doesn't support dock_pull.py to pull images from docker hub. use build_push_image workflow instead.
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
