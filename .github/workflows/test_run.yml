@@ -15,7 +15,7 @@ on:
           default: 'echo "ok"'
 
 jobs:
-  docker:
+  run_docker:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Docker layers
@@ -26,7 +26,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ github.event.inputs.image_name }}
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker env
         uses: docker/setup-buildx-action@v2.5.0
 
       - name: test run
