@@ -32,4 +32,4 @@ jobs:
 
       - name: test run
         run:
-          docker run --entrypoint="${{ github.event.inputs.cmd }}"  ${{ github.event.inputs.image_name }}  
+          docker run --entrypoint=/bin/bash ${{ github.event.inputs.image_name }} ${{ github.event.inputs.cmd }}
