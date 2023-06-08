@@ -1,5 +1,5 @@
 name: build_push_image
-
+run-name: Build ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
 on:
   workflow_dispatch:
     inputs:
