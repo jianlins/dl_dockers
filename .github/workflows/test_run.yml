@@ -17,6 +17,7 @@ on:
 jobs:
   run_docker:
     runs-on: ubuntu-latest
+    run-name: Run ${{ github.event.inputs.image_name }} & execute ${{ github.event.inputs.cmd }}  
     steps:
       - name: Cache Docker layers
         uses: actions/cache@v2
