@@ -23,4 +23,4 @@ jobs:
 
       - name: test run
         run:
-          docker run ${{ github.event.inputs.image_name }}  ${{ github.event.inputs.bash }} 
+          docker run -it --entrypoint=/bin/bash ${{ github.event.inputs.image_name }}  ${{ github.event.inputs.bash }} 
