@@ -3,21 +3,16 @@ name: test_run
 on:
   workflow_dispatch:
     inputs:
-      build_folder:
-        description: 'From which folder, the Dockerfiles will be built'  
+      image_name:
+        description: 'Image name to run'  
         type: string   
         required: false
-        default: 'helloworld'
-      tag:
-          description: 'Customize image tag'  
+        default: 'brokenjade/helloworld'
+      cmd:
+          description: 'command to run after docker run'  
           type: string   
           required: false
-          default: 'latest'
-      hub_username:
-        description: 'Docker hub username'  
-        type: string   
-        required: false
-        default: 'brokenjade'
+          default: 'echo "ok"'
 
 jobs:
   docker:
@@ -32,4 +27,4 @@ jobs:
 
       - name: test run
         run:
-          docker run ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} echo "ok"
+          docker run ${{ github.event.inputs.image_name }}  ${{ github.event.inputs.bash }} 
