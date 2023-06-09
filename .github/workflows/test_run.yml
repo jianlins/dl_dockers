@@ -1,5 +1,5 @@
 name: test_run
-run-name: Run ${{ github.event.inputs.image_name }} & execute ${{ github.event.inputs.cmd }}  
+run-name: Test ${{ github.event.inputs.image_name }} & execute ${{ github.event.inputs.cmd }}  
 
 on:
   workflow_dispatch:
