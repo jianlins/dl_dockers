@@ -31,11 +31,11 @@ jobs:
         uses: docker/setup-buildx-action@v2.5.0
 
       - name: Run with ${{ github.event.inputs.cmd }}
-        if: ${{ github.event.inputs.cmd }}
+        if: github.event.inputs.cmd != ''
         run:
           docker run --entrypoint=/bin/bash ${{ github.event.inputs.image_name }} ${{ github.event.inputs.cmd }}
       
       - name: Test run
-        if: ! ${{ github.event.inputs.cmd }}
+        if: github.event.inputs.cmd == ''
         run:
           docker run ${{ github.event.inputs.image_name }}
