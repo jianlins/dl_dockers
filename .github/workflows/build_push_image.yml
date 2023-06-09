@@ -20,7 +20,7 @@ on:
         default: 'brokenjade'
 
 jobs:
-  docker:
+  build_docker:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,13 +43,18 @@ jobs:
           username: ${{ github.event.inputs.hub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and publish
+      - name: Build
         run: |
           pwd
           ls
           cd ${{ github.event.inputs.build_folder }}
           docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
-          docker images
+          
+      - name: list images
+        run: docker images
+        
+      - name: publish
+        run: |
           docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
 
       # only works if built on self-hosted runners. Github runners do not have enough space for this.
