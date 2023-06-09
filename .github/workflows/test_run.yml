@@ -10,10 +10,10 @@ on:
         required: false
         default: 'jupyter/pyspark-notebook'
       cmd:
-          description: 'command to run after docker run'  
+          description: 'command to run after docker run, e.g. echo "ok"'  
           type: string   
           required: false
-          default: 'echo "ok"'
+          default: ''
 
 jobs:
   run_docker:
