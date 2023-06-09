@@ -18,6 +18,7 @@ on:
 jobs:
   run_docker:
     runs-on: ubuntu-latest
+    timeout-minutes: 8
     steps:
       - name: Cache Docker layers
         uses: actions/cache@v2
