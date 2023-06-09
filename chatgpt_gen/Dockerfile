@@ -19,6 +19,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 #RUN pip3 install torch==2.0.0+cu118 torchvision==0.10.0+cu118 torchaudio==0.10.0 -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip3 install torch --index-url https://download.pytorch.org/whl/cu118
 
+
+# Install Corretto JDK 8
+RUN curl -O https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz && \
+    tar xzf amazon-corretto-8-x64-linux-jdk.tar.gz && \
+    mv amazon-corretto-8.* /usr/lib/jvm/corretto && \
+    rm amazon-corretto-8-x64-linux-jdk.tar.gz
+
+# Set Java environment variables
+ENV JAVA_HOME=/usr/lib/jvm/corretto
+ENV PATH=$PATH:$JAVA_HOME/bin
+
 # Install Spark
 RUN curl -O https://archive.apache.org/dist/spark/spark-3.4.0/spark-3.4.0-bin-hadoop3.tgz  && \
     tar xzf spark-3.4.0-bin-hadoop3.tgz  && \
