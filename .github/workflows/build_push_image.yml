@@ -30,9 +30,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          key: buildx-${{ github.event.inputs.build_folder  }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            buildx-${{ github.event.inputs.build_folder  }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2.5.0
@@ -52,7 +52,7 @@ jobs:
           
       - name: list images
         run: docker images
-        
+
       - name: publish
         run: |
           docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
