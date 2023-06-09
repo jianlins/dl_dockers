@@ -20,10 +20,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip3 install torch --index-url https://download.pytorch.org/whl/cu118
 
 # Install Spark
-RUN curl -O https://archive.apache.org/dist/spark/spark-3.4.0/spark-3.4.0-bin-hadoop3.2.tgz && \
-    tar xzf spark-3.4.0-bin-hadoop3.2.tgz && \
-    mv spark-3.4.0-bin-hadoop3.2 /opt/spark && \
-    rm spark-3.4.0-bin-hadoop3.2.tgz
+RUN curl -O https://archive.apache.org/dist/spark/spark-3.4.0/spark-3.4.0-bin-hadoop3.tgz  && \
+    tar xzf spark-3.4.0-bin-hadoop3.tgz  && \
+    mv spark-3.4.0-bin-hadoop3 /opt/spark && \
+    rm spark-3.4.0-bin-hadoop3.tgz 
 
 # Set environment variables for Spark
 ENV SPARK_HOME=/opt/spark
