@@ -4,6 +4,7 @@ FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    wget \
     ca-certificates \
     git \
     vim \
@@ -21,10 +22,11 @@ RUN pip3 install torch --index-url https://download.pytorch.org/whl/cu118
 
 
 # Install Corretto JDK 8
-RUN curl -O https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz && \
-    tar xzf amazon-corretto-8-x64-linux-jdk.tar.gz && \
-    mv amazon-corretto-8.* /usr/lib/jvm/corretto && \
-    rm amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN wget https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN tar xzf amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN rm amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN mv amazon-corretto-8.* /usr/lib/jvm/corretto
+
 
 # Set Java environment variables
 ENV JAVA_HOME=/usr/lib/jvm/corretto
