@@ -25,6 +25,7 @@ RUN pip3 install torch --index-url https://download.pytorch.org/whl/cu118
 RUN wget https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
 RUN tar xzf amazon-corretto-8-x64-linux-jdk.tar.gz
 RUN rm amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN [ ! -d /usr/lib/jvm ] && mkdir /usr/lib/jvm
 RUN mv amazon-corretto-8.* /usr/lib/jvm/corretto
 
 
