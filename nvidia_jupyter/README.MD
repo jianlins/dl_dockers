@@ -1,4 +1,6 @@
 Add jupyter notebook/lab into nvidia cuda image.
+Why need this built? 
+The default nvidia images does not include/support conda environment. However, some packages are only available in conda except built from source.
 
 ## installed locations: 
 mamba: /opt/conda
