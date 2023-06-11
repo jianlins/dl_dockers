@@ -12,7 +12,7 @@ dependencies:
   # https://docs.rapids.ai/install
   - rapidsai::rapids=23.04
   - pytorch::torchtext
-  - pandas=2.0.2
+  - pandas
   - pip
   - numpy
   - openpyxl
