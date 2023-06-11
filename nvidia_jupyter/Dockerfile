@@ -1,8 +1,9 @@
+ARG BASE_IMAGE="nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04"
+FROM ${BASE_IMAGE}
+
 ARG NB_USER="jovyan"
 ARG NB_UID="1000"
 ARG NB_GID="100"
-ARG BASE_IMAGE="nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04"
-
 # Pin python version here, or set it to "default"
 ARG PYTHON_VERSION=3.8
 
@@ -15,7 +16,6 @@ ARG openjdk_version="17"
 # make the working dir shorter so that it's easier type when mapping volumns or operating files.
 ARG WORK_DIR="/workspace"
 
-FROM ${BASE_IMAGE}
 
 
 #sets the user context for subsequent instructions in the Dockerfile to the "root" user.
