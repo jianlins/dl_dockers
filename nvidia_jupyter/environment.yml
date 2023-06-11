@@ -13,6 +13,7 @@ dependencies:
   - rapidsai::rapids=23.04
   - pytorch::torchtext
   - pandas=2.0.2
+  - pip
   - numpy
   - openpyxl
   - scipy
