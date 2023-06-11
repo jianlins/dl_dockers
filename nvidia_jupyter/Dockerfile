@@ -140,10 +140,12 @@ RUN set -x && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
     # install packages from environment.yml
-    mamba env update --yes --file environment.yml --prune && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+RUN mamba env update --file environment.yml --prune && \
+    mamba clean --all -f -y 
+
 
 COPY post_install.sh /tmp/post_install.sh
 RUN chmod 775 /tmp/post_install.sh && \
