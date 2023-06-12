@@ -38,7 +38,8 @@ dependencies:
     # https://pytorch.org/docs/stable/dynamo/installation.html
     - medspacy==1.1.2
     - transformers
-    - medpspacy-io
+    # dependency version conflict, fix it later
+    # - medpspacy-io
     - simpletransformers==0.63
     - nltk==3.8.1
     - bioc==2.0
