@@ -17,20 +17,19 @@ ENV APACHE_SPARK_VERSION="${spark_version}" \
     HADOOP_VERSION="${hadoop_version}"
 
 WORKDIR /tmp
+COPY environment.yml /tmp/environment.yml
+COPY post_install.sh /tmp/post_install.sh
+
 RUN mamba env update --file environment.yml
 RUN mamba clean --all -f -y 
 
 
 
 # install jdk, download models.
-COPY post_install.sh /tmp/post_install.sh
 RUN chmod 775 /tmp/post_install.sh && \
     /tmp/post_install.sh
 
 # Spark installation
-
-
-
 # You need to use https://archive.apache.org/dist/ website if you want to download old Spark versions
 # But it seems to be slower, that's why we use recommended site for download
 RUN if [ -z "${scala_version}" ]; then \
