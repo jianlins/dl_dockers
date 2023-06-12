@@ -1,4 +1,5 @@
 name: test_build_image
+# only test build image without push to docker hub
 run-name: Test_Build ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
 on:
   workflow_dispatch:

@@ -179,8 +179,7 @@ USER ${NB_UID}
 
 WORKDIR "${WORK_DIR}"
 
-RUN cd /tmp
-RUN rm -ri *
+RUN rm -ri /tmp/*
 
 
 
