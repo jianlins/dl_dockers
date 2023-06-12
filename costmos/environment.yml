@@ -36,7 +36,7 @@ dependencies:
   - conda-forge::scikit-learn
   - conda-forge::jupytext
   - conda-forge::spacy=3.5
-  - pyarrow
+  - conda-forge::pyarrow
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
     - git+https://github.com/NVIDIA/TransformerEngine.git@release_v0.9
