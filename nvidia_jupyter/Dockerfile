@@ -179,8 +179,6 @@ USER ${NB_UID}
 
 WORKDIR "${WORK_DIR}"
 
-RUN ls /tmp
-
 
 
 
