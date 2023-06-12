@@ -21,3 +21,5 @@ USER root
 
 RUN nvcc --version
 RUN which nvcc
+RUN python --version
+RUN which python
