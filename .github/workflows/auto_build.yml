@@ -21,7 +21,7 @@ on:
   #       required: false
   #       default: 'brokenjade'
 env:
-  build_folder: 'nvidia_jupyter'
+  build_folder: 'costmos'
   hub_username: 'brokenjade'
   tag: 'latest'
 

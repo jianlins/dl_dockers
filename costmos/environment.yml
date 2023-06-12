@@ -36,6 +36,7 @@ dependencies:
   - conda-forge::scikit-learn
   - conda-forge::jupytext
   - conda-forge::spacy=3.5
+  - pyarrow
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
     - git+https://github.com/NVIDIA/TransformerEngine.git@release_v0.9
@@ -43,6 +44,7 @@ dependencies:
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
     - medspacy==1.1.2
+    - transformers
     - medpspacy-io
     - simpletransformers==0.63
     - cupy-cuda11x
@@ -55,4 +57,10 @@ dependencies:
     - wheel
     - joblib
     - matplotlib
+    - itsdangerous<2.1.0
+    - accelerate==0.18.0
+    - bitsandbytes==0.38.1
+    - lightning
+    - install-jdk
+    - pyspark==3.4.0
     - https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_sm-0.3.0.tar.gz
