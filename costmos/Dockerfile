@@ -67,8 +67,7 @@ COPY ipython_kernel_config.py "/etc/ipython/"
 RUN fix-permissions "/etc/ipython/"
 
 # clean tmp
-RUN cd /tmp
-RUN rm -ri *
+RUN rm -ri /tmp/*
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER ${NB_UID}
