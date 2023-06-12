@@ -14,8 +14,9 @@ ARG openjdk_version="17"
 
 
 ENV APACHE_SPARK_VERSION="${spark_version}" \
-    HADOOP_VERSION="${hadoop_version}"
-
+    HADOOP_VERSION="${hadoop_version}" \
+    NVTE_FRAMEWORK="pytorch"
+# https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/installation.html
 
 RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends git
