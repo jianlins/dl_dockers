@@ -23,7 +23,7 @@ on:
 env:
   build_folder: 'nvidia_jupyter'
   hub_username: 'brokenjade'
-  tag_name: 'latest'
+  tag: 'latest'
 
 jobs:
   build_docker:
