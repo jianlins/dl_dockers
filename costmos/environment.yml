@@ -9,8 +9,6 @@ dependencies:
   # - pytorch::torchaudio
   - pytorch::pytorch-cuda=11.8
   - pytorch::faiss-gpu
-  # https://docs.rapids.ai/install
-  - rapidsai::rapids=23.04
   - pytorch::torchtext
   - pandas
   - pip
@@ -19,10 +17,6 @@ dependencies:
   - scipy
   - sqlalchemy
   - ipywidgets
-  - h5py
-  - beautifulsoup4
-  - bokeh
-  - seaborn
   - ipympl
   - cython=0.29
   - statsmodels
@@ -40,14 +34,12 @@ dependencies:
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
     - git+https://github.com/NVIDIA/TransformerEngine.git@release_v0.9
-    - torch-tensorrt==1.4.0
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
     - medspacy==1.1.2
     - transformers
     - medpspacy-io
     - simpletransformers==0.63
-    - cupy-cuda11x
     - nltk==3.8.1
     - bioc==2.0
     - tqdm==4.65
@@ -59,7 +51,6 @@ dependencies:
     - matplotlib
     - itsdangerous<2.1.0
     - accelerate==0.18.0
-    - bitsandbytes==0.38.1
     - lightning
     - install-jdk
     - pyspark==3.4.0
