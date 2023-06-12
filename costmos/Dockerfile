@@ -18,6 +18,16 @@ ENV APACHE_SPARK_VERSION="${spark_version}" \
     NVTE_FRAMEWORK="pytorch"
 # https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/installation.html
 
+# need build essential for some pip installs (only source code available.)
+RUN apt-get update --yes && \
+    # - apt-get upgrade is run to patch known vulnerabilities in apt-get packages as
+    #   the ubuntu base image is rebuilt too seldom sometimes (less than once a month)
+    apt-get upgrade --yes && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
+    build-essential && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
 
 WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
