@@ -10,7 +10,7 @@ dependencies:
   - pytorch::pytorch-cuda=11.8
   - pytorch::faiss-gpu
   - pytorch::torchtext
-  - "nvidia/label/cuda-11.8.0"::cutatoolkit
+  - nvidia/label/cuda-11.8.0::cutatoolkit
   - pandas
   - pip
   - numpy
