@@ -25,6 +25,8 @@ WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
 COPY post_install.sh /tmp/post_install.sh
 
+RUN mamba install -y -c "nvidia/label/cuda-11.8.0" cuda-toolkit
+
 RUN mamba env update --file environment.yml
 RUN mamba clean --all -f -y 
 
