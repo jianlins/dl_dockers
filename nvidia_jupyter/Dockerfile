@@ -147,9 +147,9 @@ RUN set -x && \
 #     mamba clean --all -f -y 
 
 
-COPY post_install.sh /tmp/post_install.sh
-RUN chmod 775 /tmp/post_install.sh && \
-    post_install.sh
+# COPY post_install.sh /tmp/post_install.sh
+# RUN chmod 775 /tmp/post_install.sh && \
+#     post_install.sh
 
 
 ENV JUPYTER_PORT=8888
