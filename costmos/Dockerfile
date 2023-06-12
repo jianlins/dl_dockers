@@ -18,13 +18,13 @@ ENV APACHE_SPARK_VERSION="${spark_version}" \
     NVTE_FRAMEWORK="pytorch"
 # https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/installation.html
 
-RUN apt-get update --yes && \
-    apt-get install --yes --no-install-recommends git
 
 WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
 COPY post_install.sh /tmp/post_install.sh
 
+# https://anaconda.org/nvidia/cuda-toolkit
+# Channel "nvidia/label/cuda-11.8.0" seems not working in yaml configure file
 RUN mamba install -y -c "nvidia/label/cuda-11.8.0" cuda-toolkit
 
 RUN mamba env update --file environment.yml

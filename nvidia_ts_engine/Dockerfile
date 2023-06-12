@@ -1,10 +1,7 @@
 ARG BASE_IMAGE="nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04"
 FROM ${BASE_IMAGE}
 
-ARG NB_USER="jovyan"
-ARG NB_UID="1000"
-ARG NB_GID="100"
-# Pin python version here, or set it to "default"
+
 ARG PYTHON_VERSION=3.8
 
 # make the working dir shorter so that it's easier type when mapping volumns or operating files.
@@ -22,32 +19,6 @@ USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 
-RUN apt-get update --yes && \
-    # - apt-get upgrade is run to patch known vulnerabilities in apt-get packages as
-    #   the ubuntu base image is rebuilt too seldom sometimes (less than once a month)
-    apt-get upgrade --yes && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    # - pandoc is used to convert notebooks to html files
-    #   it's not present in aarch64 ubuntu image, so we install it here
-    pandoc \
-    # - bzip2 is necessary to extract the micromamba executable.
-    bzip2 \
-    ca-certificates \
-    locales \
-    sudo \
-    # - tini is installed as a helpful container entrypoint that reaps zombie
-    #   processes and such of the actual executable we want to start, see
-    #   https://github.com/krallin/tini#why-tini for details.
-    tini \
-    # - run-one - a wrapper script that runs no more
-    #   than one unique  instance  of  some  command with a unique set of arguments,
-    #   we use `run-one-constantly` to support `RESTARTABLE` option
-    run-one \
-    git \
-    wget && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
 
 
 # Configure environment
@@ -178,10 +149,5 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
 USER ${NB_UID}
 
 WORKDIR "${WORK_DIR}"
-
-RUN cd /tmp
-RUN rm -ri *
-
-
 
 
