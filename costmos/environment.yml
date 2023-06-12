@@ -31,8 +31,12 @@ dependencies:
   - conda-forge::jupytext
   - conda-forge::spacy=3.5
   - conda-forge::pyarrow
+  - conda-forge::nvcc_linux-64
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
+    # https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/installation.html
+    - pybind11
+    - cmake
     - git+https://github.com/NVIDIA/TransformerEngine.git@stable
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html

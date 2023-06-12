@@ -1,5 +1,4 @@
 name: auto_build
-run-name: auto build brokenjade/nvidia_jupyter
 on:
   push:
     paths:
