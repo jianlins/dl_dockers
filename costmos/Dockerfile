@@ -17,7 +17,8 @@ ENV APACHE_SPARK_VERSION="${spark_version}" \
     HADOOP_VERSION="${hadoop_version}"
 
 
-RUN apt-get install --yes --no-install-recommends git
+RUN apt-get update --yes && \
+    apt-get install --yes --no-install-recommends git
 
 WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
