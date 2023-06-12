@@ -36,9 +36,6 @@ dependencies:
   - conda-forge::pyarrow
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
-    # https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/installation.html
-    - pybind11
-    - cmake
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
     - medspacy==1.1.2

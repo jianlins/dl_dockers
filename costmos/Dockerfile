@@ -23,9 +23,6 @@ WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
 COPY post_install.sh /tmp/post_install.sh
 
-# https://anaconda.org/nvidia/cuda-toolkit
-# Channel "nvidia/label/cuda-11.8.0" seems not working in yaml configure file
-RUN mamba install -y -c "nvidia/label/cuda-11.8.0" cuda-toolkit
 
 RUN mamba env update --file environment.yml
 RUN mamba clean --all -f -y 
@@ -67,7 +64,7 @@ COPY ipython_kernel_config.py "/etc/ipython/"
 RUN fix-permissions "/etc/ipython/"
 
 # clean tmp
-RUN rm -ri /tmp/*
+RUN ls -l -a /tmp
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER ${NB_UID}
