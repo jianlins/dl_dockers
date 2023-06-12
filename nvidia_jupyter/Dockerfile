@@ -115,7 +115,6 @@ RUN fix-permissions "${WORK_DIR}"
 # files across image layers when the permissions change
 COPY --chown="${NB_UID}:${NB_GID}" initial-condarc "${CONDA_DIR}/.condarc"
 WORKDIR /tmp
-COPY environment.yml /tmp/environment.yml
 
 RUN set -x && \
     arch=$(uname -m) && \
@@ -139,7 +138,6 @@ RUN set -x && \
     rm micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
-    # install packages from environment.yml
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
