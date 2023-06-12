@@ -17,8 +17,7 @@ ENV APACHE_SPARK_VERSION="${spark_version}" \
     HADOOP_VERSION="${hadoop_version}"
 
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    git \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends git
 
 WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
