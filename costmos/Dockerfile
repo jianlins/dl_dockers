@@ -35,6 +35,9 @@ COPY post_install.sh /tmp/post_install.sh
 
 
 RUN mamba env update --file environment.yml
+# -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
+# -f, --force-pkgs-dirs	Remove all writable package caches
+# -y, --yes	Do not ask for confirmation
 RUN mamba clean --all -f -y 
 
 
