@@ -17,7 +17,7 @@ ENV APACHE_SPARK_VERSION="${spark_version}" \
     HADOOP_VERSION="${hadoop_version}"
 
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends git
+RUN apt-get install --yes --no-install-recommends git
 
 WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
@@ -30,7 +30,7 @@ RUN mamba clean --all -f -y
 
 # install jdk, download models.
 RUN chmod 775 /tmp/post_install.sh && \
-    /tmp/post_install.sh
+    /tmp/post_install.sh ${openjdk_version}
 
 # Spark installation
 # You need to use https://archive.apache.org/dist/ website if you want to download old Spark versions
