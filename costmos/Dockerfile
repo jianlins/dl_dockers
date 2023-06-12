@@ -67,4 +67,7 @@ RUN fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
 EXPOSE 4040
+EXPOSE 18080
+EXPOSE 8081
+EXPOSE 8080
 
