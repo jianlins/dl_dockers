@@ -16,11 +16,11 @@ ARG openjdk_version="17"
 ENV APACHE_SPARK_VERSION="${spark_version}" \
     HADOOP_VERSION="${hadoop_version}"
 
-
+WORKDIR /tmp
 RUN mamba env update --file environment.yml
 RUN mamba clean --all -f -y 
 
-WORKDIR /tmp
+
 
 # install jdk, download models.
 COPY post_install.sh /tmp/post_install.sh
@@ -60,7 +60,11 @@ RUN if [ -z "${scala_version}" ]; then \
 COPY ipython_kernel_config.py "/etc/ipython/"
 RUN fix-permissions "/etc/ipython/"
 
+
+# Switch back to jovyan to avoid accidental container runs as root
 USER ${NB_UID}
+
+WORKDIR "${WORK_DIR}"
 
 # Install pyarrow
 RUN fix-permissions "${CONDA_DIR}" && \
