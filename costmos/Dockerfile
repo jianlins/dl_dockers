@@ -16,6 +16,10 @@ ARG openjdk_version="17"
 ENV APACHE_SPARK_VERSION="${spark_version}" \
     HADOOP_VERSION="${hadoop_version}"
 
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
+    git \
+
 WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
 COPY post_install.sh /tmp/post_install.sh
@@ -59,6 +63,9 @@ RUN if [ -z "${scala_version}" ]; then \
 COPY ipython_kernel_config.py "/etc/ipython/"
 RUN fix-permissions "/etc/ipython/"
 
+# clean tmp
+RUN cd /tmp
+RUN rm -ri *
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER ${NB_UID}
