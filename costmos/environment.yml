@@ -17,12 +17,12 @@ dependencies:
   - pip
   - numpy
   - openpyxl
-  - scipy
+  # - scipy
   - sqlalchemy
   # - ipywidgets
   # - ipympl
   - cython=0.29
-  - statsmodels
+  # - statsmodels
   # - notebook
   - jupyterlab
   # - numba
@@ -48,8 +48,8 @@ dependencies:
     - tqdm==4.65
     - tensorboard
     - pytest
-    - setuptools
-    - wheel
+    # - setuptools
+    # - wheel
     - joblib
     # - matplotlib
     # - itsdangerous<2.1.0
