@@ -17,15 +17,15 @@ dependencies:
   - pip
   - numpy
   - openpyxl
-  # - scipy
+  - scipy
   - sqlalchemy
-  # - ipywidgets
-  # - ipympl
+  - ipywidgets
+  - ipympl
   - cython=0.29
-  # - statsmodels
-  # - notebook
+  - statsmodels
+  - notebook
   - jupyterlab
-  # - numba
+  - numba
   - numexpr
   - xlrd
   - conda-forge::torchinfo
@@ -48,12 +48,12 @@ dependencies:
     - tqdm==4.65
     - tensorboard
     - pytest
-    # - setuptools
-    # - wheel
+    - setuptools
+    - wheel
     - joblib
-    # - matplotlib
-    # - itsdangerous<2.1.0
-    # - accelerate==0.18.0
+    - matplotlib
+    - itsdangerous<2.1.0
+    - accelerate==0.18.0
     - lightning
     - install-jdk
     - pyspark==3.4.0
