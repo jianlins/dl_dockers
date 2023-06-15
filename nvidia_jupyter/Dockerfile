@@ -112,6 +112,8 @@ RUN set -x && \
     rm micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
+    mamba install pip && \
+    pip install jupyterlab
     mamba clean --all -f -y && \
     chmod -R 775 "${CONDA_DIR}" 
 
