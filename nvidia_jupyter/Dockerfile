@@ -112,12 +112,14 @@ RUN set -x && \
     rm micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
-    mamba install pip && \
-    pip install jupyterlab
     mamba clean --all -f -y && \
     chmod -R 775 "${CONDA_DIR}" 
 
-
+RUN mamba install pip -c conda-forge jupyterlab
+# -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
+# -f, --force-pkgs-dirs	Remove all writable package caches
+# -y, --yes	Do not ask for confirmation
+RUN mamba clean --all -f -y 
 
 EXPOSE $JUPYTER_PORT
 
