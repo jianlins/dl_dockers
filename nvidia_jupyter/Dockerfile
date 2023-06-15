@@ -113,9 +113,10 @@ RUN set -x && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
     mamba clean --all -f -y && \
+    which mamba && \
     chmod -R 775 "${CONDA_DIR}" 
 
-RUN mamba install pip -c conda-forge jupyterlab
+RUN mamba install -c conda-forge jupyterlab
 # -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
 # -f, --force-pkgs-dirs	Remove all writable package caches
 # -y, --yes	Do not ask for confirmation
