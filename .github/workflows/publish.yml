@@ -1,5 +1,6 @@
 name: pub2dockerhub
-
+# use build-push-action@v4 to build and publish
+# seems not meeting the OCI standard v1.2, which docker_pull.py uses.
 on:
   workflow_dispatch:
     inputs:
