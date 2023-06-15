@@ -1,4 +1,4 @@
-name: test_build_image
+name: update_hub_description
 # Update image description on docker hub
 # Require a READM.MD in the subfolder that contains the Dockerfile.
 run-name: Update_Desc ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
