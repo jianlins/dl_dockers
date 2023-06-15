@@ -1,9 +1,7 @@
 ARG BASE_IMAGE="nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04"
 FROM ${BASE_IMAGE}
 
-ARG NB_USER="jovyan"
-ARG NB_UID="1000"
-ARG NB_GID="100"
+
 # Pin python version here, or set it to "default"
 ARG PYTHON_VERSION=3.8
 
@@ -53,56 +51,31 @@ RUN apt-get update --yes && \
 # Configure environment
 ENV CONDA_DIR=/opt/conda \
     SHELL=/bin/bash \
-    NB_USER="${NB_USER}" \
-    NB_UID=${NB_UID} \
-    NB_GID=${NB_GID} \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
+
 ENV PATH="${CONDA_DIR}/bin:${PATH}" \
-    HOME="/home/${NB_USER}" \
+    HOME="${WORK_DIR}" \
     WORK_DIR="${WORK_DIR}"
 
-# Copy a script that we will use to correct permissions after running certain commands
-COPY fix-permissions /usr/local/bin/fix-permissions
-RUN chmod a+rx /usr/local/bin/fix-permissions
+# This port number does't need to be changed, as it's container's own port, only visible inside containers. 
+# From outside access, change the port using "-p 0.0.0.0:{desired port nuber}:8888" when starting the container.
+ENV JUPYTER_PORT=8888    
 
 
 
-# Enable prompt color in the skeleton .bashrc before creating the default NB_USER
+# Enable prompt color in the skeleton .bashrc 
 # hadolint ignore=SC2016
 RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashrc && \
    # Add call to conda init script see https://stackoverflow.com/a/58081608/4413446
    echo 'eval "$(command conda shell.bash hook 2> /dev/null)"' >> /etc/skel/.bashrc
 
 
-# Create NB_USER with name jovyan user with UID=1000 and in the 'users' group
-# and make sure these dirs are writable by the `users` group.
-# check variables
-RUN echo "${NB_UID}" "${NB_USER}" "${HOME}" "${CONDA_DIR}"
-
-RUN echo "auth requisite pam_deny.so" >> /etc/pam.d/su && \
-    sed -i.bak -e 's/^%admin/#%admin/' /etc/sudoers && \
-    sed -i.bak -e 's/^%sudo/#%sudo/' /etc/sudoers && \
-    useradd -l -m -s /bin/bash -N -u "${NB_UID}" "${NB_USER}" && \
-    mkdir -p "${CONDA_DIR}" && \
-    chown "${NB_USER}:${NB_GID}" "${CONDA_DIR}" && \
-    chmod g+w /etc/passwd && \
-    fix-permissions "${HOME}" && \
-    fix-permissions "${CONDA_DIR}"
 
 # set up working directory
-RUN mkdir ${WORK_DIR} && chown ${NB_USER} ${WORK_DIR}
+RUN mkdir ${WORK_DIR}
 
-
-
-USER ${NB_UID}
-
-
-
-# Setup work directory for backward-compatibility
-RUN fix-permissions "/home/${NB_USER}"
-RUN fix-permissions "${WORK_DIR}"
 
 # Download and install Micromamba, and initialize Conda prefix.
 #   <https://github.com/mamba-org/mamba#micromamba>
@@ -114,7 +87,7 @@ RUN fix-permissions "${WORK_DIR}"
 # Correct permissions
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
-COPY --chown="${NB_UID}:${NB_GID}" initial-condarc "${CONDA_DIR}/.condarc"
+COPY initial-condarc "${CONDA_DIR}/.condarc"
 WORKDIR /tmp
 
 RUN set -x && \
@@ -140,32 +113,26 @@ RUN set -x && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
     mamba clean --all -f -y && \
-    fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${NB_USER}"
+    chmod -R 775 "${CONDA_DIR}" 
 
 
-ENV JUPYTER_PORT=8888
+
 EXPOSE $JUPYTER_PORT
 
 # Configure container startup
 # Configure container startup
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["start-notebook.sh"]
 
-# Copy local files as late as possible to avoid cache busting
-COPY start.sh /usr/local/bin/
-# Copy local files as late as possible to avoid cache busting
-COPY start-notebook.sh start-singleuser.sh /usr/local/bin/
+
+
 # Currently need to have both jupyter_notebook_config and jupyter_server_config to support classic and lab
 COPY jupyter_server_config.py docker_healthcheck.py /etc/jupyter/
 
-# Fix permissions on /etc/jupyter as root
-USER root
 
 # Legacy for Jupyter Notebook Server, see: [#1205](https://github.com/jupyter/docker-stacks/issues/1205)
 RUN sed -re "s/c.ServerApp/c.NotebookApp/g" \
     /etc/jupyter/jupyter_server_config.py > /etc/jupyter/jupyter_notebook_config.py && \
-    fix-permissions /etc/jupyter/
+    chmod -R 775 /etc/jupyter/
 
 # HEALTHCHECK documentation: https://docs.docker.com/engine/reference/builder/#healthcheck
 # This healtcheck works well for `lab`, `notebook`, `nbclassic`, `server` and `retro` jupyter commands
@@ -173,11 +140,9 @@ RUN sed -re "s/c.ServerApp/c.NotebookApp/g" \
 HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
     CMD /etc/jupyter/docker_healthcheck.py || exit 1
 
-
-# Switch back to jovyan to avoid accidental container runs as root
-USER ${NB_UID}
-
 WORKDIR "${WORK_DIR}"
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+
 
 
 

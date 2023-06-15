@@ -31,3 +31,7 @@ Note: Even BASE_IMAGE is configurable, try use ubuntu based images only, for som
 ## Externalize conda environment configuration
 If you only need to change some of the python packages, just edit the environment.yml if you are familiar with conda. Very minimal knowledge about docker is needed.
 Note: in this Dockerfile configuration, all the packages will be installed to base environment for simplifying downstream executions. If you prefer not to run under base environment, you will be revise the Dockerfile accordingly.
+
+
+## Switch back to root user to kick off jupyter
+In cosmos nonroot users from containers cannot write into volumes. It's easier to directly start from root users. This change starts from v2.
