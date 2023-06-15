@@ -1,4 +1,11 @@
 This Dockefile was originally developed by HDAP team. Revised for VINCI NLP use on cosmos
+This image inherent from nvidia_jupyter: 
+* has mamba installed
+* externalize the package configuration in environment.yml
+* download nlp models specified in post_install.sh
+
+
+
 Original Dockerfile:
 
 ```
