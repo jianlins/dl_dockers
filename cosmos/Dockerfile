@@ -74,19 +74,12 @@ RUN if [ -z "${scala_version}" ]; then \
 
 # Configure IPython system-wide
 COPY ipython_kernel_config.py "/etc/ipython/"
-RUN fix-permissions "/etc/ipython/"
+RUN chmod -R 775 "/etc/ipython/"
 
 # clean tmp
 RUN ls -l -a /tmp
 
-# Switch back to jovyan to avoid accidental container runs as root
-USER ${NB_UID}
-
 WORKDIR "${WORK_DIR}"
-
-# Install pyarrow
-RUN fix-permissions "${CONDA_DIR}" && \
-    fix-permissions "/home/${NB_USER}"
 
 EXPOSE 4040
 EXPOSE 18080

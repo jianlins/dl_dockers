@@ -57,6 +57,14 @@ jobs:
         run: |
           docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
 
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ github.event.inputs.hub_username }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
+          readme-filepath: "${{ github.event.inputs.build_folder }}/README.MD"
+
       # only works if built on self-hosted runners. Github runners do not have enough space for this.
 
       # - name: Save image as a tar for later use 💾
