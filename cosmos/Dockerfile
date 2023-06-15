@@ -10,7 +10,7 @@ ARG spark_version="3.4.0"
 ARG hadoop_version="3"
 ARG scala_version
 ARG spark_checksum="67bc912e9192ef2159540cb480820e5466dfd91e907c97c5a4787587e3020be042b76c40c51854f2a5dbeb8c3775fe12d9021c1200c4704463ec644132243a69"
-ARG openjdk_version="17"
+ARG openjdk_version="8"
 
 
 ENV APACHE_SPARK_VERSION="${spark_version}" \
