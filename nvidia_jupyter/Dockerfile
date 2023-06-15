@@ -131,7 +131,8 @@ ENTRYPOINT ["tini", "-g", "--"]
 
 
 # Currently need to have both jupyter_notebook_config and jupyter_server_config to support classic and lab
-COPY jupyter_server_config.py docker_healthcheck.py /etc/jupyter/
+# COPY jupyter_server_config.py docker_healthcheck.py /etc/jupyter/
+COPY jupyter_server_config.py /etc/jupyter/
 
 
 # Legacy for Jupyter Notebook Server, see: [#1205](https://github.com/jupyter/docker-stacks/issues/1205)
@@ -142,8 +143,8 @@ RUN sed -re "s/c.ServerApp/c.NotebookApp/g" \
 # HEALTHCHECK documentation: https://docs.docker.com/engine/reference/builder/#healthcheck
 # This healtcheck works well for `lab`, `notebook`, `nbclassic`, `server` and `retro` jupyter commands
 # https://github.com/jupyter/docker-stacks/issues/915#issuecomment-1068528799
-HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
-    CMD /etc/jupyter/docker_healthcheck.py || exit 1
+# HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
+#     CMD /etc/jupyter/docker_healthcheck.py || exit 1
 
 WORKDIR "${WORK_DIR}"
 CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
