@@ -49,6 +49,7 @@ jobs:
         run: |
           pwd
           ls
+          ls ${{ github.event.inputs.build_folder }}
 
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v3
@@ -56,5 +57,5 @@ jobs:
           username: ${{ github.event.inputs.hub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
-          readme-filepath: "dl_dockers/{{ github.event.inputs.build_folder }}/README.MD"
+          readme-filepath: "${{ github.event.inputs.build_folder }}/README.MD"
         
