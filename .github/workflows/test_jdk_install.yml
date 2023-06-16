@@ -28,3 +28,4 @@ jobs:
       - name: test jdk
         run:
           java --version
+          which java
