@@ -43,8 +43,22 @@ RUN mamba clean --all -f -y
 
 
 # install jdk, download models.
-RUN chmod 775 /tmp/post_install.sh && \
-    /tmp/post_install.sh ${openjdk_version}
+RUN chmod 770 /tmp/post_install.sh && \
+    /tmp/post_install.sh
+
+
+# Install Corretto JDK 8 or ${openjdk_version}
+RUN wget https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN tar xzf amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
+RUN rm amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
+RUN [ ! -d /usr/lib/jvm ] && mkdir /usr/lib/jvm
+RUN mv amazon-corretto-${openjdk_version}.* /usr/lib/jvm/corretto
+
+
+# Set Java environment variables
+ENV JAVA_HOME=/usr/lib/jvm/corretto
+ENV PATH=$PATH:$JAVA_HOME/bin
+
 
 # Spark installation
 # You need to use https://archive.apache.org/dist/ website if you want to download old Spark versions
