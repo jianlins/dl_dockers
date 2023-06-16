@@ -7,7 +7,7 @@ ARG PYTHON_VERSION=3.8
 
 # make the working dir shorter so that it's easier type when mapping volumns or operating files.
 ARG WORK_DIR="/workspace"
-
+ARG HOME='/home/root'
 
 
 #sets the user context for subsequent instructions in the Dockerfile to the "root" user.
@@ -56,7 +56,7 @@ ENV CONDA_DIR=/opt/conda \
     LANGUAGE=en_US.UTF-8
 
 ENV PATH="${CONDA_DIR}/bin:${PATH}" \
-    HOME="${WORK_DIR}" \
+    HOME="${HOME}" \
     WORK_DIR="${WORK_DIR}"
 
 # This port number does't need to be changed, as it's container's own port, only visible inside containers. 
@@ -75,6 +75,8 @@ RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashr
 
 # set up working directory
 RUN mkdir ${WORK_DIR}
+# set up home directory /home/root by default
+RUN mkdir ${HOME}
 
 
 # Download and install Micromamba, and initialize Conda prefix.
