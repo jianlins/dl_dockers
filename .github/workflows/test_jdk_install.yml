@@ -22,7 +22,7 @@ jobs:
       - name: install jdk
         run: |
           pip install install-jdk
-          python -c "import jdk; jdk.install('{{ github.event.inputs.jdk_version }}');"
+          python -c "import jdk; jdk.install('${{ github.event.inputs.jdk_version }}');"
       
 
       - name: test jdk
