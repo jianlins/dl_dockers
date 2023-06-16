@@ -26,6 +26,6 @@ jobs:
       
 
       - name: test jdk
-        run:
+        run: |
           java --version
           which java
