@@ -1,0 +1,36 @@
+name: test_jdk_install
+run-name: Test ${{ github.event.inputs.image_name }} & execute ${{ github.event.inputs.cmd }}  
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_name:
+        description: 'Image name to run'  
+        type: string   
+        required: false
+        default: 'jupyter/pyspark-notebook'
+      cmd:
+          description: 'command to run after docker run, e.g. echo "ok"'  
+          type: string   
+          required: false
+          default: ''
+
+jobs:
+  run_docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8  
+          
+      - name: install jdk
+        run: |
+          pip install install-jdk
+          python -c "import jdk; jdk.install('8');"
+      
+
+      - name: test jdk
+        run:
+          java --version
