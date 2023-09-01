@@ -149,6 +149,7 @@ RUN sed -re "s/c.ServerApp/c.NotebookApp/g" \
 #     CMD /etc/jupyter/docker_healthcheck.py || exit 1
 
 WORKDIR "${WORK_DIR}"
+COPY README.MD "${WORK_DIR}"/jupyter_server_config.jso[n] /home/root/.jupyter/
 CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
 
 
