@@ -43,6 +43,11 @@ jobs:
         with:
           username: ${{ github.event.inputs.hub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: check hardware
+        run: |
+          cat /proc/cpuinfo
+          cat /proc/meminfo
 
       - name: Build
         run: |
