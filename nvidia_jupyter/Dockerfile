@@ -128,6 +128,8 @@ EXPOSE $JUPYTER_PORT
 
 # Configure container startup
 # Configure container startup
+
+
 ENTRYPOINT ["tini", "-g", "--"]
 
 
@@ -136,11 +138,12 @@ ENTRYPOINT ["tini", "-g", "--"]
 # COPY jupyter_server_config.py docker_healthcheck.py /etc/jupyter/
 COPY jupyter_server_config.py /etc/jupyter/
 
+COPY start.sh /usr/local/bin/
+RUN chmod 775 /usr/local/bin/*.sh
+
 
 # Legacy for Jupyter Notebook Server, see: [#1205](https://github.com/jupyter/docker-stacks/issues/1205)
-RUN sed -re "s/c.ServerApp/c.NotebookApp/g" \
-    /etc/jupyter/jupyter_server_config.py > /etc/jupyter/jupyter_notebook_config.py && \
-    chmod -R 775 /etc/jupyter/
+RUN chmod -R 775 /etc/jupyter/
 
 # HEALTHCHECK documentation: https://docs.docker.com/engine/reference/builder/#healthcheck
 # This healtcheck works well for `lab`, `notebook`, `nbclassic`, `server` and `retro` jupyter commands
@@ -148,11 +151,7 @@ RUN sed -re "s/c.ServerApp/c.NotebookApp/g" \
 # HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
 #     CMD /etc/jupyter/docker_healthcheck.py || exit 1
 
+RUN mkdir /home/root/.jupyter
 WORKDIR "${WORK_DIR}"
-CMD ["[ -f /workspace/jupyter_server_config.json ]","&&","cp /workspace/jupyter_server_config.json /home/root/.jupyter/jupyter_server_config.json"]
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
-
-
-
-
-
+CMD ["start.sh"]
+# CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]

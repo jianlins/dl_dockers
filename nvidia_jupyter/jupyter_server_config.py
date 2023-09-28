@@ -8,9 +8,9 @@ import errno
 import stat
 
 c = get_config()
-c.NotebookApp.ip = '0.0.0.0'
-c.NotebookApp.port = 8888
-c.NotebookApp.open_browser = False
+c.ServerApp.ip = '0.0.0.0'
+c.ServerApp.port = 8888
+c.ServerApp.open_browser = False
 
 # https://github.com/jupyter/notebook/issues/3130
 c.FileContentsManager.delete_to_trash = False
@@ -36,7 +36,7 @@ if 'GEN_CERT' in os.environ:
                            '-out', pem_file])
     # Restrict access to the file
     os.chmod(pem_file, stat.S_IRUSR | stat.S_IWUSR)
-    c.NotebookApp.certfile = pem_file
+    c.ServerApp.certfile = pem_file
 
 # Change default umask for all subprocesses of the notebook server if set in
 # the environment
