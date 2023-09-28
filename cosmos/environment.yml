@@ -39,7 +39,7 @@ dependencies:
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
     - medspacy==1.1.2
-    - transformers
+    - transformers>=4.31.0
     # dependency version conflict, fix it later
     # - medpspacy-io
     - simpletransformers==0.63
@@ -58,3 +58,18 @@ dependencies:
     - install-jdk
     - pyspark==3.4.0
     - https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_sm-0.3.0.tar.gz
+    # vector db
+    - pymilvus
+    # used in llama2
+    - fairscale
+    - fire
+    - accelerate
+    - peft
+    - datasets
+    - appdirs
+    - loralib
+    - bitsandbytes
+    - black
+    - black[jupyter]
+    - py7zr
+    - optimum
