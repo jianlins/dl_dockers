@@ -1,0 +1,60 @@
+name: base
+channels:
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch::pytorch
+  # - pytorch::torchvision
+  # - pytorch::torchaudio
+  - pytorch::pytorch-cuda=11.8
+  - pytorch::torchtext
+  # github runner doesn't have a gpu, it seems not working , disable for now. 
+  # might work using https://github.com/gpgpu-sim/gpgpu-sim_distribution, check it later
+  # - nvidia/label/cuda-11.8.0::cutatoolkit
+  - pandas
+  - pip
+  - numpy
+  - openpyxl
+  - scipy
+  - sqlalchemy
+  - ipywidgets
+  - ipympl
+  - cython=0.29
+  - statsmodels
+  - notebook
+  - jupyterlab
+  - numba
+  - numexpr
+  - xlrd
+  - conda-forge::torchinfo
+  - conda-forge::imbalanced-learn
+  - conda-forge::scikit-learn
+  - conda-forge::jupytext
+  - conda-forge::spacy=3.5
+  - conda-forge::pyarrow
+  - pip:
+    # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
+    # may consider torchdynamo in later versions
+    # https://pytorch.org/docs/stable/dynamo/installation.html
+    - medspacy==1.1.2
+    - transformers>=4.31.0
+    # dependency version conflict, fix it later
+    # - medpspacy-io
+    - simpletransformers==0.63
+    - nltk==3.8.1
+    - bioc==2.0
+    - tqdm==4.65
+    - tensorboard
+    - pytest
+    - setuptools
+    - wheel
+    - joblib
+    - matplotlib
+    - itsdangerous<2.1.0
+    - accelerate
+    - lightning
+    - install-jdk
+    - pyspark==3.4.1
+    - https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.3.0/en_core_sci_sm-0.3.0.tar.gz
+    
