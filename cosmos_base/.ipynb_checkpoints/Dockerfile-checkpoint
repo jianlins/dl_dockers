@@ -96,6 +96,14 @@ RUN if [ -z "${scala_version}" ]; then \
 COPY ipython_kernel_config.py "/etc/ipython/"
 RUN chmod -R 775 "/etc/ipython/"
 
+RUN apt-get update && apt-get install -y openssh-server
+
+RUN wget -O- https://aka.ms/install-vscode-server/setup.sh | sh
+
+RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
+
+RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.1.4.jar
+
 # clean tmp
 RUN ls -l -a /tmp
 

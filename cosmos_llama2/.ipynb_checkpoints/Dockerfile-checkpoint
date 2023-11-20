@@ -9,7 +9,7 @@ RUN apt-get update --yes && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
     build-essential && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
+    
 COPY environment.yml /tmp/environment.yml
 
 RUN mamba env update --file /tmp/environment.yml
