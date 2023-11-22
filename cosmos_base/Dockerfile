@@ -27,7 +27,7 @@ RUN apt-get update --yes && \
     #   the ubuntu base image is rebuilt too seldom sometimes (less than once a month)
     apt-get upgrade --yes && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    build-essential && \
+    build-essential openssh-server && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
@@ -41,14 +41,20 @@ RUN mamba env update --file environment.yml
 # -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
 # -f, --force-pkgs-dirs	Remove all writable package caches
 # -y, --yes	Do not ask for confirmation
+
+RUN wget -O- https://aka.ms/install-vscode-server/setup.sh | sh
+
+RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
+
+RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.1.4.jar
+
+
 RUN mamba clean --all -f -y 
 RUN pip cache purge
 
 
 
-# install jdk, download models.
-RUN chmod 770 /tmp/post_install.sh && \
-    /tmp/post_install.sh
+
 
 
 # Install Corretto JDK 8 or ${openjdk_version}
@@ -91,18 +97,17 @@ RUN if [ -z "${scala_version}" ]; then \
   # Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
   mkdir -p /usr/local/bin/before-notebook.d && \
   ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
+  
+
+#  download models.
+RUN chmod 770 /tmp/post_install.sh && \
+    /tmp/post_install.sh
 
 # Configure IPython system-wide
 COPY ipython_kernel_config.py "/etc/ipython/"
 RUN chmod -R 775 "/etc/ipython/"
 
-RUN apt-get update && apt-get install -y openssh-server
 
-RUN wget -O- https://aka.ms/install-vscode-server/setup.sh | sh
-
-RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
-
-RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.1.4.jar
 
 # clean tmp
 RUN ls -l -a /tmp
