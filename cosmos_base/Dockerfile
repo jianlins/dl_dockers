@@ -9,10 +9,10 @@ ARG openjdk_version="8"
 # Spark dependencies
 # Default values can be overridden at build time
 # (ARGS are in lower case to distinguish them from ENV)
-ARG spark_version="3.4.1"
+ARG spark_version="3.5.0"
 ARG hadoop_version="3"
 ARG scala_version
-ARG spark_checksum="5a21295b4c3d1d3f8fc85375c711c7c23e3eeb3ec9ea91778f149d8d321e3905e2f44cf19c69a28df693cffd536f7316706c78932e7e148d224424150f18b2c5"
+ARG spark_checksum="8883c67e0a138069e597f3e7d4edbbd5c3a565d50b28644aad02856a1ec1da7cb92b8f80454ca427118f69459ea326eaa073cf7b1a860c3b796f4b07c2101319"
 
 
 ENV APACHE_SPARK_VERSION="${spark_version}" \
@@ -37,28 +37,10 @@ COPY environment.yml /tmp/environment.yml
 COPY post_install.sh /tmp/post_install.sh
 
 
-RUN mamba env update --file environment.yml
-# -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
-# -f, --force-pkgs-dirs	Remove all writable package caches
-# -y, --yes	Do not ask for confirmation
-
-RUN wget -O- https://aka.ms/install-vscode-server/setup.sh | sh
-
-RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
-
-RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.1.4.jar
-
-
-RUN mamba clean --all -f -y 
-RUN pip cache purge
-
-
-
-
 
 
 # Install Corretto JDK 8 or ${openjdk_version}
-RUN wget https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
 RUN tar xzf amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
 RUN rm amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
 RUN [ ! -d /usr/lib/jvm ] && mkdir /usr/lib/jvm
@@ -99,9 +81,26 @@ RUN if [ -z "${scala_version}" ]; then \
   ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
   
 
+
+RUN mamba env update --file environment.yml
+# -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
+# -f, --force-pkgs-dirs	Remove all writable package caches
+# -y, --yes	Do not ask for confirmation
+
+RUN wget -qO- https://aka.ms/install-vscode-server/setup.sh | sh
+
+RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
+
+RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.1.4.jar
+
 #  download models.
 RUN chmod 770 /tmp/post_install.sh && \
     /tmp/post_install.sh
+
+
+RUN mamba clean --all -f -y 
+RUN pip cache purge
+
 
 # Configure IPython system-wide
 COPY ipython_kernel_config.py "/etc/ipython/"
@@ -115,6 +114,7 @@ RUN ls -l -a /tmp
 WORKDIR "${WORK_DIR}"
 
 EXPOSE 4040
+EXPOSE 22
 EXPOSE 18080
 EXPOSE 8081
 EXPOSE 8080

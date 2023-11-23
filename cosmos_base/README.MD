@@ -5,6 +5,12 @@ This image inherent from [nvidia_jupyter](https://hub.docker.com/r/brokenjade/nv
 * download nlp models specified in [post_install.sh](https://github.com/jianlins/dl_dockers/blob/main/cosmos/post_install.sh)
 
 
+## Updates from v1
+upgrade pyspark to 3.5.0
+add spark-nlp, gensim
+add openssh-server --- will see if we can set vs code dev container directly connected.
+
+
 
 Original Dockerfile:
 

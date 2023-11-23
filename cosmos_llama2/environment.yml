@@ -11,9 +11,7 @@ dependencies:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
-    - medspacy==1.1.2    
-    # vector db
-    - pymilvus
+    # - medspacy==1.1.2    
     # used in llama2
     - fairscale
     - fire
