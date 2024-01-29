@@ -60,6 +60,5 @@ dependencies:
     - install-jdk    
     - pyspark[pandas_on_spark]==3.5.0
     - spark-nlp==5.2.0
-    - scispacy
     - gensim
     
