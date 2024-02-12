@@ -34,6 +34,7 @@ RUN apt-get update --yes && \
 
 WORKDIR /tmp
 COPY environment.yml /tmp/environment.yml
+COPY environment2.yml /tmp/environment2.yml
 COPY post_install.sh /tmp/post_install.sh
 
 
@@ -83,6 +84,7 @@ RUN if [ -z "${scala_version}" ]; then \
 
 
 RUN mamba env update --file environment.yml
+RUN mamba env update --file environment2.yml
 # -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
 # -f, --force-pkgs-dirs	Remove all writable package caches
 # -y, --yes	Do not ask for confirmation
