@@ -88,6 +88,10 @@ RUN mkdir ${HOME}
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 COPY initial-condarc "${CONDA_DIR}/.condarc"
+COPY jupyter_server_config.py /etc/jupyter/
+COPY start.sh /usr/local/bin/
+COPY post_install.sh /tmp/post_install.sh
+COPY environment.yml /tmp/environment.yml
 WORKDIR /tmp
 
 RUN set -x && \
@@ -151,8 +155,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN ls -l -a /tmp
 
 
-COPY jupyter_server_config.py /etc/jupyter/
-COPY start.sh /usr/local/bin/
+
 RUN chmod 775 /usr/local/bin/*.sh
 
 # Legacy for Jupyter Notebook Server, see: [#1205](https://github.com/jupyter/docker-stacks/issues/1205)
