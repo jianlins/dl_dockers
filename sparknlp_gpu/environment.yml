@@ -4,11 +4,9 @@ channels:
   - defaults
 dependencies:
   - python=3.8
-  - pytorch::pytorch
-  # - pytorch::torchvision
-  # - pytorch::torchaudio
-  - pytorch::pytorch-cuda=11.8
-  - pytorch::torchtext
+  - nvidia/label/cuda-11.3.1::cuda-toolkit
+  - nvidia:cudnn
+  - pytorch::faiss-gpu
   # github runner doesn't have a gpu, it seems not working , disable for now. 
   # might work using https://github.com/gpgpu-sim/gpgpu-sim_distribution, check it later
   # - nvidia/label/cuda-11.8.0::cutatoolkit
@@ -33,4 +31,25 @@ dependencies:
   - conda-forge::jupytext
   - conda-forge::spacy=3.5.4
   - conda-forge::pyarrow=14.0.1
-    
+  - pip:
+    - setuptools==65
+    - medspacy
+    - git+https://github.com/medspacy/medspacy_io.git
+    - nltk==3.8.1
+    - bioc==2.0
+    - tqdm==4.65
+    - tensorboard
+    - pytest
+    - wheel
+    - joblib
+    - matplotlib
+    - pyspark[pandas_on_spark]==3.5.0
+    - spark-nlp==5.2.0
+    - mlflow
+    - gensim
+    - Keras
+    - scikit-spark
+    - pydot
+    - tensorflow==2.12.0
+    - graphviz
+

@@ -33,4 +33,32 @@ dependencies:
   - conda-forge::jupytext
   - conda-forge::spacy=3.5.4
   - conda-forge::pyarrow=14.0.1
+  - pip:
+    # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
+    # may consider torchdynamo in later versions
+    # https://pytorch.org/docs/stable/dynamo/installation.html
+    - setuptools==65
+    # tmp solution to fix the pip install medspacy     
+    # - git+https://github.com/jianlins/medspacy.git
+    - medspacy
+    - git+https://github.com/medspacy/medspacy_io.git
+    - transformers>=4.31.0
+    # dependency version conflict, fix it later
+    # - medpspacy-io
+    - simpletransformers==0.64.5
+    - nltk==3.8.1
+    - bioc==2.0
+    - tqdm==4.65
+    - tensorboard
+    - pytest
+    - wheel
+    - joblib
+    - matplotlib
+    - itsdangerous<2.1.0
+    - accelerate
+    - lightning==2.1.2
+    - install-jdk    
+    - pyspark[pandas_on_spark]==3.5.0
+    - spark-nlp==5.2.0
+    - gensim
     
