@@ -134,9 +134,10 @@ ENV PATH=$PATH:$JAVA_HOME/bin
 
 RUN echo "export JAVA_HOME=/usr/lib/jvm/corretto/" >> ~/.bashrc
 
+# debug
+RUN ls /tmp
 
-
-RUN ["/bin/bash", "-c", "set -o pipefail && mamba env update --file environment.yml"]
+RUN mamba env update --file environment.yml
 
 # add sparknlp pyspark jars
 RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
@@ -147,7 +148,7 @@ RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.c
 RUN chmod 770 /tmp/post_install.sh && \
     /tmp/post_install.sh
 
-RUN ["/bin/bash", "-c", "set -o pipefail && mamba clean --all -f -y"]
+RUN mamba clean --all -f -y
 RUN pip cache purge
 
 # clean tmp
