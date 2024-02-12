@@ -7,7 +7,7 @@ on:
         description: 'From which folder, the Dockerfiles will be built'  
         type: string   
         required: false
-        default: 'nvidia_jupyter'
+        default: 'sparknlp_gpu'
       tag:
           description: 'Customize image tag'  
           type: string   
