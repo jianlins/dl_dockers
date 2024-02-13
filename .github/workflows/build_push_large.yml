@@ -32,6 +32,7 @@ jobs:
       
       - name: Set docker storage to lvm
         run: |
+          sudo docker images
           # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
           sudo systemctl stop docker
           echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
