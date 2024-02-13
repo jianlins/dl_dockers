@@ -36,10 +36,10 @@ jobs:
           sudo systemctl stop docker
           echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a  /etc/docker/daemon.json 
           echo "copy existing files..."
-          sudo cp -rp /var/lib/docker /mnt/
+          sudo rsync -aP /var/lib/docker/ "/mnt/docker"
           sudo rm -rf /var/lib/docker
           sudo ls -l /mnt/docker
-          echo "start to mount..."
+          echo "restart docker..."
           # sudo mount --rbind /mnt/docker /var/lib/docker
           sudo systemctl start docker
 
