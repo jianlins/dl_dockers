@@ -1,5 +1,5 @@
 setuptools==65
-medspacy
+medspacy==1.1.5
 git+https://github.com/medspacy/medspacy_io.git
 nltk==3.8.1
 bioc==2.0
