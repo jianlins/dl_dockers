@@ -18,6 +18,7 @@ RUN apt-get update --yes && \
     #   the ubuntu base image is rebuilt too seldom sometimes (less than once a month)
     apt-get upgrade --yes && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
+    build-essential \
     # - pandoc is used to convert notebooks to html files
     #   it's not present in aarch64 ubuntu image, so we install it here
     pandoc \
