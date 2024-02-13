@@ -8,10 +8,6 @@ ARG HOME='/home/root'
 ARG PYTHON_VERSION=3.8
 ARG openjdk_version="8"
 
-ENV PATH="${CONDA_DIR}/bin:${PATH}" \
-    HOME="${HOME}" \
-    WORK_DIR="${WORK_DIR}"
-
 ENV PYSPARK_PYTHON=python3
 ENV PYSPARK_DRIVER_PYTHON=python3
 
@@ -75,7 +71,7 @@ RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashr
 RUN mkdir ${WORK_DIR}
 # set up home directory /home/root by default
 RUN mkdir ${HOME}
-
+RUN mkdir ${CONDA_DIR}
 
 # Download and install Micromamba, and initialize Conda prefix.
 #   <https://github.com/mamba-org/mamba#micromamba>
@@ -120,6 +116,7 @@ RUN set -x && \
     which mamba && \
     chmod -R 775 "${CONDA_DIR}" 
 
+RUN ls ${CONDA_DIR}/bin
 
 RUN mamba env update --file environment.yml && mamba clean --all -f -y
 
