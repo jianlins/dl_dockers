@@ -88,6 +88,7 @@ COPY jupyter_server_config.py /etc/jupyter/
 COPY start.sh /usr/local/bin/
 COPY post_install.sh /tmp/post_install.sh
 COPY environment.yml /tmp/environment.yml
+COPY requirements.txt /tmp/requirements.txt
 WORKDIR /tmp
 
 RUN set -x && \
@@ -119,6 +120,8 @@ RUN set -x && \
 RUN ls ${CONDA_DIR}/bin
 
 RUN mamba env update --file environment.yml && mamba clean --all -f -y
+
+RUN pip install -r requirements.txt && pip cache purge
 
 # Install Corretto JDK 8 due to TRM requirement
 RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
