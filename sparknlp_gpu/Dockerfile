@@ -132,11 +132,11 @@ RUN set -x && \
 
 RUN ls ${CONDA_DIR}/bin
 
-RUN mamba env update --file environment.yml && mamba clean --all -f -y
+RUN mamba env update --file environment.yml && mamba clean --all -f -y && pip cache purge
 
-RUN pip install --upgrade pip 
-RUN pip install -r requirements.txt
-RUN pip install --no-deps medspacy==1.1.5 scikit-spark && pip cache purge
+# RUN pip install --upgrade pip 
+# RUN pip install -r requirements.txt
+# RUN pip install --no-deps medspacy==1.1.5 scikit-spark && pip cache purge
 
 
 

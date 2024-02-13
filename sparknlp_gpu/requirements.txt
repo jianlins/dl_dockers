@@ -1,21 +1,20 @@
-setuptools==65
-git+https://github.com/medspacy/medspacy_io.git
-nltk==3.8.1
-bioc==2.0
-tqdm==4.65
-tensorboard
-pytest
-wheel
-joblib
-matplotlib
-pyspark==3.5.0
-spark-nlp==5.2.0
-mlflow
-gensim
-Keras
-pydot
-tensorflow==2.12.0
-graphviz
-PyRuSH>=1.0.8
-pysbd==0.3.4
-jsonschema
+    - setuptools==65
+    - git+https://github.com/medspacy/medspacy_io.git
+    - nltk==3.8.1
+    - bioc==2.0
+    - tqdm==4.65
+    - tensorboard
+    - pytest
+    - wheel
+    - joblib
+    - matplotlib
+    - pyspark==3.5.0
+    - spark-nlp==5.2.0
+    - mlflow
+    - gensim
+    - Keras
+    - pydot
+    - graphviz
+    - PyRuSH>=1.0.8
+    - pysbd==0.3.4
+    - jsonschema

@@ -25,3 +25,27 @@ dependencies:
   - conda-forge::imbalanced-learn=0.11.0
   - conda-forge::scikit-learn=1.3.2
   - conda-forge::spacy=3.5.4
+  - pip:
+    - setuptools==65
+    - git+https://github.com/medspacy/medspacy_io.git
+    - medspacy==1.1.5
+    - scikit-spark
+    - nltk==3.8.1
+    - bioc==2.0
+    - tqdm==4.65
+    - tensorboard
+    - pytest
+    - wheel
+    - joblib
+    - matplotlib
+    - pyspark==3.5.0
+    - spark-nlp==5.2.0
+    - mlflow
+    - gensim
+    - Keras
+    - pydot
+    - graphviz
+    # - tensorflow==2.12.0 # only need this for Visual NLP
+    - PyRuSH>=1.0.8
+    - pysbd==0.3.4
+    - jsonschema
