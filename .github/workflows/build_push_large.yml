@@ -1,0 +1,86 @@
+name: build_push_large
+# this workflow added maximize-build-space action to get larger disc to build.
+run-name: B&D ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
+on:
+  workflow_dispatch:
+    inputs:
+      build_folder:
+        description: 'From which folder, the Dockerfiles will be built'  
+        type: string   
+        required: false
+        default: 'cosmos_base'
+      tag:
+          description: 'Customize image tag'  
+          type: string   
+          required: false
+          default: 'latest'
+      hub_username:
+        description: 'Docker hub username'  
+        type: string   
+        required: false
+        default: 'brokenjade'
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 5120mb
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-${{ github.event.inputs.build_folder  }}
+          restore-keys: |
+            buildx-${{ github.event.inputs.build_folder  }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ github.event.inputs.hub_username }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build
+        run: |
+          pwd
+          ls
+          cd ${{ github.event.inputs.build_folder }}
+          docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
+          
+      - name: list images
+        run: docker images
+
+      - name: publish
+        run: |
+          docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ github.event.inputs.hub_username }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
+          readme-filepath: "${{ github.event.inputs.build_folder }}/README.MD"
+
+      # only works if built on self-hosted runners. Github runners do not have enough space for this.
+
+      # - name: Save image as a tar for later use 💾
+      #   run: docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} -o /tmp/${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}.tar
+      #   shell: bash
+      # - name: Upload image as artifact 💾
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}
+      #     path: /tmp/${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}.tar
+      #     retention-days: 3
