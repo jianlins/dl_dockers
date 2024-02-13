@@ -4,7 +4,8 @@ channels:
   - defaults
 dependencies:
   - python=3.8
-  - nvidia::cuda-toolkit=11.3.1
+  - nvidia/label/cuda-11.3.1::cuda-toolkit
+  - nvidia/label/cuda-11.3.1::cuda
   - nvidia::cudnn
   - pytorch::faiss-gpu
   # github runner doesn't have a gpu, it seems not working , disable for now. 
