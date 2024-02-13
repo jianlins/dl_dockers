@@ -34,10 +34,10 @@ jobs:
         run: |
           sudo mkdir /mnt/docker
           sudo chmod 777 /mnt/docker
+          sudo cp -r /var/lib/docker/* /mnt/docker/
           sudo rm -rf /var/lib/docker
           sudo ln -s /mnt/docker /var/lib/docker
           sudo chmod 777 /var/lib/docker
-          docker pull moby/buildkit
 
       - name: Checkout
         uses: actions/checkout@v4
