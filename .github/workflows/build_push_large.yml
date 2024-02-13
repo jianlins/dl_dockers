@@ -33,7 +33,7 @@ jobs:
       - name: Set docker storage to lvm
         run: |
           sudo systemctl stop docker
-          sudo echo "{\"data-root\": \"/mnt/docker\"}" > /etc/docker/daemon.json 
+          echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a  /etc/docker/daemon.json 
           echo "copy existing files..."
           sudo cp -rp /var/lib/docker /mnt/
           sudo rm -rf /var/lib/docker
