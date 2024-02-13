@@ -4,13 +4,14 @@ channels:
   - defaults
 dependencies:
   - python=3.8
+  - pytorch::pytorch
   - pytorch::pytorch-cuda=11.8
   - pytorch::faiss-gpu
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
-    # - medspacy==1.1.2    
+    - medspacy==1.1.5
     # used in llama2
     - fairscale
     - fire
