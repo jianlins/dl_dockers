@@ -121,6 +121,8 @@ RUN set -x && \
     chmod -R 775 "${CONDA_DIR}" 
 
 
+RUN mamba env update --file environment.yml && mamba clean --all -f -y
+
 # Install Corretto JDK 8 due to TRM requirement
 RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
 RUN tar xzf amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
@@ -137,7 +139,6 @@ RUN echo "export JAVA_HOME=/usr/lib/jvm/corretto/" >> ~/.bashrc
 # debug
 RUN ls /tmp
 
-RUN mamba env update --file environment.yml
 
 # add sparknlp pyspark jars
 RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
