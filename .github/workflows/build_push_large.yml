@@ -29,6 +29,11 @@ jobs:
         with:
           overprovision-lvm: 'true'          
           remove-dotnet: 'true'
+      
+      - name: Set docker storage to lvm
+        run: |
+          mkdir /mnt/docker
+          ln -s /mnt/docker /var/lib/docker
 
       - name: Checkout
         uses: actions/checkout@v4
