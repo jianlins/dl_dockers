@@ -39,6 +39,7 @@ dependencies:
     - wheel
     - joblib
     - matplotlib
+    - xgboost
     - pyspark==3.5.0
     - spark-nlp==5.2.0
     - mlflow
