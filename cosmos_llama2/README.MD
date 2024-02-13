@@ -4,7 +4,7 @@ This image inherent from [nvidia_jupyter](https://hub.docker.com/r/brokenjade/nv
 * externalize the package configuration in [environment.yml](https://github.com/jianlins/dl_dockers/blob/main/cosmos/environment.yml)
 * download nlp models specified in [post_install.sh](https://github.com/jianlins/dl_dockers/blob/main/cosmos/post_install.sh)
 
-
+The published image is here:  [[https://hub.docker.com/r/brokenjade/cosmos_llama2](https://hub.docker.com/r/brokenjade/cosmos_llama2)
 
 Original Dockerfile:
 

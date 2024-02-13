@@ -4,6 +4,8 @@ This image inherent from [nvidia_jupyter](https://hub.docker.com/r/brokenjade/nv
 * externalize the package configuration in [environment.yml](https://github.com/jianlins/dl_dockers/blob/main/cosmos/environment.yml)
 * download nlp models specified in [post_install.sh](https://github.com/jianlins/dl_dockers/blob/main/cosmos/post_install.sh)
 
+The published image is here:  [[https://hub.docker.com/r/brokenjade/cosmos_base](https://hub.docker.com/r/brokenjade/cosmos_base)
+
 
 ## Updates from v1
 upgrade pyspark to 3.5.0
