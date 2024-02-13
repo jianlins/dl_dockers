@@ -32,10 +32,8 @@ jobs:
       
       - name: Set docker storage to lvm
         run: |
-          sudo mkdir /mnt/docker
-          sudo chmod 777 /mnt/docker
           sudo ls -a -l /var/lib/docker
-          sudo cp -r /var/lib/docker/* /mnt/docker/
+          sudo cp -R /var/lib/docker /mnt/
           sudo rm -rf /var/lib/docker
           sudo ln -s /mnt/docker /var/lib/docker
           sudo chmod -R 777 /var/lib/docker
