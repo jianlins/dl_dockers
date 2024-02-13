@@ -135,7 +135,6 @@ RUN ls ${CONDA_DIR}/bin
 RUN mamba env update --file environment.yml && mamba clean --all -f -y
 
 RUN pip install --upgrade pip 
-# RUN pip install tensorflow==2.12.0 sparknlp==5.2.0 Keras scikit-spark pydot graphviz
 RUN pip install -r requirements.txt
 RUN pip install --no-deps medspacy==1.1.5 scikit-spark && pip cache purge
 
