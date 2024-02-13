@@ -121,7 +121,7 @@ RUN ls ${CONDA_DIR}/bin
 
 RUN mamba env update --file environment.yml && mamba clean --all -f -y
 
-RUN pip install --upgrade pip && pip install -r requirements.txt && pip cache purge
+RUN pip install --upgrade pip && pip install -r requirements.txt && pip install --no-deps medspacy==1.1.5 && pip cache purge
 
 # Install Corretto JDK 8 due to TRM requirement
 RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz

@@ -1,5 +1,4 @@
 setuptools==65
-medspacy==1.1.5
 git+https://github.com/medspacy/medspacy_io.git
 nltk==3.8.1
 bioc==2.0
@@ -18,3 +17,6 @@ scikit-spark
 pydot
 tensorflow[and-cuda]==2.12.0
 graphviz
+PyRuSH>=1.0.8
+pysbd==0.3.4
+jsonschema
