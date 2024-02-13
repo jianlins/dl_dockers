@@ -91,6 +91,19 @@ COPY environment.yml /tmp/environment.yml
 COPY requirements.txt /tmp/requirements.txt
 WORKDIR /tmp
 
+# Install Corretto JDK 8 due to TRM requirement
+RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN tar xzf amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
+RUN rm amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
+RUN [ ! -d /usr/lib/jvm ] && mkdir /usr/lib/jvm
+RUN mv amazon-corretto-${openjdk_version}.* /usr/lib/jvm/corretto
+
+# Set Java environment variables
+ENV JAVA_HOME=/usr/lib/jvm/corretto
+ENV PATH=$PATH:$JAVA_HOME/bin
+
+RUN echo "export JAVA_HOME=/usr/lib/jvm/corretto/" >> ~/.bashrc
+
 RUN set -x && \
     arch=$(uname -m) && \
     if [ "${arch}" = "x86_64" ]; then \
@@ -121,20 +134,12 @@ RUN ls ${CONDA_DIR}/bin
 
 RUN mamba env update --file environment.yml && mamba clean --all -f -y
 
-RUN pip install --upgrade pip && pip install -r requirements.txt && pip install --no-deps medspacy==1.1.5 && pip cache purge
+RUN pip install --upgrade pip 
+# RUN pip install tensorflow==2.12.0 sparknlp==5.2.0 Keras scikit-spark pydot graphviz
+RUN pip install -r requirements.txt
+RUN pip install --no-deps medspacy==1.1.5 scikit-spark && pip cache purge
 
-# Install Corretto JDK 8 due to TRM requirement
-RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
-RUN tar xzf amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
-RUN rm amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
-RUN [ ! -d /usr/lib/jvm ] && mkdir /usr/lib/jvm
-RUN mv amazon-corretto-${openjdk_version}.* /usr/lib/jvm/corretto
 
-# Set Java environment variables
-ENV JAVA_HOME=/usr/lib/jvm/corretto
-ENV PATH=$PATH:$JAVA_HOME/bin
-
-RUN echo "export JAVA_HOME=/usr/lib/jvm/corretto/" >> ~/.bashrc
 
 # debug
 RUN ls /tmp
