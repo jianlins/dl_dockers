@@ -32,10 +32,12 @@ jobs:
       
       - name: Set docker storage to lvm
         run: |
-          sudo ls -a -l /var/lib/docker
           sudo systemctl stop docker
+          echo "copy existing files..."
           sudo cp -R /var/lib/docker /mnt/
           sudo rm -rf /var/lib/docker
+          sudo ls -l /mnt/docker
+          echo "start to mount..."
           sudo mount --rbind /mnt/docker /var/lib/docker
           sudo systemctl start docker
 
