@@ -12,7 +12,7 @@ RUN apt-get update --yes && \
     
 COPY environment.yml /tmp/environment.yml
 
-RUN mamba env update --file /tmp/environment.yml
+RUN mamba env update --file /tmp/environment.yml && mamba clean --all -f -y 
 
 RUN pip install git+https://github.com/facebookresearch/llama.git
 # The following line does work for torch gpu
@@ -22,7 +22,6 @@ RUN pip install git+https://github.com/facebookresearch/llama-recipes.git
 # -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
 # -f, --force-pkgs-dirs	Remove all writable package caches
 # -y, --yes	Do not ask for confirmation
-RUN mamba clean --all -f -y 
 RUN pip cache purge
 
 
