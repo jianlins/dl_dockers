@@ -46,6 +46,7 @@ jobs:
           sudo ls -l /mnt/docker
           echo "restart docker..."
           sudo df -h
+          sudo docker --debug
           # sudo mount --rbind /mnt/docker /var/lib/docker
           sudo systemctl start docker
 
