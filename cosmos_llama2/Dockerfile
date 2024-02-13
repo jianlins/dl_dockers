@@ -17,14 +17,9 @@ COPY environment.yml /tmp/environment.yml
 RUN pip install git+https://github.com/facebookresearch/llama.git
 # The following line does work for torch gpu
 # RUN pip install --extra-index-url https://download.pytorch.org/whl/test/cu118 llama-recipes
-RUN pip install git+https://github.com/facebookresearch/llama-recipes.git
+RUN pip install git+https://github.com/facebookresearch/llama-recipes.git & pip cache purge
 
-RUN mamba install -c conda-forge faiss-gpu
-
-# -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
-# -f, --force-pkgs-dirs	Remove all writable package caches
-# -y, --yes	Do not ask for confirmation
-RUN pip cache purge
+RUN mamba install -c conda-forge faiss-gpu && mamba clean --all -f -y 
 
 
 
