@@ -33,10 +33,11 @@ jobs:
       - name: Set docker storage to lvm
         run: |
           sudo ls -a -l /var/lib/docker
+          sudo systemctl stop docker
           sudo cp -R /var/lib/docker /mnt/
           sudo rm -rf /var/lib/docker
-          sudo ln -s /mnt/docker /var/lib/docker
-          sudo chmod -R 777 /var/lib/docker
+          sudo mount --rbind /mnt/docker /var/lib/docker
+          sudo systemctl start docker
 
       - name: Checkout
         uses: actions/checkout@v4
