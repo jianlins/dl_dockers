@@ -32,7 +32,8 @@ jobs:
       
       - name: Set docker storage to lvm
         run: |
-          mkdir /mnt/docker
+          sudo mkdir /mnt/docker
+          sudo chmod 777 /mnt/docker
           ln -s /mnt/docker /var/lib/docker
 
       - name: Checkout
