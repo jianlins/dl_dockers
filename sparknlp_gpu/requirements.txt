@@ -15,7 +15,7 @@ gensim
 Keras
 scikit-spark
 pydot
-tensorflow[and-cuda]==2.12.0
+tensorflow[and-cuda]
 graphviz
 PyRuSH>=1.0.8
 pysbd==0.3.4
