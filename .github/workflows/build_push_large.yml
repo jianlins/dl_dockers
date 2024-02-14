@@ -49,11 +49,11 @@ jobs:
           sudo systemctl status docker.service
           sudo systemctl stop docker
           sudo systemctl status docker.service
-          echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
+          echo "{\"data-root\": \"/home/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
           echo "copy existing files..."
-          sudo rsync -aPq /var/lib/docker/ /mnt/docker
+          sudo rsync -aPq /var/lib/docker/ /home/docker
           # sudo rm -rf /var/lib/docker
-          sudo ls -l /mnt/docker
+          sudo ls -l /home/docker
           echo "restart docker..."
           sudo df -h
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
