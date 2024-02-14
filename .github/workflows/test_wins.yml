@@ -1,18 +1,16 @@
-name: Docker Image CI
+name: test win
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch
 
 jobs:
-
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
     - name: List drives and space usage
       run: |
         Get-PSDrive -PSProvider FileSystem | 
