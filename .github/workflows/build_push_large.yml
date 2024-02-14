@@ -54,12 +54,6 @@ jobs:
           sudo df -h
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
           sudo systemctl start docker
-
-      - name: check error0
-        continue-on-error: true
-        run: |
-          sudo docker --debug
-          cat /etc/modprobe.d/disable-overlay-redirect-dir.conf
       
       - name: check error
         continue-on-error: true
@@ -69,7 +63,7 @@ jobs:
       - name: check error2
         continue-on-error: true
         run: |
-          sudo journalctl -xeu docker.service
+          sudo docker info
 
       - name: Checkout
         uses: actions/checkout@v4
