@@ -83,7 +83,7 @@ RUN if [ -z "${scala_version}" ]; then \
   
 
 
-RUN mamba env update --file environment.yml
+# RUN mamba env update --file environment.yml
 RUN mamba env update --file environment2.yml
 # -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
 # -f, --force-pkgs-dirs	Remove all writable package caches
