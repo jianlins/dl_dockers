@@ -33,7 +33,12 @@ jobs:
         run: |
           sudo ls /var/lib/docker -l
           sudo rsync -aPq /mnt/docker/ /var/lib/docker
-      
+          
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3      
               
       - name: list images
         run: docker images
