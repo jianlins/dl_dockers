@@ -10,9 +10,9 @@ jobs:
       - name: Backup docker files
         run: |
           echo "backup moby/buildkit image"
-          sudo docker image save -o /mnt/images.tar moby/buildkit
-          sudo find /var/lib/docker/. -maxdepth 5 -type d > ${GITHUB_WORKSPACE}/dirs.txt
-          sudo cat ${GITHUB_WORKSPACE}/dirs.txt
+          sudo docker image save -o ${GITHUB_WORKSPACE}/images.tar moby/buildkit
+          sudo docker system prune -a
+          sudo rsync -aPq /var/lib/docker/ ${GITHUB_WORKSPACE}/docker 
 
 
       - name: Maximize build space
@@ -25,12 +25,12 @@ jobs:
 
       - name: Restore docker files
         run: |
-          sudo ls /var/lib/docker -l
-          sudo pwd
-          sudo ls /mnt -l
+          sudo rsync -aPq ${GITHUB_WORKSPACE}/docker/ /var/lib/docker
+          sudo rm -rf ${GITHUB_WORKSPACE}/docker
+          sudo ls ${GITHUB_WORKSPACE} -l
           sudo xargs mkdir -p < ${GITHUB_WORKSPACE}/dirs.txt
-          sudo docker image load -i /mnt/images.tar
-          sudo rm /mnt/images.tar
+          sudo docker image load -i ${GITHUB_WORKSPACE}/images.tar
+          sudo rm ${GITHUB_WORKSPACE}/images.tar
 
       - name: Checkout
         uses: actions/checkout@v4
