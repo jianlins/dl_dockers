@@ -29,20 +29,21 @@ jobs:
         with:
           overprovision-lvm: 'true'          
           remove-dotnet: 'true'
+          build-mount-path: '/var/lib/docker/'
 
       - name: check docker containers
         run: |
           sudo docker container ls -a
           sudo cat /etc/default/docker
       
-      - name: change location
-        run: |
-          sudo systemctl stop docker
-          sudo mkdir /home/runner/work/dl_dockers/docker
-          sudo chmod 777 /home/runner/work/dl_dockers/docker
-          sudo dockerd --data-root /home/runner/work/dl_dockers/docker &
-        env:
-          DOCKER_DATA_ROOT: /home/runner/work/dl_dockers/docker
+      # - name: change location
+      #   run: |
+      #     sudo systemctl stop docker
+      #     sudo mkdir /home/runner/work/dl_dockers/docker
+      #     sudo chmod 777 /home/runner/work/dl_dockers/docker
+      #     sudo dockerd --data-root /home/runner/work/dl_dockers/docker &
+      #   env:
+      #     DOCKER_DATA_ROOT: /home/runner/work/dl_dockers/docker
       
       # - name: Set docker storage to lvm
       #   continue-on-error: true
