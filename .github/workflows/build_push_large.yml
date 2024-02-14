@@ -59,6 +59,7 @@ jobs:
         continue-on-error: true
         run: |
           sudo docker --debug
+          cat /etc/modprobe.d/disable-overlay-redirect-dir.conf
       
       - name: check error
         continue-on-error: true
