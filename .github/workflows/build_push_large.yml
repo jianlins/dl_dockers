@@ -33,6 +33,7 @@ jobs:
       - name: check docker containers
         run: |
           sudo docker container ls -a
+          sudo cat /etc/default/docker
       
       - name: Set docker storage to lvm
         continue-on-error: true
