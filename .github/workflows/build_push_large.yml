@@ -46,10 +46,10 @@ jobs:
           sudo ls -l /mnt/docker
           echo "restart docker..."
           sudo df -h
-          sudo docker --debug
           # sudo mount --rbind /mnt/docker /var/lib/docker
           sudo systemctl start docker
-          sudo docker --debug
+          sudo systemctl status docker.service
+          sudo journalctl -xeu docker.service
 
       - name: Checkout
         uses: actions/checkout@v4
