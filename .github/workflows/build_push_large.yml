@@ -26,6 +26,12 @@ jobs:
     steps:
       - name: backup docker files
         run: |
+          sudo docker rmi node:16
+          sudo docker rmi node:18
+          sudo docker rmi debian:10
+          sudo docker rmi ubuntu:20.04
+          sudo docker rmi node:16-alpine 
+          sudo docker rmi node:18-alpine 
           sudo rsync -aPq /var/lib/docker/ /mnt/docker
 
       - name: Maximize build space
