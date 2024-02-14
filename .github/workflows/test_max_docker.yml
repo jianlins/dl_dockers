@@ -1,24 +1,7 @@
 name: test_max_docker
 # test configure maximize-build-space action for docker build
-run-name: B&DL ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
 on:
-  workflow_dispatch:
-    inputs:
-      build_folder:
-        description: 'From which folder, the Dockerfiles will be built'  
-        type: string   
-        required: false
-        default: 'cosmos_base'
-      tag:
-          description: 'Customize image tag'  
-          type: string   
-          required: false
-          default: 'latest'
-      hub_username:
-        description: 'Docker hub username'  
-        type: string   
-        required: false
-        default: 'brokenjade'
+  workflow_dispatch
 
 jobs:
   build_docker:
