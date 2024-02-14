@@ -11,8 +11,8 @@ jobs:
         run: |
           echo "backup moby/buildkit image"
           sudo docker image save -o /mnt/images.tar moby/buildkit
-          sudo find /var/lib/docker/. -type d > ${GITHUB_WORKSPACE}/dirs.txt
-          sudo cat /mnt/dirs.txt
+          sudo find /var/lib/docker/. -maxdepth 2 -type d > ${GITHUB_WORKSPACE}/dirs.txt
+          sudo cat ${GITHUB_WORKSPACE}/dirs.txt
 
 
       - name: Maximize build space
