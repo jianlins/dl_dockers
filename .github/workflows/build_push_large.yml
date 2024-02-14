@@ -44,12 +44,8 @@ jobs:
       - name: restore docker files
         run: |
           sudo rsync -aPq /mnt/docker/ /var/lib/docker
-
-      - name: check docker containers
-        run: |
-          sudo docker container ls -a
-          sudo cat /etc/default/docker
       
+      # the following script does not work yet. might be usable later with some additional tweaks.
       # - name: change location
       #   run: |
       #     sudo systemctl stop docker
@@ -115,7 +111,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build
-        continue-on-error: true
+        continue-on-error: false
         run: |
           pwd
           ls
@@ -128,17 +124,17 @@ jobs:
       - name: check storage
         run: sudo df -h
 
-      # - name: publish
-      #   run: |
-      #     docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+      - name: publish
+        run: |
+          docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
 
-      # - name: Update Docker Hub Description
-      #   uses: peter-evans/dockerhub-description@v4
-      #   with:
-      #     username: ${{ github.event.inputs.hub_username }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #     repository: ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
-      #     readme-filepath: "${{ github.event.inputs.build_folder }}/README.MD"
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ github.event.inputs.hub_username }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
+          readme-filepath: "${{ github.event.inputs.build_folder }}/README.MD"
 
       # only works if built on self-hosted runners. Github runners do not have enough space for this.
 
