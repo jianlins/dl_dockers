@@ -29,6 +29,10 @@ jobs:
         with:
           overprovision-lvm: 'true'          
           remove-dotnet: 'true'
+
+      - name: check docker containers
+        run: |
+          sudo docker container ls -a
       
       - name: Set docker storage to lvm
         continue-on-error: false
@@ -38,6 +42,8 @@ jobs:
           sudo docker rmi node:18
           sudo docker rmi debian:10
           sudo docker rmi ubuntu:20.04
+          sudo docker rmi node:16-alpine
+          sudo docker rmi node:18-alpine
           # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
           sudo service stop docker
           echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
