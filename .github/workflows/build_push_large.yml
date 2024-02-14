@@ -42,7 +42,9 @@ jobs:
           sudo systemctl stop docker
           echo "try restart and restop..."
           sudo systemctl start docker
+          sudo systemctl status docker.service
           sudo systemctl stop docker
+          sudo systemctl status docker.service
           echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
           echo "copy existing files..."
           sudo rsync -aPq /var/lib/docker/ /mnt/docker
