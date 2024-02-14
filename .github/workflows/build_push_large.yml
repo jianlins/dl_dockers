@@ -40,18 +40,12 @@ jobs:
           sudo docker rmi ubuntu:20.04
           # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
           sudo systemctl stop docker
-          echo "try restart and restop..."
-          sudo systemctl start docker
-          sudo systemctl status docker.service
-          sudo systemctl stop docker
-          sudo systemctl status docker.service
-          echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
+          echo "{\"data-root\": \"/boot/efi/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
           echo "copy existing files..."
-          sudo rsync -aPq /var/lib/docker/ /mnt/docker
+          sudo rsync -aPq /var/lib/docker/ /boot/efi/docker
           # sudo rm -rf /var/lib/docker
-          sudo ls -l /mnt/docker
+          sudo ls -l /boot/efi/docker
           echo "restart docker..."
-          sudo df -h
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
           sudo systemctl start docker
       
@@ -64,6 +58,7 @@ jobs:
         continue-on-error: true
         run: |
           sudo docker info
+          sudo df -h
 
       - name: Checkout
         uses: actions/checkout@v4
