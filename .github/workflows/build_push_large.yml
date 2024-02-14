@@ -31,16 +31,15 @@ jobs:
           remove-dotnet: 'true'
       
       - name: Set docker storage to lvm
-        continue-on-error: false
+        continue-on-error: true
         run: |
-          sudo ls -l /boot/efi
           sudo docker images
           sudo docker rmi node:16
           sudo docker rmi node:18
           sudo docker rmi debian:10
           sudo docker rmi ubuntu:20.04
           # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
-          sudo systemctl stop docker
+          sudo service stop docker
           echo "{\"data-root\": \"/boot/efi/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
           echo "copy existing files..."
           sudo rsync -aPq /var/lib/docker/ /boot/efi/docker
@@ -48,18 +47,17 @@ jobs:
           sudo ls -l /boot/efi/docker
           echo "restart docker..."
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
-          sudo systemctl start docker
+          sudo service start docker
       
       - name: check error
         continue-on-error: true
         run: |
-          sudo systemctl status docker.service
+          sudo service status docker.service
           
       - name: check error2
         continue-on-error: true
         run: |
           sudo docker info
-          sudo df -h
 
       - name: Checkout
         uses: actions/checkout@v4
