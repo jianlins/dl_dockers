@@ -24,6 +24,8 @@ jobs:
       - name: Restore docker files
         run: |
           sudo ls /var/lib/docker -l
+          sudo pwd
+          sudo ls /mnt -l
           sudo docker image load -i /mnt/images.tar
 
       - name: Checkout
