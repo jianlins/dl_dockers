@@ -18,6 +18,7 @@ jobs:
           sudo docker rmi ubuntu:22.04
           sudo docker rmi node:16-alpine 
           sudo docker rmi node:18-alpine 
+          sudo docker rmi node:20-alpine 
           echo "start backing up..."
           sudo rsync -aPq /var/lib/docker/ /mnt/docker
 
