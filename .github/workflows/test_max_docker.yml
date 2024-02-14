@@ -1,0 +1,63 @@
+name: test_max_docker
+# test configure maximize-build-space action for docker build
+run-name: B&DL ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
+on:
+  workflow_dispatch:
+    inputs:
+      build_folder:
+        description: 'From which folder, the Dockerfiles will be built'  
+        type: string   
+        required: false
+        default: 'cosmos_base'
+      tag:
+          description: 'Customize image tag'  
+          type: string   
+          required: false
+          default: 'latest'
+      hub_username:
+        description: 'Docker hub username'  
+        type: string   
+        required: false
+        default: 'brokenjade'
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Backup docker files
+        run: |
+          echo "clean up unused images..."
+          sudo docker rmi node:16
+          sudo docker rmi node:18
+          sudo docker rmi debian:10
+          sudo docker rmi ubuntu:20.04
+          sudo docker rmi node:16-alpine 
+          sudo docker rmi node:18-alpine 
+          echo "start backing up..."
+          sudo rsync -aPq /var/lib/docker/ /mnt/docker
+
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          overprovision-lvm: 'true'          
+          remove-dotnet: 'true'
+          # instead of using default value to mount to build path, /var/lib/docker/ is really the place we need more spaces.
+          build-mount-path: '/var/lib/docker/'
+
+      
+      
+      - name: Restore docker files
+        run: |
+          sudo ls /var/lib/docker -l
+          sudo rsync -aPq /mnt/docker/ /var/lib/docker
+      
+              
+      - name: list images
+        run: docker images
+
+      - name: check storage
+        run: |
+          sudo df -h
+          ls /tmp -l
+
+    
