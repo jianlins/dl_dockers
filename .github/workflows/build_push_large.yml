@@ -31,6 +31,7 @@ jobs:
           remove-dotnet: 'true'
       
       - name: Set docker storage to lvm
+        continue-on-error: true
         run: |
           sudo docker images
           sudo docker rmi node:16
