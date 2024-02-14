@@ -9,18 +9,9 @@ jobs:
     steps:
       - name: Backup docker files
         run: |
-          echo "clean up unused images..."
-          sudo docker rmi node:16
-          sudo docker rmi node:18
-          sudo docker rmi node:20
-          sudo docker rmi debian:10
-          sudo docker rmi ubuntu:20.04
-          sudo docker rmi ubuntu:22.04
-          sudo docker rmi node:16-alpine 
-          sudo docker rmi node:18-alpine 
-          sudo docker rmi node:20-alpine 
-          echo "start backing up..."
-          sudo rsync -aPq /var/lib/docker/ /mnt/docker
+          echo "backup moby/buildkit image"
+          sudo docker image save -o /mnt/images.tar moby/buildkit
+
 
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
@@ -30,12 +21,10 @@ jobs:
           # instead of using default value to mount to build path, /var/lib/docker/ is really the place we need more spaces.
           build-mount-path: '/var/lib/docker/'
 
-      
-      
       - name: Restore docker files
         run: |
           sudo ls /var/lib/docker -l
-          sudo rsync -aPq /mnt/docker/ /var/lib/docker
+          sudo docker image load -i /mnt/images.tar
 
       - name: Checkout
         uses: actions/checkout@v4
