@@ -11,7 +11,7 @@ jobs:
         run: |
           echo "backup moby/buildkit image"
           sudo docker image save -o /mnt/images.tar moby/buildkit
-          sudo find /var/lib/docker/. -type d > /mnt/dirs.txt
+          sudo find /var/lib/docker/. -type d > ${GITHUB_WORKSPACE}/dirs.txt
           sudo cat /mnt/dirs.txt
 
 
@@ -28,7 +28,7 @@ jobs:
           sudo ls /var/lib/docker -l
           sudo pwd
           sudo ls /mnt -l
-          sudo xargs mkdir -p < /mnt/dirs.txt
+          sudo xargs mkdir -p < ${GITHUB_WORKSPACE}/dirs.txt
           docker image load -i /mnt/images.tar
 
       - name: Checkout
