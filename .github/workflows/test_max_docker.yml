@@ -7,17 +7,17 @@ jobs:
   build_docker:
     runs-on: ubuntu-latest
     steps:
-      - name: Backup docker files
-        run: |
-          echo "clean up unused images..."
-          sudo docker rmi node:16
-          sudo docker rmi node:18
-          sudo docker rmi debian:10
-          sudo docker rmi ubuntu:20.04
-          sudo docker rmi node:16-alpine 
-          sudo docker rmi node:18-alpine 
-          echo "start backing up..."
-          sudo rsync -aPq /var/lib/docker/ /mnt/docker
+      # - name: Backup docker files
+      #   run: |
+      #     echo "clean up unused images..."
+      #     sudo docker rmi node:16
+      #     sudo docker rmi node:18
+      #     sudo docker rmi debian:10
+      #     sudo docker rmi ubuntu:20.04
+      #     sudo docker rmi node:16-alpine 
+      #     sudo docker rmi node:18-alpine 
+      #     echo "start backing up..."
+      #     sudo rsync -aPq /var/lib/docker/ /mnt/docker
 
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
@@ -33,7 +33,7 @@ jobs:
         run: |
           sudo ls /var/lib/docker -l
           sudo rsync -aPq /mnt/docker/ /var/lib/docker
-          
+
       - name: Checkout
         uses: actions/checkout@v4
 
