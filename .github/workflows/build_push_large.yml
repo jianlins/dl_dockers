@@ -35,30 +35,39 @@ jobs:
           sudo docker container ls -a
           sudo cat /etc/default/docker
       
-      - name: Set docker storage to lvm
-        continue-on-error: true
+      - name: change location
         run: |
-          sudo docker images
-          sudo docker rmi node:16
-          sudo docker rmi node:18
-          sudo docker rmi debian:10
-          sudo docker rmi ubuntu:20.04
-          # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
           sudo systemctl stop docker
-          echo "try restart and restop..."
-          sudo systemctl start docker
-          sudo systemctl status docker.service
-          sudo systemctl stop docker
-          sudo systemctl status docker.service
-          echo "{\"data-root\": \"/home/runner/work/docker\", \"storage-driver\": \"fuse-overlayfs\"}"  | sudo tee -a /etc/docker/daemon.json 
-          echo "copy existing files..."
-          sudo rsync -aPq /var/lib/docker/ /home/runner/work/docker
-          # sudo rm -rf /var/lib/docker
-          sudo ls -l /home/runner/work/docker
-          echo "restart docker..."
-          sudo df -h
-          # sudo modprobe -r overlay && modprobe overlay redirect_dir=on
-          sudo systemctl start docker
+          sudo mkdir /home/runner/work/docker
+          sudo chmod 777 /home/runner/work/docker
+          sudo dockerd --data-root /home/runner/work/docker &
+        env:
+          DOCKER_DATA_ROOT: /home/runner/work/docker
+      
+      # - name: Set docker storage to lvm
+      #   continue-on-error: true
+      #   run: |
+      #     sudo docker images
+      #     sudo docker rmi node:16
+      #     sudo docker rmi node:18
+      #     sudo docker rmi debian:10
+      #     sudo docker rmi ubuntu:20.04
+      #     # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
+      #     sudo systemctl stop docker
+      #     echo "try restart and restop..."
+      #     sudo systemctl start docker
+      #     sudo systemctl status docker.service
+      #     sudo systemctl stop docker
+      #     sudo systemctl status docker.service
+      #     echo "{\"data-root\": \"/home/runner/work/docker\", \"storage-driver\": \"fuse-overlayfs\"}"  | sudo tee -a /etc/docker/daemon.json 
+      #     echo "copy existing files..."
+      #     sudo rsync -aPq /var/lib/docker/ /home/runner/work/docker
+      #     # sudo rm -rf /var/lib/docker
+      #     sudo ls -l /home/runner/work/docker
+      #     echo "restart docker..."
+      #     sudo df -h
+      #     # sudo modprobe -r overlay && modprobe overlay redirect_dir=on
+      #     sudo systemctl start docker
       
       - name: check status
         continue-on-error: true
