@@ -11,7 +11,7 @@ jobs:
         run: |
           echo "backup moby/buildkit image"
           sudo docker image save -o /mnt/images.tar moby/buildkit
-          sudo cd /var/lib/docker
+          cd /var/lib/docker
           sudo find . -type d > /mnt/dirs.txt
 
 
@@ -28,7 +28,7 @@ jobs:
           sudo ls /var/lib/docker -l
           sudo pwd
           sudo ls /mnt -l
-          sudo cd /var/lib/docker
+          cd /var/lib/docker
           xargs mkdir -p < /mnt/dirs.txt
           sudo docker image load -i /mnt/images.tar
 
