@@ -45,7 +45,7 @@ jobs:
           sudo docker rmi node:16-alpine
           sudo docker rmi node:18-alpine
           # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
-          sudo service stop docker
+          sudo service docker stop
           echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
           echo "copy existing files..."
           sudo rsync -aPq /var/lib/docker/ /mnt/docker
@@ -54,12 +54,12 @@ jobs:
           echo "restart docker..."
           sudo df -h
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
-          sudo service start docker
+          sudo service docker start
       
       - name: check error
         continue-on-error: true
         run: |
-          sudo service status docker.service
+          sudo systemctl status docker.service
           
       - name: check error2
         continue-on-error: true
