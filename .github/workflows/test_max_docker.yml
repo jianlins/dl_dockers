@@ -26,6 +26,7 @@ jobs:
           sudo ls /var/lib/docker -l
           sudo pwd
           sudo ls /mnt -l
+          sudo mkdir /var/lib/docker/tmp
           sudo docker image load -i /mnt/images.tar
 
       - name: Checkout
