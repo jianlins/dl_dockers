@@ -31,7 +31,7 @@ jobs:
           remove-dotnet: 'true'
       
       - name: Set docker storage to lvm
-        continue-on-error: true
+        continue-on-error: false
         run: |
           sudo docker images
           sudo docker rmi node:16
@@ -40,12 +40,13 @@ jobs:
           sudo docker rmi ubuntu:20.04
           # https://tienbm90.medium.com/how-to-change-docker-root-data-directory-89a39be1a70b
           sudo service stop docker
-          echo "{\"data-root\": \"/boot/efi/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
+          echo "{\"data-root\": \"/mnt/docker\"}"  | sudo tee -a /etc/docker/daemon.json 
           echo "copy existing files..."
-          sudo rsync -aPq /var/lib/docker/ /boot/efi/docker
+          sudo rsync -aPq /var/lib/docker/ /mnt/docker
           # sudo rm -rf /var/lib/docker
-          sudo ls -l /boot/efi/docker
+          sudo ls -l /mnt/docker
           echo "restart docker..."
+          sudo df -h
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
           sudo service start docker
       
