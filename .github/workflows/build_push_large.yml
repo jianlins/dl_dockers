@@ -53,6 +53,8 @@ jobs:
           sudo ls -l /mnt/docker
           echo "restart docker..."
           sudo df -h
+          echo 1 | sudo tee -a /proc/sys/kernel/sysrq
+          echo x | sudo tee -a /proc/sysrq-trigger
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
           sudo service docker start
       
