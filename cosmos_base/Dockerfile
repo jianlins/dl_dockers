@@ -84,7 +84,7 @@ RUN if [ -z "${scala_version}" ]; then \
 
 
 # RUN mamba env update --file environment.yml
-RUN mamba env update --file environment2.yml
+RUN mamba env update --file environment2.yml && mamba clean --all -f -y && pip cache purge
 # -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
 # -f, --force-pkgs-dirs	Remove all writable package caches
 # -y, --yes	Do not ask for confirmation
@@ -99,8 +99,6 @@ RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.c
 RUN chmod 770 /tmp/post_install.sh && \
     /tmp/post_install.sh
 
-
-RUN mamba clean --all -f -y 
 RUN pip cache purge
 
 
@@ -112,6 +110,7 @@ RUN chmod -R 775 "/etc/ipython/"
 
 # clean tmp
 RUN ls -l -a /tmp
+RUN rm -rf /tmp/*
 
 WORKDIR "${WORK_DIR}"
 
