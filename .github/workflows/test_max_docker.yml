@@ -29,10 +29,10 @@ jobs:
 
       
       
-      - name: Restore docker files
-        run: |
-          sudo ls /var/lib/docker -l
-          sudo rsync -aPq /mnt/docker/ /var/lib/docker
+      # - name: Restore docker files
+      #   run: |
+      #     sudo ls /var/lib/docker -l
+      #     sudo rsync -aPq /mnt/docker/ /var/lib/docker
 
       - name: Checkout
         uses: actions/checkout@v4
