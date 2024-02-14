@@ -35,14 +35,14 @@ jobs:
           sudo docker container ls -a
           sudo cat /etc/default/docker
       
-      - name: change location
-        run: |
-          sudo systemctl stop docker
-          sudo mkdir /home/runner/work/docker
-          sudo chmod 777 /home/runner/work/docker
-          sudo dockerd --data-root /home/runner/work/docker &
-        env:
-          DOCKER_DATA_ROOT: /home/runner/work/docker
+      # - name: change location
+      #   run: |
+      #     sudo systemctl stop docker
+      #     sudo mkdir /home/runner/work/docker
+      #     sudo chmod 777 /home/runner/work/docker
+      #     sudo dockerd --data-root /home/runner/work/docker &
+      #   env:
+      #     DOCKER_DATA_ROOT: /home/runner/work/docker
       
       # - name: Set docker storage to lvm
       #   continue-on-error: true
