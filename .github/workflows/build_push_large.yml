@@ -55,6 +55,11 @@ jobs:
           # sudo mount --rbind /mnt/docker /var/lib/docker
           sudo systemctl start docker
 
+      - name: check error0
+        continue-on-error: true
+        run: |
+          sudo docker --debug
+      
       - name: check error
         continue-on-error: true
         run: |
