@@ -11,9 +11,8 @@ jobs:
         run: |
           echo "backup moby/buildkit image"
           sudo docker image save -o /mnt/images.tar moby/buildkit
-          sudo su
-          cd /var/lib/docker
-          find . -type d > /mnt/dirs.txt
+          sudo find /var/lib/docker/. -type d > /mnt/dirs.txt
+          sudo cat /mnt/dirs.txt
 
 
       - name: Maximize build space
@@ -29,9 +28,7 @@ jobs:
           sudo ls /var/lib/docker -l
           sudo pwd
           sudo ls /mnt -l
-          sudo su
-          cd /var/lib/docker
-          xargs mkdir -p < /mnt/dirs.txt
+          sudo xargs mkdir -p < /mnt/dirs.txt
           docker image load -i /mnt/images.tar
 
       - name: Checkout
