@@ -26,15 +26,12 @@ jobs:
     steps:
       - name: Backup docker files
         run: |
-          echo "clean up unused images..."
-          sudo docker rmi node:16
-          sudo docker rmi node:18
-          sudo docker rmi debian:10
-          sudo docker rmi ubuntu:20.04
-          sudo docker rmi node:16-alpine 
-          sudo docker rmi node:18-alpine 
-          echo "start backing up..."
-          sudo rsync -aPq /var/lib/docker/ /mnt/docker
+          echo "backup moby/buildkit image"
+          sudo docker image save -o ${GITHUB_WORKSPACE}/images.tar moby/buildkit
+          sudo docker system prune -a -f
+          echo "Back up /var/lib/docker folder structure and other files"
+          sudo rsync -aPq /var/lib/docker/ ${GITHUB_WORKSPACE}/docker 
+
 
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
@@ -43,10 +40,14 @@ jobs:
           remove-dotnet: 'true'
           # instead of using default value to mount to build path, /var/lib/docker/ is really the place we need more spaces.
           build-mount-path: '/var/lib/docker/'
-      
+
       - name: Restore docker files
         run: |
-          sudo rsync -aPq /mnt/docker/ /var/lib/docker
+          sudo rsync -aPq ${GITHUB_WORKSPACE}/docker/ /var/lib/docker
+          sudo rm -rf ${GITHUB_WORKSPACE}/docker
+          sudo ls ${GITHUB_WORKSPACE} -l
+          sudo docker image load -i ${GITHUB_WORKSPACE}/images.tar
+          sudo rm ${GITHUB_WORKSPACE}/images.tar
       
       # the following script does not work yet. might be usable later with some additional tweaks.
       # - name: change location
