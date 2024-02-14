@@ -49,6 +49,7 @@ jobs:
           sudo docker --debug
           # sudo mount --rbind /mnt/docker /var/lib/docker
           sudo systemctl start docker
+          sudo docker --debug
 
       - name: Checkout
         uses: actions/checkout@v4
