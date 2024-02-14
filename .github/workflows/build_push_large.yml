@@ -59,12 +59,12 @@ jobs:
           sudo modprobe -r overlay && modprobe overlay redirect_dir=on
           sudo systemctl start docker
       
-      - name: check error
+      - name: check status
         continue-on-error: true
         run: |
           sudo systemctl status docker.service
           
-      - name: check error2
+      - name: check docker info
         continue-on-error: true
         run: |
           sudo docker info
