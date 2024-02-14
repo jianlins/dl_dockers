@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+- name: List drives and space usage
+  run: |
+    Get-PSDrive -PSProvider FileSystem | 
+    ForEach-Object {
+      $_ | Select-Object Name, Used, Free, @{Name="TotalSize"; Expression={$_.Used + $_.Free}} |
+      Format-Table -AutoSize
+    }
+  shell: powershell
