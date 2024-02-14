@@ -24,12 +24,20 @@ jobs:
   build_docker:
     runs-on: ubuntu-latest
     steps:
+      - name: backup docker files
+        run: |
+          sudo rsync -aPq /var/lib/docker/ /mnt/docker
+
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
           overprovision-lvm: 'true'          
           remove-dotnet: 'true'
           build-mount-path: '/var/lib/docker/'
+      
+      - name: restore docker files
+        run: |
+          sudo rsync -aPq /mnt/docker/ /var/lib/docker
 
       - name: check docker containers
         run: |
