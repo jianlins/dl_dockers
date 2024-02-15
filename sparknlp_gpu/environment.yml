@@ -38,6 +38,7 @@ dependencies:
     - pytest
     - wheel
     - joblib
+    - loguru
     - matplotlib
     - xgboost
     - pyspark==3.5.0
