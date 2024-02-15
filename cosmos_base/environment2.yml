@@ -23,6 +23,7 @@ dependencies:
   - cython=0.29
   - statsmodels=0.14.0
   - notebook
+  - loguru
   - jupyterlab
   - numba=0.58.1
   - numexpr=2.8.4
