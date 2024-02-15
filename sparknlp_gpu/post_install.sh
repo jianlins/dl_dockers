@@ -5,3 +5,4 @@
 python3 -c "import nltk; nltk.download('punkt');"
 python3 -m spacy download en_core_web_sm
 python3 -c "import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
+rm -rf /root/.ivy2/cache/*
