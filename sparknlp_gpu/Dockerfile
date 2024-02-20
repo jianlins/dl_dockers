@@ -89,6 +89,9 @@ RUN mkdir ${HOME}
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 COPY initial-condarc "${CONDA_DIR}/.condarc"
+COPY environment.yml /tmp/environment.yml
+COPY post_install.sh /tmp/post_install.sh
+
 WORKDIR /tmp
 
 RUN set -x && \
