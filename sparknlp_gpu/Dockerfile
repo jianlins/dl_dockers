@@ -6,7 +6,11 @@ FROM ${BASE_IMAGE}
 ARG WORK_DIR="/workspace"
 ARG HOME='/home/root'
 ARG PYTHON_VERSION=3.8
-ARG openjdk_version="8"
+
+ENV PATH="${CONDA_DIR}/bin:${PATH}" \
+    HOME="${HOME}" \
+    WORK_DIR="${WORK_DIR}" \
+    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${CONDA_DIR}/lib"
 
 ENV PYSPARK_PYTHON=python3
 ENV PYSPARK_DRIVER_PYTHON=python3
@@ -18,7 +22,6 @@ RUN apt-get update --yes && \
     #   the ubuntu base image is rebuilt too seldom sometimes (less than once a month)
     apt-get upgrade --yes && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends \
-    build-essential \
     # - pandoc is used to convert notebooks to html files
     #   it's not present in aarch64 ubuntu image, so we install it here
     pandoc \
@@ -72,7 +75,7 @@ RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashr
 RUN mkdir ${WORK_DIR}
 # set up home directory /home/root by default
 RUN mkdir ${HOME}
-RUN mkdir ${CONDA_DIR}
+
 
 # Download and install Micromamba, and initialize Conda prefix.
 #   <https://github.com/mamba-org/mamba#micromamba>
@@ -85,25 +88,7 @@ RUN mkdir ${CONDA_DIR}
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 COPY initial-condarc "${CONDA_DIR}/.condarc"
-COPY jupyter_server_config.py /etc/jupyter/
-COPY start.sh /usr/local/bin/
-COPY post_install.sh /tmp/post_install.sh
-COPY environment.yml /tmp/environment.yml
-COPY requirements.txt /tmp/requirements.txt
 WORKDIR /tmp
-
-# Install Corretto JDK 8 due to TRM requirement
-RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
-RUN tar xzf amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
-RUN rm amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
-RUN [ ! -d /usr/lib/jvm ] && mkdir /usr/lib/jvm
-RUN mv amazon-corretto-${openjdk_version}.* /usr/lib/jvm/corretto
-
-# Set Java environment variables
-ENV JAVA_HOME=/usr/lib/jvm/corretto
-ENV PATH=$PATH:$JAVA_HOME/bin
-
-RUN echo "export JAVA_HOME=/usr/lib/jvm/corretto/" >> ~/.bashrc
 
 RUN set -x && \
     arch=$(uname -m) && \
@@ -131,19 +116,23 @@ RUN set -x && \
     which mamba && \
     chmod -R 775 "${CONDA_DIR}" 
 
-RUN ls ${CONDA_DIR}/bin
 
-RUN mamba env update --file environment.yml && mamba clean --all -f -y && pip cache purge
+# Install Corretto JDK 8 due to TRM requirement
+RUN wget -q https://corretto.aws/downloads/latest/amazon-corretto-8-x64-linux-jdk.tar.gz
+RUN tar xzf amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
+RUN rm amazon-corretto-${openjdk_version}-x64-linux-jdk.tar.gz
+RUN [ ! -d /usr/lib/jvm ] && mkdir /usr/lib/jvm
+RUN mv amazon-corretto-${openjdk_version}.* /usr/lib/jvm/corretto
 
-# RUN pip install --upgrade pip 
-# RUN pip install -r requirements.txt
-# RUN pip install --no-deps medspacy==1.1.5 scikit-spark && pip cache purge
+# Set Java environment variables
+ENV JAVA_HOME=/usr/lib/jvm/corretto
+ENV PATH=$PATH:$JAVA_HOME/bin
+
+RUN echo "export JAVA_HOME=/usr/lib/jvm/corretto/" >> ~/.bashrc
 
 
 
-# debug
-RUN ls /tmp
-
+RUN mamba env update --file environment.yml
 
 # add sparknlp pyspark jars
 RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
@@ -154,7 +143,7 @@ RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.c
 RUN chmod 770 /tmp/post_install.sh && \
     /tmp/post_install.sh
 
-RUN mamba clean --all -f -y
+RUN mamba clean --all -f -y 
 RUN pip cache purge
 
 # clean tmp
@@ -162,7 +151,8 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN ls -l -a /tmp
 
 
-
+COPY jupyter_server_config.py /etc/jupyter/
+COPY start.sh /usr/local/bin/
 RUN chmod 775 /usr/local/bin/*.sh
 
 # Legacy for Jupyter Notebook Server, see: [#1205](https://github.com/jupyter/docker-stacks/issues/1205)
