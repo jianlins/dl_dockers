@@ -8,10 +8,8 @@ ARG HOME='/home/root'
 ARG PYTHON_VERSION=3.8
 ARG openjdk_version=8
 
-ENV PATH="${CONDA_DIR}/bin:${PATH}" \
-    HOME="${HOME}" \
-    WORK_DIR="${WORK_DIR}" \
-    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${CONDA_DIR}/lib"
+ENV HOME="${HOME}" \
+    WORK_DIR="${WORK_DIR}"
 
 ENV PYSPARK_PYTHON=python3
 ENV PYSPARK_DRIVER_PYTHON=python3
@@ -57,7 +55,8 @@ ENV CONDA_DIR=/opt/conda \
 
 ENV PATH="${CONDA_DIR}/bin:${PATH}" \
     HOME="${HOME}" \
-    WORK_DIR="${WORK_DIR}"
+    WORK_DIR="${WORK_DIR}" \    
+    LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${CONDA_DIR}/lib"
 
 # This port number does't need to be changed, as it's container's own port, only visible inside containers. 
 # From outside access, change the port using "-p 0.0.0.0:{desired port nuber}:8888" when starting the container.
