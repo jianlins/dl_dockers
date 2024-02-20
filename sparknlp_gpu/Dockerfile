@@ -6,6 +6,7 @@ FROM ${BASE_IMAGE}
 ARG WORK_DIR="/workspace"
 ARG HOME='/home/root'
 ARG PYTHON_VERSION=3.8
+ARG openjdk_version=8
 
 ENV PATH="${CONDA_DIR}/bin:${PATH}" \
     HOME="${HOME}" \
