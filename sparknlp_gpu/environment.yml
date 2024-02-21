@@ -44,7 +44,7 @@ dependencies:
     - joblib
     - matplotlib
     - pyspark==3.5.0
-    - spark-nlp==5.2.0
+    - spark-nlp==5.2.3
     - mlflow
     - gensim
     - Keras
