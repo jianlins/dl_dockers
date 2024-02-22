@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="ubuntu:22.04"
+ARG BASE_IMAGE="nvcr.io/nvidia/cuda:11.4.3-base-ubuntu20.04"
 FROM ${BASE_IMAGE}
 # Base on here, sparknlp need cuda 11.3
 # https://sparknlp.org/docs/en/hardware_acceleration#:~:text=1%20and%20the%20following%20NVIDIA,CUDA%C2%AE%20Toolkit%2011.2
