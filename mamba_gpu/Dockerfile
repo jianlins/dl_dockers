@@ -120,7 +120,7 @@ RUN set -x && \
     which mamba && \
     chmod -R 775 "${CONDA_DIR}" 
 
-RUN mamba install jupyter lab && mamba clean --all -f -y
+RUN mamba install jupyterlab && mamba clean --all -f -y
 #  download models.
 RUN chmod 770 /tmp/post_install.sh && \
     /tmp/post_install.sh
