@@ -119,7 +119,7 @@ RUN set -x && \
     mamba clean --all -f -y && \
     which mamba && \
     chmod -R 775 "${CONDA_DIR}" 
-
+RUN mamba init
 RUN mamba install jupyterlab && mamba clean --all -f -y
 RUN mamba install nvidia/label/cuda-11.4.1::cuda-toolkit conda-forge:cudnn=8.1.0 && mamba clean --all -f -y
 #  download models.
