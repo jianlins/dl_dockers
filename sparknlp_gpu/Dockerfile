@@ -134,7 +134,9 @@ ENV PATH=$PATH:$JAVA_HOME/bin
 
 RUN echo "export JAVA_HOME=/usr/lib/jvm/corretto/" >> ~/.bashrc
 
-
+# split a large layer
+RUN mamba init
+RUN mamba install nvidia/label/cuda-11.4.1::cuda-toolkit conda-forge:cudnn=8.1.0 && mamba clean --all -f -y
 
 RUN mamba env update --file environment.yml
 
@@ -149,6 +151,12 @@ RUN chmod 770 /tmp/post_install.sh && \
 
 RUN mamba clean --all -f -y 
 RUN pip cache purge
+
+# check environ variables.
+RUN echo $LD_LIBRARY_PATH
+RUN echo $CONDA_DIR
+RUN echo $PATH
+RUN cat ~/.bashrc
 
 # clean tmp
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

@@ -4,8 +4,8 @@ channels:
   - defaults
 dependencies:
   - python=3.8
-  - nvidia/label/cuda-11.3.1::cuda-toolkit
-  - conda-forge:cudnn=8.1.0
+  # - nvidia/label/cuda-11.4.1::cuda-toolkit     # split the cudatoolkit installation to different layer
+  # - conda-forge:cudnn=8.1.0
   - pytorch::faiss-gpu
   # github runner doesn't have a gpu, it seems not working , disable for now. 
   # might work using https://github.com/gpgpu-sim/gpgpu-sim_distribution, check it later
