@@ -7,7 +7,7 @@ on:
         description: 'From which folder, the conda environment will be built'  
         type: string   
         required: false
-        default: 'win_pytorch'
+        default: 'win_cuda'
       target_folder:
         description: 'target folder path (must be on D drive)'
         type: string

@@ -1,4 +1,4 @@
-name: pytorch_win
+name: win_cuda
 channels:
   - nvidia
   - defaults
