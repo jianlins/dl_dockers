@@ -36,9 +36,7 @@ jobs:
     - name: Install Miniconda
       uses: conda-incubator/setup-miniconda@v3
       with:
-        activate-environment: myenv
-        environment-file: environment.yml
-        auto-activate-base: false
+        auto-activate-base: true
     
     - name: Create Conda Environment
       run: |
