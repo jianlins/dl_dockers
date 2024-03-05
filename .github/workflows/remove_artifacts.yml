@@ -1,0 +1,29 @@
+name: del_artifacts
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete all artifacts
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { repo } = context;
+          const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+          const listArtifacts = await octokit.rest.actions.listArtifactsForRepo({
+            ...repo,
+          });
+          const artifactIds = listArtifacts.data.artifacts.map(artifact => artifact.id);
+          
+          for (const artifactId of artifactIds) {
+            await octokit.rest.actions.deleteArtifact({
+              ...repo,
+              artifact_id: artifactId,
+            });
+            console.log(`Deleted artifact ${artifactId}`);
+          }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
