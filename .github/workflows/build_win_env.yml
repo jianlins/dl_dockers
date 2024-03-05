@@ -59,3 +59,4 @@ jobs:
       with:
         name: ${{ github.event.inputs.build_folder }}_compressed
         path: ${{ github.event.inputs.build_folder }}.7z.*
+        retention-days: 1
