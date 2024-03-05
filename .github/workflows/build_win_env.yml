@@ -1,0 +1,61 @@
+name: build_win_env
+run-name: B&D ${{ github.event.inputs.build_folder }}
+on:
+  workflow_dispatch:
+    inputs:
+      build_folder:
+        description: 'From which folder, the conda environment will be built'  
+        type: string   
+        required: false
+        default: 'win_pytorch'
+      target_folder:
+        description: 'target folder path (must be on D drive)'
+        type: string
+        required: false
+        default: 'D:/myenv/'
+
+        
+jobs:
+  build_docker:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    
+    - name: Change dir
+      run: |
+        pwd
+        cd ${{ github.event.inputs.build_folder }}
+
+    - name: Install Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        activate-environment: myenv
+        environment-file: environment.yml
+        auto-activate-base: false
+    
+    - name: Create Conda Environment
+      run: |
+        conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}
+
+    - name: check folder
+      run: |
+        ls ${{ github.event.inputs.target_folder }}
+        
+    - name: Install 7-Zip
+      run: choco install 7zip
+  
+    - name: Compress and split folder
+      run: 7z a -t7z -mx=9 -v400m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+
+    - name: Upload compressed parts as artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.inputs.build_folder }}_compressed
+        path: ${{ github.event.inputs.build_folder }}.7z.*

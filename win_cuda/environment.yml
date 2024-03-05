@@ -1,0 +1,11 @@
+name: pytorch_win
+channels:
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.8
+  - pytorch::pytorch
+  # - pytorch::torchvision
+  # - pytorch::torchaudio
+  - pytorch::pytorch-cuda=11.8
+  - pytorch::torchtext
