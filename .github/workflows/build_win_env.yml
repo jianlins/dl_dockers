@@ -33,10 +33,11 @@ jobs:
         pwd
         ls ${{ github.event.inputs.build_folder }}
 
-    - name: Install Miniconda
+    - name: Install miniforge
       uses: conda-incubator/setup-miniconda@v3
       with:
         auto-activate-base: true
+        miniforge-version: latest
     
     - name: Create Conda Environment
       run: |
