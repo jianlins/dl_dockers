@@ -28,7 +28,7 @@ jobs:
       with:
         python-version: '3.x'
     
-    - name: Change dir
+    - name: Check Setting Folder
       run: |
         pwd
         ls ${{ github.event.inputs.build_folder }}
