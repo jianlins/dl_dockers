@@ -31,8 +31,7 @@ jobs:
     - name: Change dir
       run: |
         pwd
-        ls
-        cd ${{ github.event.inputs.build_folder }}
+        ls ${{ github.event.inputs.build_folder }}
 
     - name: Install Miniconda
       uses: conda-incubator/setup-miniconda@v3
@@ -43,6 +42,7 @@ jobs:
     
     - name: Create Conda Environment
       run: |
+        cd ${{ github.event.inputs.build_folder }}
         conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}
 
     - name: check folder
