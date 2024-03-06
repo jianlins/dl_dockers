@@ -1,3 +1,5 @@
+# by default the artifacts will stay on repo for 90 days. However, there is a max size limits of all artifacts. 
+# If you are hitting that limit, you would want remove previously generated artifacts to clean out spaces.
 name: del_artifacts
 
 on:
@@ -6,7 +8,7 @@ on:
 permissions:
   actions: write
   contents: read
-  
+
 jobs:
   cleanup-artifacts:
     runs-on: ubuntu-latest
