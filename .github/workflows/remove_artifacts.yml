@@ -10,21 +10,21 @@ jobs:
     - name: Delete all artifacts
       uses: actions/github-script@v6
       with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const octokit = github.getOctokit(core.getInput('token'));
-          const { owner, repo } = context.repo;
-          const listArtifacts = await octokit.rest.actions.listArtifactsForRepo({
-            owner,
-            repo,
+          const { repo } = context;
+          // No need to getOctokit, directly use the github object provided
+          const listArtifacts = await github.rest.actions.listArtifactsForRepo({
+            owner: repo.owner,
+            repo: repo.repo,
           });
           const artifactIds = listArtifacts.data.artifacts.map(artifact => artifact.id);
           
           for (const artifactId of artifactIds) {
-            await octokit.rest.actions.deleteArtifact({
-              owner,
-              repo,
+            await github.rest.actions.deleteArtifact({
+              owner: repo.owner,
+              repo: repo.repo,
               artifact_id: artifactId,
             });
             console.log(`Deleted artifact ${artifactId}`);
           }
-        token: ${{ secrets.GITHUB_TOKEN }}
