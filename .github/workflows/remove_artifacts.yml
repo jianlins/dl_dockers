@@ -11,19 +11,20 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const { repo } = context;
-          const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+          const octokit = github.getOctokit(core.getInput('token'));
+          const { owner, repo } = context.repo;
           const listArtifacts = await octokit.rest.actions.listArtifactsForRepo({
-            ...repo,
+            owner,
+            repo,
           });
           const artifactIds = listArtifacts.data.artifacts.map(artifact => artifact.id);
           
           for (const artifactId of artifactIds) {
             await octokit.rest.actions.deleteArtifact({
-              ...repo,
+              owner,
+              repo,
               artifact_id: artifactId,
             });
             console.log(`Deleted artifact ${artifactId}`);
           }
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
