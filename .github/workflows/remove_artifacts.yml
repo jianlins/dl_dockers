@@ -3,6 +3,10 @@ name: del_artifacts
 on:
   workflow_dispatch:
 
+permissions:
+  actions: write
+  contents: read
+  
 jobs:
   cleanup-artifacts:
     runs-on: ubuntu-latest
