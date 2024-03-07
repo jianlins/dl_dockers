@@ -1,32 +1,33 @@
-name: test_multi_artifacts
-on:
-  workflow_dispatch
+name: Upload Each File as Zipped Artifact
 
+on: [push]
 
 jobs:
-  upload-multiple-artifacts:
+  upload-artifacts:
     runs-on: windows-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
-    - name: Setup environment
+    - name: Generate files
       run: |
-        # Setup your environment as necessary
         mkdir files
-        # Example: Generate files dynamically. Adjust this as needed.
-        echo "Generating files..."
-        1..5 | ForEach-Object { Out-File -FilePath "files/File$_.txt" -InputObject "Content for file $_" }
-
-
-    - name: Upload each volume as an artifact
-      shell: pwsh
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        $files = Get-ChildItem -Path files
-        foreach ($file in $files) {
-          echo $file
-          gh workflow run upload_calls.yml --repo ${{ github.repository }} -f artifact-name=$file.Name -f artifact-path=$file.FullName
+        # Example: Generate 5 text files. Adjust this script to generate your files.
+        1..5 | ForEach-Object {
+          $filename = "files\File$_.txt"
+          "Hello, this is file $_" | Out-File $filename
         }
+
+    - name: Zip and Upload files as individual artifacts
+      run: |
+        $files = Get-ChildItem ./files -File
+        foreach ($file in $files) {
+          $zipName = "$($file.BaseName).zip"
+          Compress-Archive -Path $file.FullName -DestinationPath $zipName
+          echo "Uploading $zipName as an artifact..."
+          $artifactName = $file.BaseName
+          # Use actions/upload-artifact to upload the zipped file
+          echo "::set-output name=$artifactName::$zipName"
+        }
+      shell: pwsh
