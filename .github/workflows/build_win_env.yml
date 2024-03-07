@@ -67,6 +67,8 @@ jobs:
         $repoName = "${{ github.repository }}"
         $runId = "${{ github.run_id }}"
 
+        cd ${{ github.event.inputs.target_folder }}
+
         # Find all the 7z files
         $files = Get-ChildItem -Path . -Filter "${{ github.event.inputs.build_folder }}.7z.*"
 
