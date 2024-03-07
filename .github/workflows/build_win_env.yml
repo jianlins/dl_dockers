@@ -14,7 +14,7 @@ on:
         required: false
         default: 'D:/conda_envs_jianlins/'
       zip_vol_size:
-        description: 'envs path (must be on D drive)'
+        description: 'Max size for each volumn of 7zipped file.'
         type: string
         required: false
         default: '400m'
