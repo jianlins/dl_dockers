@@ -1,6 +1,12 @@
 name: Upload Multiple Artifacts
 
-on: [push]
+on:
+  workflow_dispatch:
+    inputs:
+      source_folder:
+        description: 'The source folder containing files to upload'
+        required: true
+        default: './'
 
 permissions:
   actions: write
