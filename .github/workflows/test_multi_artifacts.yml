@@ -28,5 +28,5 @@ jobs:
         $files = Get-ChildItem -Path files
         foreach ($file in $files) {
           echo $file
-          gh workflow run upload-artifact.yml --repo ${{ github.repository }} -f artifact-name=$file.Name -f artifact-path=$file.FullName
+          gh workflow run upload_calls.yml --repo ${{ github.repository }} -f artifact-name=$file.Name -f artifact-path=$file.FullName
         }
