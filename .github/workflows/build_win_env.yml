@@ -69,7 +69,7 @@ jobs:
       run: |
         pwd
         7z a -t7z -v10m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
-        ls
+        ls *.7z*
 
     - name: Upload each volume as a separate artifact
       run: node upload-artifacts.js
