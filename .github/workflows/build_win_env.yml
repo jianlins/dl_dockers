@@ -9,10 +9,10 @@ on:
         required: false
         default: 'win_cuda'
       target_folder:
-        description: 'target folder path (must be on D drive)'
+        description: 'envs path (must be on D drive)'
         type: string
         required: false
-        default: 'D:/conda_envs/mine/'
+        default: 'D:/conda_envs_jianlins/'
 
 permissions:
   actions: write
@@ -39,7 +39,7 @@ jobs:
     - name: Cache Miniforge Environment
       uses: actions/cache@v2
       with:
-        path: ${{ github.event.inputs.target_folder }}
+        path: ${{ github.event.inputs.build_folder }}
         key: ${{ runner.os }}-conda-${{ hashFiles('${{ github.event.inputs.build_folder }}/environment.yml') }}
         restore-keys: |
           ${{ runner.os }}-conda-
@@ -53,11 +53,13 @@ jobs:
     - name: Create Conda Environment
       run: |
         cd ${{ github.event.inputs.build_folder }}
-        conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}
+        conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
 
     - name: check folder
       run: |
         ls ${{ github.event.inputs.target_folder }}
+        ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+
         
     - name: Check for 7-Zip installation
       run: |
@@ -68,7 +70,7 @@ jobs:
     - name: Compress and split folder
       run: |
         pwd
-        7z a -t7z -v2g zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+        7z a -t7z -v2g zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}*
         ls zipped
 
     - name: Upload compressed parts as artifacts
