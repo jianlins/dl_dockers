@@ -1,0 +1,39 @@
+name: Test Artifacts
+
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create files and directory
+      run: |
+        mkdir artifacts
+        echo "File 1 content" > artifacts/file1.txt
+        echo "File 2 content" > artifacts/file2.txt
+        echo "File 3 content" > artifacts/file3.txt
+
+    - name: Upload artifacts
+      run: |
+        $files = Get-ChildItem .\artifacts\* -Name
+        foreach ($file in $files) {
+          $artifactName = [System.IO.Path]::GetFileNameWithoutExtension($file)
+          echo "Uploading $file as $artifactName"
+          # Upload artifact
+          New-Item -ItemType "directory" -Path ".\$artifactName"
+          Copy-Item "artifacts\$file" -Destination ".\$artifactName"
+          echo "Artifact $artifactName prepared for upload."
+        }
+      shell: pwsh
+
+    - name: Dynamically upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.workflow }}-${{ github.run_number }}-${{ matrix.os }}-${{ github.sha }}
+        path: |
+          file1/*
+          file2/*
+          file3/*
