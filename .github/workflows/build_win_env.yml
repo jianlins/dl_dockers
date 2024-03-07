@@ -12,8 +12,11 @@ on:
         description: 'target folder path (must be on D drive)'
         type: string
         required: false
-        default: 'D:/myenv/'
+        default: 'D:/conda_envs/mine'
 
+permissions:
+  actions: write
+  contents: read
         
 jobs:
   create_env:
@@ -52,11 +55,34 @@ jobs:
       run: choco install 7zip
   
     - name: Compress and split folder
-      run: 7z a -t7z -mx=9 -v400m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+      run: 7z a -t7z -v2m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
 
-    - name: Upload compressed parts as artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ github.event.inputs.build_folder }}_compressed
-        path: ${{ github.event.inputs.build_folder }}.7z.*
-        retention-days: 1
+    - name: Upload each volume as an artifact
+      shell: pwsh
+      run: |
+        $headers = @{
+          "Authorization" = "Bearer ${{ secrets.GITHUB_TOKEN }}"
+          "Accept" = "application/vnd.github.v3+json"
+        }
+        $repoName = "${{ github.repository }}"
+        $runId = "${{ github.run_id }}"
+
+        # Find all the 7z files
+        $files = Get-ChildItem -Path . -Filter "${{ github.event.inputs.build_folder }}.7z.*"
+
+        foreach ($file in $files) {
+          $artifactName = $file.Name
+          $uploadUrl = "https://api.github.com/repos/$repoName/actions/runs/$runId/artifacts"
+
+          # Create an artifact
+          $body = @{
+            name = $artifactName
+            expires_at = (Get-Date).AddDays(1).ToString("o") # Set expiration to 1 day from now
+          } | ConvertTo-Json
+
+          $response = Invoke-RestMethod -Uri $uploadUrl -Method Post -Headers $headers -Body $body
+          $uploadArtifactUrl = $response.upload_url
+
+          # Upload the artifact file
+          Invoke-RestMethod -Uri $uploadArtifactUrl -Method Post -Headers $headers -ContentType "application/zip" -InFile $file.FullName
+        }
