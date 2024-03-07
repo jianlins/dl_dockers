@@ -29,6 +29,6 @@ jobs:
 
     - name: Run upload script
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ARTIFACTS_TOKEN }}
       run: |
         python upload_artifacts.py "./files" --expire_days 10
