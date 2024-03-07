@@ -12,7 +12,7 @@ on:
         description: 'target folder path (must be on D drive)'
         type: string
         required: false
-        default: 'D:/conda_envs/mine'
+        default: 'D:/conda_envs/mine/'
 
 permissions:
   actions: write
@@ -55,7 +55,10 @@ jobs:
       run: choco install 7zip
   
     - name: Compress and split folder
-      run: 7z a -t7z -v2m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+      run: |
+        pwd
+        7z a -t7z -v2m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+        ls
 
     - name: Upload each volume as an artifact
       shell: pwsh
@@ -66,8 +69,6 @@ jobs:
         }
         $repoName = "${{ github.repository }}"
         $runId = "${{ github.run_id }}"
-
-        cd ${{ github.event.inputs.target_folder }}
 
         # Find all the 7z files
         $files = Get-ChildItem -Path . -Filter "${{ github.event.inputs.build_folder }}.7z.*"
