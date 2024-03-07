@@ -1,39 +1,39 @@
-name: Test Artifacts
+name: Upload Multiple Artifacts
 
-on: workflow_dispatch
+on: [push]
 
 jobs:
-  build:
+  upload-multiple-artifacts:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-    - name: Create files and directory
+    - name: Setup environment
       run: |
-        mkdir artifacts
-        echo "File 1 content" > artifacts/file1.txt
-        echo "File 2 content" > artifacts/file2.txt
-        echo "File 3 content" > artifacts/file3.txt
+        # Setup your environment as necessary
+        mkdir files
+        # Example: Generate files dynamically. Adjust this as needed.
+        echo "Generating files..."
+        1..5 | ForEach-Object { Out-File -FilePath "files/File$_.txt" -InputObject "Content for file $_" }
 
-    - name: Upload artifacts
+    - name: Upload files as individual artifacts
       run: |
-        $files = Get-ChildItem .\artifacts\* -Name
+        $files = Get-ChildItem ./files -File
         foreach ($file in $files) {
-          $artifactName = [System.IO.Path]::GetFileNameWithoutExtension($file)
-          echo "Uploading $file as $artifactName"
-          # Upload artifact
-          New-Item -ItemType "directory" -Path ".\$artifactName"
-          Copy-Item "artifacts\$file" -Destination ".\$artifactName"
-          echo "Artifact $artifactName prepared for upload."
-        }
+          $name = $file.Name
+          $path = $file.FullName
+          echo "Uploading $name as an artifact..."
+          # This uses a PowerShell script to dynamically create the upload step for each file
+          echo "::set-output name=name::$name"
+          echo "::set-output name=path::$path"
+        } | ForEach-Object { gh workflow run upload-artifact.yml --field artifact-name=$_name --field path=$_path }
       shell: pwsh
 
-    - name: Dynamically upload artifacts
-      uses: actions/upload-artifact@v2
+    # Dynamic artifact upload (Example using matrix strategy for demonstration; adapt as needed)
+    - name: Upload artifact dynamically
+      uses: actions/upload-artifact@v3
       with:
-        name: ${{ github.workflow }}-${{ github.run_number }}-${{ matrix.os }}-${{ github.sha }}
-        path: |
-          file1/*
-          file2/*
-          file3/*
+        name: ${{fromJson(needs.upload-multiple-artifacts.outputs.artifacts).name}}
+        path: ${{fromJson(needs.upload-multiple-artifacts.outputs.artifacts).path}}
