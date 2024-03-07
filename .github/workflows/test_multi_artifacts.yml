@@ -1,4 +1,4 @@
-name: Upload Each File as Zipped Artifact
+name: Upload Each File as Artifact
 
 on: [push]
 
@@ -14,20 +14,24 @@ jobs:
       run: |
         mkdir files
         # Example: Generate 5 text files. Adjust this script to generate your files.
+        $filesPath = "files"
         1..5 | ForEach-Object {
-          $filename = "files\File$_.txt"
+          $filename = "${filesPath}\File$_.txt"
           "Hello, this is file $_" | Out-File $filename
         }
 
-    - name: Zip and Upload files as individual artifacts
+    - name: Upload files as individual artifacts
+      shell: pwsh
       run: |
         $files = Get-ChildItem ./files -File
         foreach ($file in $files) {
           $zipName = "$($file.BaseName).zip"
           Compress-Archive -Path $file.FullName -DestinationPath $zipName
-          echo "Uploading $zipName as an artifact..."
-          $artifactName = $file.BaseName
-          # Use actions/upload-artifact to upload the zipped file
-          echo "::set-output name=$artifactName::$zipName"
+          echo "Uploading $zipName as an artifact"
+          # Now upload the zipped file as an artifact
+          - name: Upload $zipName
+            uses: actions/upload-artifact@v3
+            with:
+              name: $file.BaseName
+              path: $zipName
         }
-      shell: pwsh
