@@ -1,6 +1,6 @@
 # by default the artifacts will stay on repo for 90 days. However, there is a max size limits of all artifacts. 
 # If you are hitting that limit, you would want remove previously generated artifacts to clean out spaces.
-name: del_artifacts
+name: remove_artifacts
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Delete all artifacts
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
