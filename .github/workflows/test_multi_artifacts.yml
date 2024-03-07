@@ -29,8 +29,8 @@ jobs:
           Compress-Archive -Path $file.FullName -DestinationPath $zipName
           echo "Uploading $zipName as an artifact"
           # Now upload the zipped file as an artifact
-          - name: Upload $zipName
-            uses: actions/upload-artifact@v3
+          - name: Upload F
+            uses: actions/upload-artifact@v4
             with:
               name: $file.BaseName
               path: $zipName
