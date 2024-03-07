@@ -35,6 +35,14 @@ jobs:
       run: |
         pwd
         ls ${{ github.event.inputs.build_folder }}
+    
+    - name: Cache Miniforge Environment
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.event.inputs.target_folder }}
+        key: ${{ runner.os }}-conda-${{ hashFiles('${{ github.event.inputs.build_folder }}/environment.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-conda-
 
     - name: Install miniforge
       uses: conda-incubator/setup-miniconda@v3
@@ -51,8 +59,11 @@ jobs:
       run: |
         ls ${{ github.event.inputs.target_folder }}
         
-    - name: Install 7-Zip
-      run: choco install 7zip
+    - name: Check for 7-Zip installation
+      run: |
+        if (!(Test-Path "C:\Program Files\7-Zip\7z.exe")) {
+          choco install 7zip
+        }
   
     - name: Compress and split folder
       run: |
