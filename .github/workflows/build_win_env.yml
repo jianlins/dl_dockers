@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: 'D:/conda_envs_jianlins/'
+      zip_vol_size:
+        description: 'envs path (must be on D drive)'
+        type: string
+        required: false
+        default: '400m'
 
 permissions:
   actions: write
@@ -70,7 +75,7 @@ jobs:
     - name: Compress and split folder
       run: |
         pwd
-        7z a -t7z -v400m zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}*
+        7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}*
         ls zipped
 
     - name: Upload compressed parts as artifacts
