@@ -24,8 +24,7 @@ if __name__ == "__main__":
     token = os.getenv("GITHUB_TOKEN")
     repo = os.getenv("GITHUB_REPOSITORY")
     run_id = os.getenv("GITHUB_RUN_ID")
-    artifact_dir = 'path/to/your/volumes' # Adjust this to your volumes' directory
 
-    for file_path in glob(f"{artifact_dir}/*.7z.*"):
+    for file_path in glob(f"./*.7z.*"):
         artifact_name = os.path.basename(file_path)
         upload_artifact(token, repo, run_id, artifact_name, file_path)
