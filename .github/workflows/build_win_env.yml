@@ -9,15 +9,20 @@ on:
         required: false
         default: 'win_cuda'
       target_folder:
-        description: 'envs path (must be on D drive)'
+        description: 'Envs path (must be on D drive)'
         type: string
         required: false
         default: 'D:/conda_envs_jianlins/'
       zip_vol_size:
-        description: 'Max size for each volumn of 7zipped file.'
+        description: 'Max 7zip volumn size'
         type: string
         required: false
         default: '400m'
+      retention_days:
+        description: 'Days to keep the artifacts'
+        type: int
+        required: false
+        default: 1
 
 permissions:
   actions: write
@@ -83,4 +88,4 @@ jobs:
       with:
         name: ${{ github.event.inputs.build_folder }}
         path: zipped/*.7z.*
-        retention-days: 1
+        retention-days: ${{ github.event.inputs.retention_days }}
