@@ -68,7 +68,7 @@ jobs:
     - name: Compress and split folder
       run: |
         pwd
-        7z a -t7z -v2m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+        7z a -t7z -v10m ${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
         ls
 
     - name: Upload each volume as an artifact
@@ -81,12 +81,15 @@ jobs:
         $repoName = "${{ github.repository }}"
         $runId = "${{ github.run_id }}"
 
+        ls *.7z*
+
         # Find all the 7z files
         $files = Get-ChildItem -Path . -Filter "${{ github.event.inputs.build_folder }}.7z.*"
 
         foreach ($file in $files) {
           $artifactName = $file.Name
           $uploadUrl = "https://api.github.com/repos/$repoName/actions/runs/$runId/artifacts"
+          
 
           # Create an artifact
           $body = @{
