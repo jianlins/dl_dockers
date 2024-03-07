@@ -83,6 +83,8 @@ jobs:
 
         ls *.7z*
 
+        echo "$repoName"
+
         # Find all the 7z files
         $files = Get-ChildItem -Path . -Filter "${{ github.event.inputs.build_folder }}.7z.*"
 
