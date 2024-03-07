@@ -2,6 +2,10 @@ name: Upload Multiple Artifacts
 
 on: [push]
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   upload-multiple-artifacts:
     runs-on: windows-latest
