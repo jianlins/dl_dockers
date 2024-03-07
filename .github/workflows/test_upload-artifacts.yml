@@ -18,22 +18,13 @@ jobs:
         echo "Generating files..."
         1..5 | ForEach-Object { Out-File -FilePath "files/File$_.txt" -InputObject "Content for file $_" }
 
-    - name: Upload files as individual artifacts
+    - name: Install Python dependencies
       run: |
-        $files = Get-ChildItem ./files -File
-        foreach ($file in $files) {
-          $name = $file.Name
-          $path = $file.FullName
-          echo "Uploading $name as an artifact..."
-          # This uses a PowerShell script to dynamically create the upload step for each file
-          echo "::set-output name=name::$name"
-          echo "::set-output name=path::$path"
-        } | ForEach-Object { gh workflow run upload-artifact.yml --field artifact-name=$_name --field path=$_path }
-      shell: pwsh
+        python -m pip install --upgrade pip
+        pip install requests
 
-    # Dynamic artifact upload (Example using matrix strategy for demonstration; adapt as needed)
-    - name: Upload artifact dynamically
-      uses: actions/upload-artifact@v3
-      with:
-        name: ${{fromJson(needs.upload-multiple-artifacts.outputs.artifacts).name}}
-        path: ${{fromJson(needs.upload-multiple-artifacts.outputs.artifacts).path}}
+    - name: Run upload script
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        python upload_artifacts.py "./files" --expire_days 10
