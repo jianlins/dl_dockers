@@ -63,6 +63,7 @@ jobs:
     - name: Create Conda Environment
       shell: pwsh
       run: |
+        cd ${{ github.event.inputs.build_folder }}
         $envPath = "${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}"
         # Check if the environment directory exists
         if (Test-Path -Path $envPath) {
