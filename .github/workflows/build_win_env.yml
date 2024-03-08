@@ -112,7 +112,7 @@ jobs:
           } else {
             echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
           }
-        python -c "import os; os.environ['PYSPARK_JARS_IVY'] = r'${{ github.event.inputs.target_folder }}/ivy';import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
+        python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', './ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:4.2.2').getOrCreate(); spark.stop();"
         
     # - name: copy cached jars
     #   run: |
