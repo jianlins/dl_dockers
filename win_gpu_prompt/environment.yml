@@ -1,9 +1,9 @@
-name: base
+name: win_gpu_prompt
 channels:
   - nvidia
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.10
   - pytorch::pytorch
   - pytorch::torchvision
   # - pytorch::torchaudio
