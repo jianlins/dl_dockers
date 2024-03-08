@@ -90,6 +90,7 @@ jobs:
         echo "Create .ivy folder"        
         New-Item -ItemType Directory -Force -Path  ${{ env.PYSPARK_JARS_IVY }}/jars
 
+    # change the default .ivy location to ${{ github.event.inputs.target_folder }}/ivy so that can be zipped together easily
     - name: Cache Ivy jars
       uses: actions/cache@v4
       env:
