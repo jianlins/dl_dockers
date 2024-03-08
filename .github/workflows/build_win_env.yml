@@ -81,29 +81,34 @@ jobs:
         echo "C:\hadoop\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
     - name: Download Hadoop DLLs for Windows
+      env:
+        PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
       run: |
         Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/winutils.exe" -OutFile "C:\hadoop\bin\winutils.exe"
         # Assuming hadoop.dll is also required and available at a certain URL - replace this URL with the actual location for hadoop.dll
         Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/hadoop.dll" -OutFile "C:\hadoop\bin\hadoop.dll"
-        echo "Create .ivy folder"
-        $ivyJarDir = ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy/jars
-        New-Item -ItemType Directory -Force -Path $ivyJarDir
+        echo "Create .ivy folder"        
+        New-Item -ItemType Directory -Force -Path  ${{ env.PYSPARK_JARS_IVY }}/jars
 
     - name: Cache Ivy jars
       uses: actions/cache@v4
       with:
         path: |
-          $ivyDir = ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy/jars
+          $ivyDir =  ${{ env.PYSPARK_JARS_IVY }}/jars
         key: ${{ runner.os }}-ivy-${{ hashFiles('**/*.jar') }}
         restore-keys: |
           ${{ runner.os }}-ivy-
 
     - name: download sparknlp jars
       run: |
-        $ivyDir = ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy
+        echo "PYSPARK_JARS_IVY=${{ env.PYSPARK_JARS_IVY }}"
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        curl -o $ivyDir/spark-nlp-gpu-assembly-5.2.3.jar https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
-        python -c "import os; os.environ['PYSPARK_JARS_IVY'] = r'$ivyDir'; import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
+        if (!(Test-Path -Path "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-5.2.3.jar")) {
+            curl -Lo "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-5.2.3.jar" https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
+          } else {
+            echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
+          }
+        python -c "import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
         
     # - name: copy cached jars
     #   run: |
@@ -127,7 +132,7 @@ jobs:
     - name: Compress and split folder
       run: |
         pwd
-        7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}*
+        7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
         ls zipped
 
     - name: Upload compressed parts as artifacts
