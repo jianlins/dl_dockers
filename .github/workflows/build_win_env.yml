@@ -74,6 +74,9 @@ jobs:
           Write-Host "Creating new environment ${{ github.event.inputs.build_folder }} under ${{ github.event.inputs.target_folder }}."
           conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         }
+        echo "clean up cache..."
+        conda clean --all -f -y
+        pip cache purge
 
     - name: Set HADOOP_HOME environment variable
       run: |
