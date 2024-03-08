@@ -93,11 +93,9 @@ jobs:
     # change the default .ivy location to ${{ github.event.inputs.target_folder }}/ivy so that can be zipped together easily
     - name: Cache Ivy jars
       uses: actions/cache@v4
-      env:
-        PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
       with:
         path: |
-          $ivyDir =  ${{ env.PYSPARK_JARS_IVY }}/jars
+          $ivyDir =  ${{ github.event.inputs.target_folder }}/ivy/jars
         key: ${{ runner.os }}-ivy-${{ hashFiles('**/*.jar') }}
         restore-keys: |
           ${{ runner.os }}-ivy-
