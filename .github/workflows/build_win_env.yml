@@ -75,6 +75,7 @@ jobs:
 
     - name: download sparknlp jars
       run: |
+        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         pyspark --packages com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:5.2.3
         
     - name: copy cached jars
