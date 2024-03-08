@@ -119,8 +119,8 @@ jobs:
       run: |
         ls ${{ github.event.inputs.target_folder }}
         ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy
-        ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy/jars
+        ls ${{ github.event.inputs.target_folder }}/ivy
+        ls ${{ github.event.inputs.target_folder }}/ivy/jars
 
         
     - name: Check for 7-Zip installation
