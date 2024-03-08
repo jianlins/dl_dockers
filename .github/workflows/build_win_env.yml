@@ -84,12 +84,23 @@ jobs:
         Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/winutils.exe" -OutFile "C:\hadoop\bin\winutils.exe"
         # Assuming hadoop.dll is also required and available at a certain URL - replace this URL with the actual location for hadoop.dll
         Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/hadoop.dll" -OutFile "C:\hadoop\bin\hadoop.dll"
+        echo "Create .ivy folder"
+        $ivyJarDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy/jars"
+        New-Item -ItemType Directory -Force -Path $ivyJarDir
+
+    - name: Cache Ivy jars
+      uses: actions/cache@v2
+      with:
+        path: |
+          ${{ env.USERPROFILE }}\.ivy2\jars
+        key: ${{ runner.os }}-ivy-${{ hashFiles('**/*.jar') }}
+        restore-keys: |
+          ${{ runner.os }}-ivy-
 
     - name: download sparknlp jars
       run: |
-        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         $ivyDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy"
-        New-Item -ItemType Directory -Force -Path $ivyDir
+        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         curl -o $ivyDir/spark-nlp-gpu-assembly-5.2.3.jar https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
         python -c "import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
         
