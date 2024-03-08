@@ -1,5 +1,5 @@
 name: build_win_env
-run-name: B&D ${{ github.event.inputs.build_folder }}
+run-name: Build ${{ github.event.inputs.build_folder }}
 on:
   workflow_dispatch:
     inputs:
