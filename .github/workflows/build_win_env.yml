@@ -86,34 +86,36 @@ jobs:
         # Assuming hadoop.dll is also required and available at a certain URL - replace this URL with the actual location for hadoop.dll
         Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/hadoop.dll" -OutFile "C:\hadoop\bin\hadoop.dll"
         echo "Create .ivy folder"
-        $ivyJarDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy/jars"
+        $ivyJarDir = ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy/jars
         New-Item -ItemType Directory -Force -Path $ivyJarDir
 
     - name: Cache Ivy jars
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: |
-          ${{ env.USERPROFILE }}\.ivy2\jars
+          $ivyDir = ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy/jars
         key: ${{ runner.os }}-ivy-${{ hashFiles('**/*.jar') }}
         restore-keys: |
           ${{ runner.os }}-ivy-
 
     - name: download sparknlp jars
       run: |
-        $ivyDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy"
+        $ivyDir = ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         curl -o $ivyDir/spark-nlp-gpu-assembly-5.2.3.jar https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
-        python -c "import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
+        python -c "import os; os.environ['PYSPARK_JARS_IVY'] = r'$ivyDir'; import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
         
-    - name: copy cached jars
-      run: |
-        $sourceDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy"
-        Get-ChildItem -Path $sourceDir -Recurse -Filter *.jar | Copy-Item -Destination ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/lib/site-packages/pyspark/jars -Force
+    # - name: copy cached jars
+    #   run: |
+    #     $sourceDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy"
+    #     Get-ChildItem -Path $sourceDir -Recurse -Filter *.jar | Copy-Item -Destination ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/lib/site-packages/pyspark/jars -Force
 
     - name: check folder
       run: |
         ls ${{ github.event.inputs.target_folder }}
         ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+        ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy
+        ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/ivy/jars
 
         
     - name: Check for 7-Zip installation
