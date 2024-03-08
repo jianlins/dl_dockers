@@ -75,8 +75,9 @@ jobs:
 
     - name: Set HADOOP_HOME environment variable
       run: |
-        [System.Environment]::SetEnvironmentVariable('HADOOP_HOME', 'C:\hadoop', [System.EnvironmentVariableTarget]::Machine)
-        [System.Environment]::SetEnvironmentVariable('Path', $env:Path + ';C:\hadoop\bin', [System.EnvironmentVariableTarget]::Machine)
+        HADOOP_HOME: C:\hadoop
+        echo "HADOOP_HOME=C:\hadoop" | Out-File -FilePath $env:GITHUB_ENV -Append
+        echo "C:\hadoop\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
         New-Item -ItemType Directory -Force -Path "C:\hadoop\bin"
 
     - name: Download Hadoop DLLs for Windows
@@ -86,6 +87,8 @@ jobs:
         Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/hadoop.dll" -OutFile "C:\hadoop\bin\hadoop.dll"
 
     - name: download sparknlp jars
+      env: 
+
       run: |
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         curl -o ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/lib/site-packages/pyspark/jars/spark-nlp-gpu-assembly-5.2.3.jar https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
