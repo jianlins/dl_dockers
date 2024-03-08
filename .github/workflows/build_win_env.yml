@@ -92,6 +92,8 @@ jobs:
 
     - name: Cache Ivy jars
       uses: actions/cache@v4
+      env:
+        PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
       with:
         path: |
           $ivyDir =  ${{ env.PYSPARK_JARS_IVY }}/jars
@@ -100,6 +102,8 @@ jobs:
           ${{ runner.os }}-ivy-
 
     - name: download sparknlp jars
+      env:
+        PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
       run: |
         echo "PYSPARK_JARS_IVY=${{ env.PYSPARK_JARS_IVY }}"
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
