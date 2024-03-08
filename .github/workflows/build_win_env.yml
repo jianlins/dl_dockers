@@ -126,6 +126,7 @@ jobs:
         ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         ls ${{ github.event.inputs.target_folder }}/ivy
         ls ${{ github.event.inputs.target_folder }}/ivy/jars
+        Remove-Item -Path ${{ github.event.inputs.target_folder }}/ivy/cache/* -Recurse -Force
 
         
     - name: Check for 7-Zip installation
