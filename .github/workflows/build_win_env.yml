@@ -71,9 +71,16 @@ jobs:
           # Environment doesn't exist, proceed to create a new one
           Write-Host "Creating new environment ${{ github.event.inputs.build_folder }} under ${{ github.event.inputs.target_folder }}."
           conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-
         }
 
+    - name: download sparknlp jars
+      run: |
+        pyspark --packages com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:5.2.3
+        
+    - name: copy cached jars
+      run: |
+        $sourceDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy"
+        Get-ChildItem -Path $sourceDir -Recurse -Filter *.jar | Copy-Item -Destination ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/lib/site-packages/pyspark/jars -Force
 
     - name: check folder
       run: |
