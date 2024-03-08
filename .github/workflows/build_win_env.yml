@@ -88,8 +88,10 @@ jobs:
     - name: download sparknlp jars
       run: |
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        curl -o ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}/lib/site-packages/pyspark/jars/spark-nlp-gpu-assembly-5.2.3.jar https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
-        python -c "import sparknlp; spark=sparknlp.start(); spark.stop();"
+        $ivyDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy"
+        New-Item -ItemType Directory -Force -Path $ivyDir
+        curl -o $ivyDir/spark-nlp-gpu-assembly-5.2.3.jar https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
+        python -c "import sparknlp; spark=sparknlp.start(gpu=True); spark.stop();"
         
     - name: copy cached jars
       run: |
