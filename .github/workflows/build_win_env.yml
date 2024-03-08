@@ -22,7 +22,7 @@ on:
         description: 'Days to keep the artifacts'
         type: int
         required: false
-        default: 1
+        default: 7
 
 permissions:
   actions: write
