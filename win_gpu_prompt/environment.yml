@@ -57,3 +57,11 @@ dependencies:
     - gensim
     - dspy-ai
     - datasets
+
+    # tried promptify however, it's conflict with transformers version used here: 
+    # The conflict is caused by:
+
+    # transformers 4.31.0 depends on huggingface-hub<1.0 and >=0.14.1
+
+    # promptify 2.0.3 depends on huggingface_hub==0.12
+
