@@ -56,5 +56,5 @@ dependencies:
     - spark-nlp==5.2.3
     - gensim
     - dspy-ai
-    - promptify
+    - git+https://github.com/promptslab/Promptify.git
     - datasets

@@ -7,7 +7,7 @@ on:
         description: "From which folder's environment.yml, the conda environment will be built"
         type: string   
         required: false
-        default: 'win_cuda'
+        default: 'win_gpu_prompt'
       target_folder:
         description: 'Envs path (must be on D drive)'
         type: string
