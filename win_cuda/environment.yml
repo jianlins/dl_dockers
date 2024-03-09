@@ -55,5 +55,3 @@ dependencies:
     - pyspark[pandas_on_spark]==3.5.0
     - spark-nlp==5.2.3
     - gensim
-    - dspy-ai
-    - promptify
