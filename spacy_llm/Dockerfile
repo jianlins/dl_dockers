@@ -7,10 +7,12 @@ RUN apt-get update
 
 RUN pip install --upgrade  pip 
 
-RUN pip3 install -U -y 'spacy[cuda11x,transformers,lookups]'
+RUN pip install -U pip setuptools wheel
+RUN pip install -U 'spacy[cuda11x]'
 RUN python -m spacy download en_core_web_trf
-RUN python -m pip3 install spacy-llm
-RUN pip install -U -y notebook
+
+
+RUN pip install -U  notebook
 
 CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8881", "--no-browser", "--allow-root"]
 
