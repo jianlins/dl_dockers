@@ -3,7 +3,7 @@ FROM python:3.9-slim
 LABEL maintainer="VA"
 
 RUN apt-get update
-RUN apt-get install -y build-essential python-dev git  
+#RUN apt-get install -y build-essential python-dev git  
 
 RUN pip3 install --upgrade -y pip setuptools wheel
 
