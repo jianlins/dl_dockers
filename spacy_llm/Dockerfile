@@ -10,7 +10,7 @@ RUN pip install --upgrade  pip
 RUN pip install -U pip setuptools wheel
 RUN pip install -U 'spacy[cuda11x]'
 RUN python -m spacy download en_core_web_trf
-
+RUN python -m pip install spacy-llm
 
 RUN pip install -U  notebook
 
