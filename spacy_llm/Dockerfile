@@ -14,7 +14,7 @@ RUN python -m pip install spacy-llm
 
 RUN pip install -U  notebook
 
-CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+#CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
 
 
 
