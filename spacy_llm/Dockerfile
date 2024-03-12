@@ -5,12 +5,9 @@ LABEL maintainer="VA"
 RUN apt-get update
 #RUN apt-get install -y build-essential python-dev git  
 
-RUN pip3 install --upgrade -y pip setuptools wheel
+RUN pip install --upgrade --yes pip setuptools wheel
 
-RUN python -m venv .env
-RUN source .env/bin/activate
-
-RUN pip3 install -U -y 'spacy[cuda11x,transformers,lookups]'
+RUN pip install -U -y 'spacy[cuda11x,transformers,lookups]'
 RUN python -m spacy download en_core_web_trf
 RUN python -m pip3 install spacy-llm
 RUN pip3 install -U -y notebook
