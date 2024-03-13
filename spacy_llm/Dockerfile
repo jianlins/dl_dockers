@@ -26,7 +26,7 @@ RUN pip install -U 'spacy[cuda11x]'
 RUN python -m spacy download en_core_web_trf
 RUN python -m pip install spacy-llm
 
-RUN pip install -U  notebook
+RUN pip install -U  notebook pandas
 
 
 #CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
