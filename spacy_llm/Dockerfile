@@ -8,6 +8,10 @@ RUN apt install -y git libsndfile1-dev tesseract-ocr espeak-ng python3 python3-p
 RUN python3 -m pip install --no-cache-dir --upgrade pip
 RUN pip install -U  setuptools wheel
 
+ARG REF=v4.38.1
+RUN git clone https://github.com/huggingface/transformers && cd transformers && git checkout $REF
+RUN python3 -m pip install --no-cache-dir -e ./transformers[dev-torch,testing,video]
+
 # If set to nothing, will install the latest version
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
