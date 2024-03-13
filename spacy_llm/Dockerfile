@@ -23,17 +23,17 @@ RUN pip install torch torchvision torchaudio --index-url https://download.pytorc
 
 
 RUN pip install -U 'spacy[cuda11x]'
-RUN python -m spacy download en_core_web_trf
-RUN python -m pip install spacy-llm
+RUN python3 -m spacy download en_core_web_trf
+RUN pip install spacy-llm
 
-RUN pip install -U  notebook pandas
+RUN  pip install -U  notebook pandas
 
 
 #CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
 RUN nvcc --version
 RUN which nvcc
-RUN python --version
-RUN which python
+RUN python3 --version
+
 
 
 
