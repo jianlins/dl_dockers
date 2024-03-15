@@ -52,6 +52,7 @@ dependencies:
     - itsdangerous<2.1.0
     - accelerate
     - lightning==2.1.2
-    - pyspark[pandas_on_spark]==3.5.0
+    - pyspark==3.5.1
     - spark-nlp==5.2.3
     - gensim
+    - git+https://github.com/HarryCaveMan/sklearn-crfsuite.git
