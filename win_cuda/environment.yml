@@ -2,13 +2,14 @@ name: base
 channels:
   - nvidia
   - defaults
+  - pytorch
 dependencies:
   - python=3.8
   - pytorch::pytorch
   - pytorch::torchvision
   # - pytorch::torchaudio
   - pytorch::pytorch-cuda=11.8
-  - pytorch::faiss-gpu
+  - faiss-gpu
   - conda-forge:cudnn
   - pytorch::torchtext
   # github runner doesn't have a gpu, it seems not working , disable for now. 
