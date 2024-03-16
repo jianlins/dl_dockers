@@ -51,7 +51,7 @@ dependencies:
     - joblib
     - itsdangerous<2.1.0
     - accelerate
-    - lightning==2.1.2
+    - lightning
     - pyspark==3.5.1
     - spark-nlp==5.2.3
     - gensim
