@@ -13,6 +13,11 @@ on:
         type: string
         required: false
         default: 'D:/conda_envs_jianlins/'
+      download_jars:
+        description: "whether download jars for pyspark"
+        type: string
+        required: false
+        default: 'true'
       zip_vol_size:
         description: 'Max 7zip volumn size'
         type: string
@@ -105,6 +110,7 @@ jobs:
           ${{ runner.os }}-ivy-
 
     - name: download sparknlp jars
+      if: ${{ github.event.inputs.download_jars == 'true' }}
       env:
         PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
       run: |
