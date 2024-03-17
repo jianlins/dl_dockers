@@ -18,11 +18,16 @@ on:
         type: string
         required: false
         default: 'false'
+      download_spacy_model:
+        description: "whether download sm spacy models"
+        type: string
+        required: false
+        default: 'true'
       zip_vol_size:
         description: 'Max 7zip volumn size'
         type: string
         required: false
-        default: '400m'
+        default: '400m'      
       retention_days:
         description: 'Days to keep the artifacts'
         type: int
@@ -128,7 +133,15 @@ jobs:
             echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
           }
         python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${{ github.event.inputs.target_folder }}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:4.2.2').getOrCreate(); spark.stop();"
-        
+    
+    - name: download spacy models
+      if: ${{ github.event.inputs.download_spacy_model == 'true' }}
+      run: |
+        python -m spacy download en_core_web_sm
+        python -m spacy download en_core_web_md
+        python -m spacy download en_core_web_trf
+
+
     # - name: copy cached jars
     #   run: |
     #     $sourceDir = Join-Path -Path $env:USERPROFILE -ChildPath ".ivy"
