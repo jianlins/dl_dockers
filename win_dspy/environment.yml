@@ -27,7 +27,7 @@ dependencies:
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
     - setuptools==65
-    - medspacy
+    - spacy
     - transformers
     - simpletransformers
     - nltk==3.8.1
