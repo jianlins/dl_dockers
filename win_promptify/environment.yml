@@ -1,4 +1,4 @@
-name: win_gpu_prompt
+name: win_promptify
 channels:
   - nvidia
   - defaults
