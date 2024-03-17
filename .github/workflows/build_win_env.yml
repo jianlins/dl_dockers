@@ -17,7 +17,7 @@ on:
         description: "whether download jars for pyspark"
         type: string
         required: false
-        default: 'true'
+        default: 'false'
       zip_vol_size:
         description: 'Max 7zip volumn size'
         type: string
@@ -55,9 +55,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        key: ${{ runner.os }}-conda-${{ hashFiles('${{ github.event.inputs.build_folder }}/environment.yml') }}
+        key: ${{ runner.os }}-${{ github.event.inputs.build_folder }}-${{ hashFiles('${{ github.event.inputs.build_folder }}/environment.yml') }}
         restore-keys: |
-          ${{ runner.os }}-conda-
+          ${{ runner.os }}-${{ github.event.inputs.build_folder }}-
 
     - name: Install miniforge
       uses: conda-incubator/setup-miniconda@v3
@@ -106,6 +106,7 @@ jobs:
 
     # change the default .ivy location to ${{ github.event.inputs.target_folder }}/ivy so that can be zipped together easily
     - name: Cache Ivy jars
+      if: ${{ github.event.inputs.download_jars == 'true' }}
       uses: actions/cache@v4
       with:
         path: |
