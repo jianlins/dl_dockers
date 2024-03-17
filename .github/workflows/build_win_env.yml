@@ -83,6 +83,10 @@ jobs:
         conda clean --all -f -y
         pip cache purge
 
+    - name: check final environment settings
+      run: |
+        conda env export
+
     - name: Set HADOOP_HOME environment variable
       run: |
         New-Item -ItemType Directory -Force -Path "C:\hadoop\bin"
