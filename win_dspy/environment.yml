@@ -5,14 +5,9 @@ channels:
 dependencies:
   - python=3.10
   - pytorch::pytorch
-  - pytorch::torchvision
-  # - pytorch::torchaudio
   - pytorch::pytorch-cuda=11.8
   - conda-forge:cudnn
   - pytorch::torchtext
-  # github runner doesn't have a gpu, it seems not working , disable for now. 
-  # might work using https://github.com/gpgpu-sim/gpgpu-sim_distribution, check it later
-  # - nvidia/label/cuda-11.8.0::cutatoolkit
   - pandas=2.0.3
   - pip
   - numpy=1.24.3
@@ -27,40 +22,25 @@ dependencies:
   - conda-forge::imbalanced-learn=0.11.0
   - conda-forge::scikit-learn=1.3.2
   - conda-forge::jupytext
-  - conda-forge::spacy=3.5.4
-  - conda-forge::pyarrow
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
     - setuptools==65
-    # tmp solution to fix the pip install medspacy     
-    # - git+https://github.com/jianlins/medspacy.git
     - medspacy
     - transformers
-    # dependency version conflict, fix it later
-    # - medpspacy-io
-    - simpletransformers==0.70.0
+    - simpletransformers
     - nltk==3.8.1
     - bioc==2.0
-    - tqdm==4.65
+    - tqdm
     - tensorboard
     - pytest
     - wheel
     - joblib
     - itsdangerous<2.1.0
     - accelerate
-    - lightning
     - pyspark==3.5.1
-    - spark-nlp==5.2.3
-    - gensim
+    - spark-nlp==5.2.3    
     - dspy-ai==2.4.0
     - datasets
-
-    # tried promptify however, it's conflict with transformers version used here: 
-    # The conflict is caused by:
-
-    # transformers 4.31.0 depends on huggingface-hub<1.0 and >=0.14.1
-
-    # promptify 2.0.3 depends on huggingface_hub==0.12
 

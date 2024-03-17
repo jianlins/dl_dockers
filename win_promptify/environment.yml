@@ -50,7 +50,7 @@ dependencies:
     - accelerate    
     - gensim
     - datasets
-    - promptify
+    - git+https://github.com/promptslab/Promptify.git
 
     # tried promptify however, it's conflict with transformers version used here: 
     # The conflict is caused by:
