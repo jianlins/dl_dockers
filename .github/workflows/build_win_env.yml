@@ -85,6 +85,7 @@ jobs:
 
     - name: check final environment settings
       run: |
+        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         conda env export
 
     - name: Set HADOOP_HOME environment variable
@@ -136,6 +137,10 @@ jobs:
       run: |
         ls ${{ github.event.inputs.target_folder }}
         ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+        
+    - name: check jar folder
+      if: ${{ github.event.inputs.download_jars == 'true' }}
+      run: |
         ls ${{ github.event.inputs.target_folder }}/ivy
         ls ${{ github.event.inputs.target_folder }}/ivy/jars
         Remove-Item -Path ${{ github.event.inputs.target_folder }}/ivy/cache/* -Recurse -Force
