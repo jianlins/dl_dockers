@@ -35,7 +35,6 @@ dependencies:
     # tmp solution to fix the pip install medspacy     
     # - git+https://github.com/jianlins/medspacy.git
     - medspacy
-    - git+https://github.com/medspacy/medspacy_io.git
     - transformers
     # dependency version conflict, fix it later
     # - medpspacy-io
