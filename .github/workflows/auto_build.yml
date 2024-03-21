@@ -22,10 +22,10 @@ on:
   #       description: 'Docker hub username'  
   #       type: string   
   #       required: false
-  #       default: 'brokenjade'
+  #       default: 'berniegan'
 env:
   build_folder: 'costmos'
-  hub_username: 'brokenjade'
+  hub_username: 'berniegan'
   tag: 'latest'
 
 jobs:

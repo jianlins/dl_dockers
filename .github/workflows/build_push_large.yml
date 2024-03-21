@@ -18,7 +18,7 @@ on:
         description: 'Docker hub username'  
         type: string   
         required: false
-        default: 'brokenjade'
+        default: 'berniegan'
 
 jobs:
   build_docker:
