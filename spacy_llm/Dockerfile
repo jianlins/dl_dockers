@@ -18,6 +18,11 @@ ARG TORCH_AUDIO=''
 # Example: `cu102`, `cu113`, etc.
 ARG CUDA='cu118'
 
+COPY jupyter_server_config.py /etc/jupyter/
+COPY start.sh /usr/local/bin/
+RUN chmod 775 /usr/local/bin/*.sh
+
+
 RUN [ ${#PYTORCH} -gt 0 ] && VERSION='torch=='$PYTORCH'.*' ||  VERSION='torch'; python3 -m pip install --no-cache-dir -U $VERSION --extra-index-url https://download.pytorch.org/whl/$CUDA
 RUN [ ${#TORCH_VISION} -gt 0 ] && VERSION='torchvision=='TORCH_VISION'.*' ||  VERSION='torchvision'; python3 -m pip install --no-cache-dir -U $VERSION --extra-index-url https://download.pytorch.org/whl/$CUDA
 RUN [ ${#TORCH_AUDIO} -gt 0 ] && VERSION='torchaudio=='TORCH_AUDIO'.*' ||  VERSION='torchaudio'; python3 -m pip install --no-cache-dir -U $VERSION --extra-index-url https://download.pytorch.org/whl/$CUDA
@@ -30,14 +35,13 @@ RUN pip install -U 'spacy[cuda11x]'
 RUN python3 -m spacy download en_core_web_trf
 RUN pip install spacy-llm
 
-RUN  pip install -U  notebook pandas
+RUN  pip install -U  notebook pandas jupyterlab
 
 
-#CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
 RUN nvcc --version
 RUN which nvcc
 RUN python3 --version
-RUN python3
+CMD ["start.sh"]
 
 
 
