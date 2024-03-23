@@ -41,6 +41,7 @@ RUN  pip install -U  notebook pandas jupyterlab
 RUN nvcc --version
 RUN which nvcc
 RUN python3 --version
+WORKDIR /workspace
 CMD ["start.sh"]
 
 
