@@ -58,6 +58,7 @@ dependencies:
     - spark-nlp==5.2.3
     - gensim
     - git+https://github.com/HarryCaveMan/sklearn-crfsuite.git
+    - pyodbc
     # torchserve
     - torchserve
     - torch-model-archiver
