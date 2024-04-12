@@ -63,8 +63,12 @@ dependencies:
     - torchserve
     - torch-model-archiver
     - torch-workflow-archiver
+    - nvgpu
     # torchserve's client
     - grpcio
     - protobuf
     - grpcio-tools
     - googleapis-common-protos
+    - flask
+    - flask-restful
+
