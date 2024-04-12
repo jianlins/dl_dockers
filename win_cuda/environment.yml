@@ -63,7 +63,19 @@ dependencies:
     - torchserve
     - torch-model-archiver
     - torch-workflow-archiver
+    # additional dependencies required by torchserve
+    # https://github.dev/pytorch/serve/blob/master/requirements/common_gpu.txt
+    # https://github.dev/pytorch/serve/blob/master/requirements/common.txt
+    # https://github.com/pytorch/serve/blob/master/examples/Huggingface_Transformers/requirements.txt
     - nvgpu
+    - optimum
+    - psutil==5.9.5
+    - requests
+    - captum==0.6.0
+    - packaging
+    - pynvml
+    - pyyaml
+    - ninja
     # torchserve's client
     - grpcio
     - protobuf
