@@ -141,7 +141,7 @@ jobs:
         python -m spacy download en_core_web_sm
         python -m spacy download en_core_web_md
         python -m spacy download en_core_web_trf
-        git clone https://github.com/triton-inference-server
+        git clone https://github.com/triton-inference-server/server
         cd triton-inference-server
         python build.py -v --no-container-build --build-dir=`pwd`/build --enable-all
 
