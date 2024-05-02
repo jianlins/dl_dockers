@@ -25,7 +25,7 @@ dependencies:
     - git+https://github.com/medspacy/medspacy_io.git
     - beautifulsoup4
     - bioc
-    - simpletransformers==0.64.5
+    - simpletransformers
     - nltk
     - numba
     - numpy
@@ -62,7 +62,6 @@ dependencies:
     - openpyxl
     - git+https://github.com/facebookresearch/llama-recipes.git
     - git+https://github.com/facebookresearch/llama.git
-    - sentence-transformers
     - findspark
     - flask
     - flask-restful
