@@ -101,4 +101,4 @@ dependencies:
     - ninja
     - pyyaml
     - requests
-prefix: D:\annaconda_env_jianlin\llama2
+prefix: D:\annaconda_env_jianlin\win_llama2
