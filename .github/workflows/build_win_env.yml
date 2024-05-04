@@ -18,6 +18,16 @@ on:
         type: string
         required: false
         default: 'false'
+      sparknlp_version:
+        description: "sparknlp fat jar version"
+        type: string
+        required: false
+        default: '5.3.3'
+      sparknlp_gpu:
+        description: "sparknlp fat jar version, if wanting gpu, use '-gpu', otherwise leave it blank"
+        type: string
+        required: false
+        default: ''
       download_spacy_model:
         description: "whether download sm spacy models"
         type: string
@@ -27,7 +37,12 @@ on:
         description: 'Max 7zip volumn size'
         type: string
         required: false
-        default: '400m'      
+        default: '400m' 
+      zip_jar_only:  
+        description: "whether zip jars file only"
+        type: string
+        required: false
+        default: 'false'   
       retention_days:
         description: 'Days to keep the artifacts'
         type: int
@@ -127,12 +142,12 @@ jobs:
       run: |
         echo "PYSPARK_JARS_IVY=${{ env.PYSPARK_JARS_IVY }}"
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        if (!(Test-Path -Path "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-5.2.3.jar")) {
-            curl -Lo "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-5.2.3.jar" https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.2.3.jar
+        if (!(Test-Path -Path "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-${{ github.event.inputs.sparknlp_version }}.jar")) {
+            curl -Lo "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar" https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar
           } else {
             echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
           }
-        python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${{ github.event.inputs.target_folder }}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:4.2.2').getOrCreate(); spark.stop();"
+        python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${{ github.event.inputs.target_folder }}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp${{ github.event.inputs.sparknlp_gpu }}_2.12:${{ github.event.inputs.sparknlp_version }}').getOrCreate(); spark.stop();"
     
     - name: download spacy models
       if: ${{ github.event.inputs.download_spacy_model == 'true' }}
@@ -168,9 +183,17 @@ jobs:
         }
   
     - name: Compress and split folder
+      if: ${{ github.event.inputs.zip_jar_only == 'false' }}
       run: |
         pwd
         7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+        ls zipped
+
+    - name: Compress and split ivy folder
+      if: ${{ github.event.inputs.zip_jar_only == 'true' }}
+      run: |
+        pwd
+        7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}_ivy.7z ${{ github.event.inputs.target_folder }}/ivy*
         ls zipped
 
     - name: Upload compressed parts as artifacts
