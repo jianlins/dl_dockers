@@ -1,0 +1,1 @@
+Create conda env for vinci linux gpu
