@@ -33,7 +33,7 @@ dependencies:
   - conda-forge::pyarrow=14.0.1
   - pip:
     - setuptools==65
-    - medspacy
+    - git+https://github.com/jianlins/medspacy.git
     - git+https://github.com/medspacy/medspacy_io.git
     - nltk==3.8.1
     - bioc==2.0
@@ -43,11 +43,13 @@ dependencies:
     - wheel
     - joblib
     - matplotlib
-    - pyspark==3.5.0
-    - spark-nlp==5.2.3
+    - pyspark==3.5.1
+    - spark-nlp==5.3.3
     - mlflow
     - gensim
     - Keras
     - scikit-spark
     - pydot
     - graphviz
+    - pyodbc
+    - loguru

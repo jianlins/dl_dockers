@@ -143,7 +143,7 @@ RUN mamba env update --file environment.yml
 # add sparknlp pyspark jars
 RUN [ -d /root/.ivy2/jars ] || mkdir -p /root/.ivy2/jars
 
-RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.1.4.jar
+RUN wget -q -P /root/.ivy2/jars/ https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp-gpu-assembly-5.3.3.jar
 
 #  download models.
 RUN chmod 770 /tmp/post_install.sh && \
