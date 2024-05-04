@@ -84,7 +84,6 @@ jobs:
       - name: install miniforge
         uses: conda-incubator/setup-miniconda@v3
         with:
-          environment-file: etc/example-environment.yml
           miniforge-version: latest        
 
       - name: Create Conda Environment
