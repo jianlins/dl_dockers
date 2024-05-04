@@ -84,6 +84,7 @@ jobs:
       - name: install miniforge
         uses: conda-incubator/setup-miniconda@v3
         with:
+          auto-activate-base: true
           miniforge-version: latest        
 
       - name: Create Conda Environment
@@ -91,15 +92,17 @@ jobs:
         run: |
           cd ${{ github.event.inputs.build_folder }}
           conda config --set verbosity 2
-          conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          if [ -d "${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}" ]; then
+            conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          else
+            conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          fi
           echo "clean up cache..."
           conda clean --all -f -y
           pip cache purge  
       
       - name: check final environment settings
         run: |
-          conda init bash
-          source ~/.bashrc
           conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env export
       
