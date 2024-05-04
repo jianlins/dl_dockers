@@ -8,7 +8,7 @@ on:
         description: "From which folder's environment.yml, the conda environment will be built"
         type: string   
         required: false
-        default: 'vlinux_gpu'
+        default: 'vlinux_llama2'
       target_folder:
         description: 'Envs path (must be on D drive)'
         type: string
