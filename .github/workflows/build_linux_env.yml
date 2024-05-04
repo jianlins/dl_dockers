@@ -1,0 +1,71 @@
+name: test_run
+run-name: Test ${{ github.event.inputs.image_name }} & execute ${{ github.event.inputs.cmd }}  
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_folder:
+        description: "From which folder's environment.yml, the conda environment will be built"
+        type: string   
+        required: false
+        default: 'win_promptify'
+      target_folder:
+        description: 'Envs path (must be on D drive)'
+        type: string
+        required: false
+        default: '/home/vhaslcshij/workspace'
+      download_jars:
+        description: "whether download jars for pyspark"
+        type: string
+        required: false
+        default: 'false'
+      sparknlp_version:
+        description: "sparknlp fat jar version"
+        type: string
+        required: false
+        default: '5.3.3'
+      sparknlp_gpu:
+        description: "sparknlp fat jar version, if wanting gpu, use '-gpu', otherwise leave it blank"
+        type: string
+        required: false
+        default: ''
+      download_spacy_model:
+        description: "whether download sm spacy models"
+        type: string
+        required: false
+        default: 'true'
+      zip_vol_size:
+        description: 'Max 7zip volumn size'
+        type: string
+        required: false
+        default: '400m' 
+      zip_jar_only:  
+        description: "whether zip jars file only"
+        type: string
+        required: false
+        default: 'false'   
+      retention_days:
+        description: 'Days to keep the artifacts'
+        type: int
+        required: false
+        default: 7
+
+jobs:
+  run_docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          key: ${{ runner.os }}-${{ github.event.inputs.build_folder }}-${{ hashFiles('${{ github.event.inputs.build_folder }}/environment.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.event.inputs.build_folder }}-
+
+
+      - name: mdir
+        if: github.event.inputs.cmd != ''
+        run:
+          mkdir -p ${{ github.event.inputs.target_folder }}
+          ls /home
