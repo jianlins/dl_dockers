@@ -8,7 +8,7 @@ on:
         description: "From which folder's environment.yml, the conda environment will be built"
         type: string   
         required: false
-        default: 'win_promptify'
+        default: 'vlinux_gpu'
       target_folder:
         description: 'Envs path (must be on D drive)'
         type: string
@@ -55,7 +55,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Cache Docker layers
+      - uses: actions/checkout@v4      
+
+      - name: install 7zip
+        run: |
+          sudo apt update
+          sudo apt install p7zip-full p7zip-rar
+
+      - name: Cache Miniforge Environment
         uses: actions/cache@v4
         with:
           path: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
@@ -69,6 +76,94 @@ jobs:
           sudo useradd -u 277084423 vhaslcshij -p 111111
           pwd
           sudo mkdir -p ${{ github.event.inputs.target_folder }}
+          sudo mkdir -p ${{ github.event.inputs.target_folder }}/ivy
           sudo chown -R vhaslcshij:vhaslcshij /home/vhaslcshij
           sudo chmod 775 -R /home/vhaslcshij
           ls -l /home
+
+      - name: install miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: etc/example-environment.yml
+          miniforge-version: latest        
+
+      - name: Create Conda Environment
+        shell: pwsh
+        run: |
+          cd ${{ github.event.inputs.build_folder }}
+          conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          echo "clean up cache..."
+          conda clean --all -f -y
+          pip cache purge  
+      
+      - name: check final environment settings
+        run: |
+          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          conda env export
+      
+      - name: Cache Ivy jars
+        if: ${{ github.event.inputs.download_jars == 'true' }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            $ivyDir =  ${{ github.event.inputs.target_folder }}/ivy/jars
+          key: ${{ runner.os }}-ivy-${{ hashFiles('**/*.jar') }}
+          restore-keys: |
+            ${{ runner.os }}-ivy-
+      
+      - name: download sparknlp jars
+        if: ${{ github.event.inputs.download_jars == 'true' }}
+        env:
+          PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
+        run: |
+          echo "PYSPARK_JARS_IVY=${{ env.PYSPARK_JARS_IVY }}"
+          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          if (!(Test-Path -Path "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-${{ github.event.inputs.sparknlp_version }}.jar")) {
+              curl -Lo "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar" https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar
+            } else {
+              echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
+            }
+          python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${{ github.event.inputs.target_folder }}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp${{ github.event.inputs.sparknlp_gpu }}_2.12:${{ github.event.inputs.sparknlp_version }}').getOrCreate(); spark.stop();"
+
+      - name: download spacy models
+        if: ${{ github.event.inputs.download_spacy_model == 'true' }}
+        run: |
+          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          python -m spacy download en_core_web_sm
+          python -m spacy download en_core_web_md
+          python -m spacy download en_core_web_trf
+
+      - name: check folder
+        run: |
+          ls ${{ github.event.inputs.target_folder }}
+          ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+
+      - name: check jar folder
+        if: ${{ github.event.inputs.download_jars == 'true' }}
+        run: |
+          ls ${{ github.event.inputs.target_folder }}/ivy
+          ls ${{ github.event.inputs.target_folder }}/ivy/jars
+          Remove-Item -Path ${{ github.event.inputs.target_folder }}/ivy/cache/* -Recurse -Force
+
+
+      - name: Compress and split folder
+        if: ${{ github.event.inputs.zip_jar_only == 'false' }}
+        run: |
+          pwd
+          7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+          ls zipped
+
+      - name: Compress and split ivy folder
+        if: ${{ github.event.inputs.zip_jar_only == 'true' }}
+        run: |
+          pwd
+          7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}_ivy.7z ${{ github.event.inputs.target_folder }}/ivy*
+          ls zipped
+
+      - name: Upload compressed parts as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.inputs.build_folder }}
+          path: zipped/*.7z.*
+          retention-days: ${{ github.event.inputs.retention_days }}      
+      
