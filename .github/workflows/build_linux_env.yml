@@ -66,5 +66,6 @@ jobs:
 
       - name: mkdir
         run:
-          mkdir -p ${{ github.event.inputs.target_folder }}
+          pwd
+          sudo mkdir -p ${{ github.event.inputs.target_folder }}
           ls /home
