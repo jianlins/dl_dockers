@@ -90,6 +90,7 @@ jobs:
         shell: pwsh
         run: |
           cd ${{ github.event.inputs.build_folder }}
+          conda config --set verbosity 2
           conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           echo "clean up cache..."
           conda clean --all -f -y
