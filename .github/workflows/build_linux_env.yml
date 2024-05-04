@@ -1,5 +1,5 @@
 name: build_linux_env
-run-name: Test ${{ github.event.inputs.image_name }} & execute ${{ github.event.inputs.cmd }}  
+run-name: Create&Zip ${{ github.event.inputs.build_folder }}
 
 on:
   workflow_dispatch:
