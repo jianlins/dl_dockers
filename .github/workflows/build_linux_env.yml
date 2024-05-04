@@ -69,5 +69,5 @@ jobs:
           sudo useradd -u 277084423 vhaslcshij -p 111111
           pwd
           sudo mkdir -p ${{ github.event.inputs.target_folder }}
-          chown -R vhaslcshij:vhaslcshij ${{ github.event.inputs.target_folder }}
+          sudo chown -R vhaslcshij:vhaslcshij ${{ github.event.inputs.target_folder }}
           ls -l /home
