@@ -176,6 +176,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.event.inputs.build_folder }}
-          path: ${{ github.event.inputs.target_folder }}
+          path: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           retention-days: ${{ github.event.inputs.retention_days }}      
       
