@@ -84,15 +84,17 @@ jobs:
       - name: install miniforge
         uses: conda-incubator/setup-miniconda@v3
         with:
-          auto-activate-base: true
-          miniforge-version: latest        
+          activate-environment: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          miniforge-version: latest   
+            
 
       - name: Create Conda Environment
         shell: pwsh
         run: |
           cd ${{ github.event.inputs.build_folder }}
           conda config --set verbosity 2
-          conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          conda env update -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          # conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           # if [ -d "${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}" ]; then
           #   conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           # else
