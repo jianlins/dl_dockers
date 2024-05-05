@@ -51,6 +51,7 @@ dependencies:
     - findspark
     - install-jdk
     - tensorflow
+    - tensorflow-text
     - pyspark==3.5.1
     - spark-nlp==5.2.3
     - gensim
