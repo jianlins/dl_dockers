@@ -106,8 +106,8 @@ jobs:
       
       - name: check final environment settings
         run: |
-          conda init
-          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          # conda init
+          # conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env export
       
       - name: Cache Ivy jars
