@@ -58,8 +58,6 @@ dependencies:
     - spark-nlp-display
     - johnsnowlabs
     - gensim
-    - tensorflow
-    - tensorflow-text
     - wandb
     - grpcio
     - protobuf
