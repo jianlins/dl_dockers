@@ -85,8 +85,8 @@ jobs:
           sudo mkdir -p ${{ github.event.inputs.target_folder }}
           sudo mkdir -p ${{ github.event.inputs.target_folder }}/ivy
           sudo chown -R vhaslcshij:vhaslcshij /home/vhaslcshij
-          sudo chmod 775 -R /home/vhaslcshij
-          ls -l /home
+          sudo chmod 777 -R /home/vhaslcshij
+          ls -l /home/vhaslcshij
 
       - name: install miniforge
         uses: conda-incubator/setup-miniconda@v3
