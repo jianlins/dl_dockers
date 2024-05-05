@@ -91,17 +91,17 @@ jobs:
       - name: install miniforge
         uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          # activate-environment: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           miniforge-version: latest 
-          environment-file: ${{ github.event.inputs.build_folder }}/environment.yml  
+          # environment-file: ${{ github.event.inputs.build_folder }}/environment.yml  
             
 
       - name: Clean Conda Environment
         run: |
-          # cd ${{ github.event.inputs.build_folder }}
-          # conda config --set verbosity 2
+          cd ${{ github.event.inputs.build_folder }}
+          conda config --set verbosity 2
           # conda env update -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          # conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           # if [ -d "${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}" ]; then
           #   conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           # else
@@ -155,6 +155,7 @@ jobs:
       - name: check folder
         run: |
           ls ${{ github.event.inputs.target_folder }}
+          pwd
           ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
 
       - name: check jar folder
