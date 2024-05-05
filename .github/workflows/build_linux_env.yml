@@ -85,7 +85,8 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          miniforge-version: latest   
+          miniforge-version: latest 
+          environment-file: ${{ github.event.inputs.build_folder }}/environment.yml  
             
 
       - name: Create Conda Environment
