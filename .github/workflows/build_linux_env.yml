@@ -61,6 +61,13 @@ jobs:
       #   run: |
       #     sudo apt update
       #     sudo apt install p7zip-full p7zip-rar
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          overprovision-lvm: 'true'          
+          remove-dotnet: 'true'
+          # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
+          build-mount-path: '${{ github.event.inputs.target_folder }}/'
 
       - name: Cache Miniforge Environment
         uses: actions/cache@v4
@@ -158,24 +165,24 @@ jobs:
           rm -R ${{ github.event.inputs.target_folder }}/ivy/cache
 
 
-      # - name: Compress and split folder
-      #   if: ${{ github.event.inputs.zip_jar_only == 'false' }}
-      #   run: |
-      #     pwd
-      #     7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
-      #     ls zipped
+      - name: Compress and split folder
+        if: ${{ github.event.inputs.zip_jar_only == 'false' }}
+        run: |
+          pwd
+          7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}*
+          ls zipped
 
-      # - name: Compress and split ivy folder
-      #   if: ${{ github.event.inputs.zip_jar_only == 'true' }}
-      #   run: |
-      #     pwd
-      #     7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}_ivy.7z ${{ github.event.inputs.target_folder }}/ivy*
-      #     ls zipped
+      - name: Compress and split ivy folder
+        if: ${{ github.event.inputs.zip_jar_only == 'true' }}
+        run: |
+          pwd
+          7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}_ivy.7z ${{ github.event.inputs.target_folder }}/ivy*
+          ls zipped
 
       - name: Upload compressed parts as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.event.inputs.build_folder }}
-          path: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          retention-days: ${{ github.event.inputs.retention_days }}      
+          path: zipped/*.7z.*
+          retention-days: ${{ github.event.inputs.retention_days }}   
       
