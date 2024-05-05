@@ -89,12 +89,11 @@ jobs:
           environment-file: ${{ github.event.inputs.build_folder }}/environment.yml  
             
 
-      - name: Create Conda Environment
-        shell: pwsh
+      - name: Clean Conda Environment
         run: |
-          cd ${{ github.event.inputs.build_folder }}
-          conda config --set verbosity 2
-          conda env update -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          # cd ${{ github.event.inputs.build_folder }}
+          # conda config --set verbosity 2
+          # conda env update -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           # conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           # if [ -d "${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}" ]; then
           #   conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
@@ -107,8 +106,8 @@ jobs:
       
       - name: check final environment settings
         run: |
-          # conda init
-          # conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          conda init
+          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env export
       
       - name: Cache Ivy jars
