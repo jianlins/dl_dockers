@@ -127,7 +127,7 @@ jobs:
           PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
         run: |
           echo "PYSPARK_JARS_IVY=${{ env.PYSPARK_JARS_IVY }}"
-          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          # conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           if (!(Test-Path -Path "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-${{ github.event.inputs.sparknlp_version }}.jar")) {
               curl -Lo "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar" https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar
             } else {
@@ -138,7 +138,7 @@ jobs:
       - name: download spacy models
         if: ${{ github.event.inputs.download_spacy_model == 'true' }}
         run: |
-          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          # conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           python -m spacy download en_core_web_sm
           python -m spacy download en_core_web_md
           python -m spacy download en_core_web_trf
