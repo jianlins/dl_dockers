@@ -1,0 +1,1 @@
+This configuration will start to build conda environment inside a docker container, then zip it and upload to artifacts.
