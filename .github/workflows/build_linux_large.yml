@@ -113,12 +113,11 @@ jobs:
 
       - name: start container
         run: |
-          docker run -d --name example-container example-image 7z a -t7z -v400m /tmp/${{ github.event.inputs.ENV_NAME }}.7z ${{ github.event.inputs.ENVS_DIR }}
+          docker run -d -v $(pwd)/:/tmp --name example-container example-image 7z a -t7z -v400m /tmp/${{ github.event.inputs.ENV_NAME }}.7z ${{ github.event.inputs.ENVS_DIR }}
 
       - name: Copy zipped files
         run: |
-          pwd
-          docker cp example-container:/tmp/*.7z.* .
+          pwd          
           ls
 
       - name: Upload compressed parts as artifacts
