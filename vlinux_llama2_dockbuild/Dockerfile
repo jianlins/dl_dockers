@@ -6,11 +6,9 @@ FROM ${BASE_IMAGE}
 ARG PYTHON_VERSION=3.8
 ARG ENVS_DIR='/home/vhaslcshij/workspace'
 ARG ENV_NAME='vlinux_llama2'
-# make the working dir shorter so that it's easier type when mapping volumns or operating files.
-ARG WORK_DIR="/workspace"
-ARG HOME='/home/vhaslcshij'
 ARG USER_NAME='vhaslcshij'
 ARG USER_ID=10000
+ARG spark_version="3.5.1"
 
 
 #sets the user context for subsequent instructions in the Dockerfile to the "root" user.
@@ -61,8 +59,7 @@ ENV CONDA_DIR=/opt/conda \
     LANGUAGE=en_US.UTF-8
 
 ENV PATH="${CONDA_DIR}/bin:${PATH}" \
-    HOME="${HOME}" \
-    WORK_DIR="${WORK_DIR}"
+    HOME="/home/${USER_NAME}"
 
 # This port number does't need to be changed, as it's container's own port, only visible inside containers. 
 # From outside access, change the port using "-p 0.0.0.0:{desired port nuber}:8888" when starting the container.
@@ -80,9 +77,6 @@ RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashr
 
 # set up home directory /home/root by default
 RUN mkdir -p ${HOME}
-
-# set up working directory
-RUN mkdir -p ${WORK_DIR}
 RUN mkdir -p ${ENVS_DIR}
 RUN mkdir -p ${ENVS_DIR}/ivy
 
@@ -98,6 +92,7 @@ RUN mkdir -p ${ENVS_DIR}/ivy
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 COPY initial-condarc "${CONDA_DIR}/.condarc"
+COPY environment.yml /tmp/environment.yml
 WORKDIR /tmp
 
 RUN set -x && \
@@ -134,9 +129,8 @@ RUN mamba clean --all -f -y
 RUN mamba init && source ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
     python3 -m spacy download en_core_web_sm && \
     python3 -m spacy download en_core_web_md && \
-    python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp${{ github.event.inputs.sparknlp_gpu }}_2.12:${{ github.event.inputs.sparknlp_version }}').getOrCreate(); spark.stop();"
+    python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:${spark_version}').getOrCreate(); spark.stop();"
 
-RUN cd ${ENVS_DIR} && \
-    7z a -t7z -v400m zipped/${ENV_NAME}.7z ${ENV_NAME}
+RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}/${ENV_NAME}
 
-RUN ls -l ${ENVS_DIR}/zipped
+RUN ls -l /tmp
