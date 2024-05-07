@@ -22,6 +22,7 @@ jobs:
     steps:
       - name: Backup docker files
         run: |
+          ifconfig
           echo "backup moby/buildkit image"
           sudo docker image save -o ${GITHUB_WORKSPACE}/images.tar moby/buildkit
           sudo docker system prune -a -f
