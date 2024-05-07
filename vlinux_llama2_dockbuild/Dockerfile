@@ -5,9 +5,12 @@ FROM ${BASE_IMAGE}
 # Pin python version here, or set it to "default"
 ARG PYTHON_VERSION=3.8
 ARG ENVS_DIR='/home/vhaslcshij/workspace'
+ARG ENV_NAME='vlinux_llama2'
 # make the working dir shorter so that it's easier type when mapping volumns or operating files.
 ARG WORK_DIR="/workspace"
 ARG HOME='/home/vhaslcshij'
+ARG USER_NAME='vhaslcshij'
+ARG USER_ID=10000
 
 
 #sets the user context for subsequent instructions in the Dockerfile to the "root" user.
@@ -32,6 +35,8 @@ RUN apt-get update --yes && \
     bzip2 \
     ca-certificates \
     locales \
+    p7zip-full \
+    p7zip-rar \
     sudo \
     # - tini is installed as a helpful container entrypoint that reaps zombie
     #   processes and such of the actual executable we want to start, see
@@ -79,6 +84,7 @@ RUN mkdir -p ${HOME}
 # set up working directory
 RUN mkdir -p ${WORK_DIR}
 RUN mkdir -p ${ENVS_DIR}
+RUN mkdir -p ${ENVS_DIR}/ivy
 
 
 # Download and install Micromamba, and initialize Conda prefix.
@@ -121,42 +127,16 @@ RUN set -x && \
     chmod -R 775 "${CONDA_DIR}" 
 
 
-RUN mamba env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}    
+RUN mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME}    
 
-RUN mamba install -c conda-forge jupyterlab
-# -a, --all	Remove index cache, lock files, unused cache packages, and tarballs
-# -f, --force-pkgs-dirs	Remove all writable package caches
-# -y, --yes	Do not ask for confirmation
 RUN mamba clean --all -f -y 
 
-EXPOSE $JUPYTER_PORT
+RUN mamba init && source ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
+    python3 -m spacy download en_core_web_sm && \
+    python3 -m spacy download en_core_web_md && \
+    python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp${{ github.event.inputs.sparknlp_gpu }}_2.12:${{ github.event.inputs.sparknlp_version }}').getOrCreate(); spark.stop();"
 
-# Configure container startup
-# Configure container startup
+RUN cd ${ENVS_DIR} && \
+    7z a -t7z -v400m zipped/${ENV_NAME}.7z ${ENV_NAME}
 
-
-ENTRYPOINT ["tini", "-g", "--"]
-
-
-
-# Currently need to have both jupyter_notebook_config and jupyter_server_config to support classic and lab
-# COPY jupyter_server_config.py docker_healthcheck.py /etc/jupyter/
-COPY jupyter_server_config.py /etc/jupyter/
-
-COPY start.sh /usr/local/bin/
-RUN chmod 775 /usr/local/bin/*.sh
-
-
-# Legacy for Jupyter Notebook Server, see: [#1205](https://github.com/jupyter/docker-stacks/issues/1205)
-RUN chmod -R 775 /etc/jupyter/
-
-# HEALTHCHECK documentation: https://docs.docker.com/engine/reference/builder/#healthcheck
-# This healtcheck works well for `lab`, `notebook`, `nbclassic`, `server` and `retro` jupyter commands
-# https://github.com/jupyter/docker-stacks/issues/915#issuecomment-1068528799
-# HEALTHCHECK --interval=5s --timeout=3s --start-period=5s --retries=3 \
-#     CMD /etc/jupyter/docker_healthcheck.py || exit 1
-
-RUN mkdir /home/root/.jupyter
-WORKDIR "${WORK_DIR}"
-CMD ["start.sh"]
-# CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+RUN ls -l ${ENVS_DIR}/zipped
