@@ -59,13 +59,15 @@ ENV PATH=$PATH:$JAVA_HOME/bin
 # But it seems to be slower, that's why we use recommended site for download
 # https://dlcdn.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz
 RUN if [ -z "${scala_version}" ]; then \
-    wget -qO "sha512hash" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.sha512"; \
-    wget -qO "spark.tgz" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"; \
+    wget -qO "sha512hash" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.sha512"; \    
   else \
     wget -qO "sha512hash" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}.tgz.sha512"; \
+  fi && export SPAK_CHECKSUM=\$(grep -o '^[^ ]*' sha512hash) && echo "${SPAK_CHECKSUM}
+RUN if [ -z "${scala_version}" ]; then \    
+    wget -qO "spark.tgz" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"; \
+  else \    
     wget -qO "spark.tgz" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}.tgz"; \
-  fi && \
-  export SPAK_CHECKSUM=\$(grep -o '^[^ ]*' sha512hash) && \
+  fi && \  
   echo "${SPAK_CHECKSUM} *spark.tgz" | sha512sum -c - && \
   tar xzf "spark.tgz" -C /usr/local --owner root --group root --no-same-owner && \
   rm "spark.tgz"
