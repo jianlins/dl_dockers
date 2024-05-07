@@ -127,8 +127,5 @@ RUN useradd -u ${USER_ID} ${USER_NAME} -p 111111 && \
 
 RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}
 
-RUN ls -l /tmp
-
-
 ENTRYPOINT ["tini", "--"]
-CMD [ "/bin/bash" ]
+CMD [ "ls -l /tmp", "/bin/bash" ]
