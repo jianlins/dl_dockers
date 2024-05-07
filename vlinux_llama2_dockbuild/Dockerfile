@@ -3,13 +3,26 @@ FROM ${BASE_IMAGE}
 
 
 # Pin python version here, or set it to "default"
-ARG PYTHON_VERSION=3.8
 ARG ENVS_DIR='/home/vhaslcshij/workspace'
 ARG ENV_NAME='vlinux_llama2'
 ARG USER_NAME='vhaslcshij'
 ARG USER_ID=10000
 ARG spark_version="3.5.1"
 
+ARG MINIFORGE_NAME=Miniforge3
+ARG MINIFORGE_VERSION=24.3.0-0
+
+ENV CONDA_DIR=/opt/conda
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
+ENV PATH=${CONDA_DIR}/bin:${PATH}
+
+# Configure environment
+ENV SHELL=/bin/bash \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+
+ENV HOME="/home/${USER_NAME}"
 
 #sets the user context for subsequent instructions in the Dockerfile to the "root" user.
 USER root
@@ -51,15 +64,7 @@ RUN apt-get update --yes && \
     locale-gen
 
 
-# Configure environment
-ENV CONDA_DIR=/opt/conda \
-    SHELL=/bin/bash \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8
 
-ENV PATH="${CONDA_DIR}/bin:${PATH}" \
-    HOME="/home/${USER_NAME}"
 
 # This port number does't need to be changed, as it's container's own port, only visible inside containers. 
 # From outside access, change the port using "-p 0.0.0.0:{desired port nuber}:8888" when starting the container.
@@ -95,38 +100,29 @@ COPY initial-condarc "${CONDA_DIR}/.condarc"
 COPY environment.yml /tmp/environment.yml
 WORKDIR /tmp
 
-RUN set -x && \
-    arch=$(uname -m) && \
-    if [ "${arch}" = "x86_64" ]; then \
-        # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
-        arch="64"; \
-    fi && \
-    wget -qO /tmp/micromamba.tar.bz2 \
-        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
-    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
-    rm /tmp/micromamba.tar.bz2 && \
-    PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
-    if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
-    # Install the packages
-    ./micromamba install \
-        --root-prefix="${CONDA_DIR}" \
-        --prefix="${CONDA_DIR}" \
-        --yes \
-        "${PYTHON_SPECIFIER}" \
-        'mamba' && \
-    rm micromamba && \
-    # Pin major.minor version of python
-    mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
-    mamba clean --all -f -y && \
-    which mamba && \
-    chmod -R 775 "${CONDA_DIR}" 
+# https://github.com/conda-forge/miniforge-images/blob/master/ubuntu/Dockerfile
+RUN apt-get update > /dev/null && \
+    apt-get install --no-install-recommends --yes \
+        wget bzip2 ca-certificates \
+        git \
+        tini \
+        > /dev/null && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    wget --no-hsts --quiet https://github.com/conda-forge/miniforge/releases/download/${MINIFORGE_VERSION}/${MINIFORGE_NAME}-${MINIFORGE_VERSION}-Linux-$(uname -m).sh -O /tmp/miniforge.sh && \
+    /bin/bash /tmp/miniforge.sh -b -p ${CONDA_DIR} && \
+    rm /tmp/miniforge.sh && \
+    conda clean --tarballs --index-cache --packages --yes && \
+    find ${CONDA_DIR} -follow -type f -name '*.a' -delete && \
+    find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete && \
+    conda clean --force-pkgs-dirs --all --yes  && \
+    echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> /etc/skel/.bashrc && \
+    echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> ~/.bashrc
 
 
-RUN mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME}    
+RUN source ~/.bashrc && mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME} && mamba clean --all -f -y 
 
-RUN mamba clean --all -f -y 
-
-RUN mamba init && source ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
+RUN source ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
     python3 -m spacy download en_core_web_sm && \
     python3 -m spacy download en_core_web_md && \
     python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:${spark_version}').getOrCreate(); spark.stop();"
@@ -138,3 +134,7 @@ RUN useradd -u ${USER_ID} ${USER_NAME} -p 111111 && \
 RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}
 
 RUN ls -l /tmp
+
+
+ENTRYPOINT ["tini", "--"]
+CMD [ "/bin/bash" ]
