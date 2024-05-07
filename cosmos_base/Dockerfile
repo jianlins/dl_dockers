@@ -12,7 +12,6 @@ ARG openjdk_version="8"
 ARG spark_version="3.5.1"
 ARG hadoop_version="3"
 ARG scala_version
-ARG spark_checksum="8883c67e0a138069e597f3e7d4edbbd5c3a565d50b28644aad02856a1ec1da7cb92b8f80454ca427118f69459ea326eaa073cf7b1a860c3b796f4b07c2101319"
 
 
 ENV APACHE_SPARK_VERSION="${spark_version}" \
@@ -58,12 +57,16 @@ ENV PATH=$PATH:$JAVA_HOME/bin
 # Spark installation
 # You need to use https://archive.apache.org/dist/ website if you want to download old Spark versions
 # But it seems to be slower, that's why we use recommended site for download
+# https://dlcdn.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz
 RUN if [ -z "${scala_version}" ]; then \
+    wget -qO "sha512hash" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.sha512"; \
     wget -qO "spark.tgz" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"; \
   else \
+    wget -qO "sha512hash" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}.tgz.sha512"; \
     wget -qO "spark.tgz" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}.tgz"; \
   fi && \
-  echo "${spark_checksum} *spark.tgz" | sha512sum -c - && \
+  export SPAK_CHECKSUM=\$(grep -o '^[^ ]*' sha512hash) && \
+  echo "${SPAK_CHECKSUM} *spark.tgz" | sha512sum -c - && \
   tar xzf "spark.tgz" -C /usr/local --owner root --group root --no-same-owner && \
   rm "spark.tgz"
 
