@@ -96,7 +96,6 @@ RUN mkdir -p ${ENVS_DIR}/ivy
 # Correct permissions
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
-COPY initial-condarc "${CONDA_DIR}/.condarc"
 COPY environment.yml /tmp/environment.yml
 WORKDIR /tmp
 
