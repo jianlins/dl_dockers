@@ -126,11 +126,15 @@ RUN mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME}
 
 RUN mamba clean --all -f -y 
 
-# RUN mamba init && source ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
-#     python3 -m spacy download en_core_web_sm && \
-#     python3 -m spacy download en_core_web_md && \
-#     python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:${spark_version}').getOrCreate(); spark.stop();"
+RUN mamba init && source ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
+    python3 -m spacy download en_core_web_sm && \
+    python3 -m spacy download en_core_web_md && \
+    python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:${spark_version}').getOrCreate(); spark.stop();"
 
-RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}/${ENV_NAME}
+RUN useradd -u ${USER_ID} ${USER_NAME} -p 111111 && \
+    chown -R ${USER_NAME}:${USER_NAME} ${ENVS_DIR} && \
+    chmod 777 -R ${ENVS_DIR}
+
+RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}
 
 RUN ls -l /tmp
