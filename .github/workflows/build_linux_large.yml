@@ -87,10 +87,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          # Key is named differently to avoid collision
-          key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
+          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-multi-buildx       
+            ${{ runner.os }}-single-buildx    
 
 
       - name: Build production image
@@ -105,7 +104,7 @@ jobs:
           # Note the mode=max here
           # More: https://github.com/moby/buildkit#--export-cache-options
           # And: https://github.com/docker/buildx#--cache-tonametypetypekeyvalue
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
           build-args: |
             ENVS_DIR=${{ github.event.inputs.ENVS_DIR }}
             ENV_NAME=${{ github.event.inputs.ENV_NAME }}
