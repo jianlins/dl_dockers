@@ -28,7 +28,7 @@ on:
           description: 'the userid on VINCI machine. Can be found using: id -u'  
           type: string   
           required: false
-          default: 'vhaslcshij'
+          default: '1005'
       retention_days:
         description: 'Days to keep the artifacts'
         type: int
