@@ -34,6 +34,7 @@ USER root
 # SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 
+
 RUN apt-get update --yes && \
     # - apt-get upgrade is run to patch known vulnerabilities in apt-get packages as
     #   the ubuntu base image is rebuilt too seldom sometimes (less than once a month)
@@ -64,19 +65,6 @@ RUN apt-get update --yes && \
     locale-gen
 
 
-
-
-# This port number does't need to be changed, as it's container's own port, only visible inside containers. 
-# From outside access, change the port using "-p 0.0.0.0:{desired port nuber}:8888" when starting the container.
-ENV JUPYTER_PORT=8888    
-
-
-
-# Enable prompt color in the skeleton .bashrc 
-# hadolint ignore=SC2016
-RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashrc && \
-   # Add call to conda init script see https://stackoverflow.com/a/58081608/4413446
-   echo 'eval "$(command conda shell.bash hook 2> /dev/null)"' >> /etc/skel/.bashrc
 
 
 
@@ -117,6 +105,9 @@ RUN apt-get update > /dev/null && \
     conda clean --force-pkgs-dirs --all --yes  && \
     echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> /etc/skel/.bashrc && \
     echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> ~/.bashrc
+
+
+SHELL ["/bin/bash", "-c"] 
 
 
 RUN source ~/.bashrc && mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME} && mamba clean --all -f -y 
