@@ -110,9 +110,9 @@ RUN apt-get update > /dev/null && \
 SHELL ["/bin/bash", "-c"] 
 
 
-RUN source ~/.bashrc && mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME} && mamba clean --all -f -y 
+RUN . ~/.bashrc && mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME} && mamba clean --all -f -y 
 
-RUN source ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
+RUN . ~/.bashrc && mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
     python3 -m spacy download en_core_web_sm && \
     python3 -m spacy download en_core_web_md && \
     python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:${spark_version}').getOrCreate(); spark.stop();"

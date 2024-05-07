@@ -80,16 +80,47 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
+        id: buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          # Key is named differently to avoid collision
+          key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-multi-buildx       
 
-      - name: Build image
-        continue-on-error: false
-        run: |
-          pwd
-          ls
-          cd ${{ github.event.inputs.build_folder }}
-          docker build -t example-image --build-arg ENVS_DIR=${{ github.event.inputs.ENVS_DIR }} --build-arg ENV_NAME=${{ github.event.inputs.ENV_NAME }} --build-arg USER_NAME=${{ github.event.inputs.USER_NAME }} --build-arg USER_ID=${{ github.event.inputs.USER_ID }} .
+
+      - name: Build production image
+        uses: docker/build-push-action@v2
+        with:
+          context: ${{ github.event.inputs.build_folder }}
+          builder: ${{ steps.buildx.outputs.name }}
+          # Set the desired build target here
+          target: deploy
+          push: false
+          tags: example-image
+          cache-from: type=local,src=/tmp/.buildx-cache
+          # Note the mode=max here
+          # More: https://github.com/moby/buildkit#--export-cache-options
+          # And: https://github.com/docker/buildx#--cache-tonametypetypekeyvalue
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+          build-args: |
+            ENVS_DIR=${{ github.event.inputs.ENVS_DIR }}
+            ENV_NAME=${{ github.event.inputs.ENV_NAME }}
+            USER_NAME=${{ github.event.inputs.USER_NAME }}
+            USER_ID=${{ github.event.inputs.USER_ID }}
+
+
+      # - name: Build image
+      #   continue-on-error: false
+      #   run: |
+      #     pwd
+      #     ls
+      #     cd ${{ github.event.inputs.build_folder }}
+      #     docker build -t example-image --build-arg ENVS_DIR=${{ github.event.inputs.ENVS_DIR }} --build-arg ENV_NAME=${{ github.event.inputs.ENV_NAME }} --build-arg USER_NAME=${{ github.event.inputs.USER_NAME }} --build-arg USER_ID=${{ github.event.inputs.USER_ID }} .
           
           
       - name: list images
