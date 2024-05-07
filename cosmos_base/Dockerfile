@@ -71,8 +71,8 @@ RUN if [ -z "${scala_version}" ]; then \
   else \    
     wget -qO "spark.tgz" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}.tgz"; \
   fi && \  
-  export SPAK_CHECKSUM = $(cat sha512value) && \
-  echo "${SPAK_CHECKSUM} *spark.tgz" | sha512sum -c - && \
+  SPARK_CHECKSUM=$(cat sha512value) && \
+  echo "${SPARK_CHECKSUM} *spark.tgz" | sha512sum -c - && \
   tar xzf "spark.tgz" -C /usr/local --owner root --group root --no-same-owner && \
   rm "spark.tgz"
 
