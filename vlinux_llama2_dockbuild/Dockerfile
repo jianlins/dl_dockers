@@ -125,7 +125,10 @@ RUN useradd -u ${USER_ID} ${USER_NAME} -p 111111 && \
     chown -R ${USER_NAME}:${USER_NAME} ${ENVS_DIR} && \
     chmod 777 -R ${ENVS_DIR}
 
-RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}
+# RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}
+
+# RUN ls -l /tmp
+
 
 ENTRYPOINT ["tini", "--"]
-CMD [ "ls -l /tmp", "/bin/bash" ]
+CMD [ "/bin/bash" ]
