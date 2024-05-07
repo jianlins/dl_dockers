@@ -113,7 +113,7 @@ jobs:
 
       - name: start container
         run: |
-          docker run -d -v $(pwd)/:/tmp --name example-container example-image /bin/bash -c "7z a -t7z -v400m /tmp/${{ github.event.inputs.ENV_NAME }}.7z ${{ github.event.inputs.ENVS_DIR }}"
+          docker run -d -v /home/runner/work/artifacts:/tmp --name example-container example-image
 
       - name: Copy zipped files
         run: |
@@ -124,5 +124,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: upload env ${{ github.event.inputs.build_folder }}
-          path: ./*.7z.*
+          path: /home/runner/work/artifacts/*.7z.*
           retention-days: ${{ github.event.inputs.retention_days }}   
