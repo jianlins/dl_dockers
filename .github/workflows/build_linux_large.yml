@@ -102,7 +102,7 @@ jobs:
       - name: Copy zipped files
         run: |
           pwd
-          docker cp example-container:${{ github.event.inputs.ENVS_DIR }}/zipped/*.7z.* .
+          docker cp example-container:/tmp/*.7z.* .
           ls
 
       - name: Upload compressed parts as artifacts
