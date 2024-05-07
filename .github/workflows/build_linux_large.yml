@@ -99,7 +99,6 @@ jobs:
           context: ${{ github.event.inputs.build_folder }}
           builder: ${{ steps.buildx.outputs.name }}
           # Set the desired build target here
-          target: deploy
           push: false
           tags: example-image
           cache-from: type=local,src=/tmp/.buildx-cache
