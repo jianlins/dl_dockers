@@ -62,7 +62,7 @@ RUN if [ -z "${scala_version}" ]; then \
     wget -qO "sha512hash" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.sha512"; \    
   else \
     wget -qO "sha512hash" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}.tgz.sha512"; \
-  fi && export SPAK_CHECKSUM=\$(grep -o '^[^ ]*' sha512hash) && echo "${SPAK_CHECKSUM}"
+  fi && export SPAK_CHECKSUM=$(grep -o '^[^ ]*' sha512hash) && echo "${SPAK_CHECKSUM}"
 
 RUN if [ -z "${scala_version}" ]; then \    
     wget -qO "spark.tgz" "https://dlcdn.apache.org/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"; \
