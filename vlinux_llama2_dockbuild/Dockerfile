@@ -117,8 +117,8 @@ RUN mamba init bash \
 RUN mamba init bash \
     && . ~/.bashrc \
     &&  mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
-    python3 -m spacy download en_core_web_sm && \
-    python3 -m spacy download en_core_web_md 
+    python3 -m spacy download en_core_web_sm
+    # python3 -m spacy download en_core_web_md 
     # python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${ENVS_DIR}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp-gpu_2.12:${spark_version}').getOrCreate(); spark.stop();"
 
 RUN useradd -u ${USER_ID} ${USER_NAME} -p 111111 && \
