@@ -1,6 +1,6 @@
 name: build_linux_large
 # this create a env inside docker which has the envs volumn mapped, so that can be zipped outside and uploaded as artifacts.
-run-name: B&DL ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
+run-name: B&DL ${{ github.event.inputs.build_folder }}
 on:
   workflow_dispatch:
     inputs:
