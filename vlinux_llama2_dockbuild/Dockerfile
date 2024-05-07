@@ -110,11 +110,11 @@ RUN apt-get update > /dev/null && \
 SHELL ["/bin/bash", "-c"] 
 
 
-RUN conda init bash \
+RUN mamba init bash \
     && . ~/.bashrc \
     && mamba env create -f environment.yml -p ${ENVS_DIR}/${ENV_NAME} && mamba clean --all -f -y 
 
-RUN conda init bash \
+RUN mamba init bash \
     && . ~/.bashrc \
     &&  mamba activate ${ENVS_DIR}/${ENV_NAME}  &&\
     python3 -m spacy download en_core_web_sm && \
