@@ -83,15 +83,6 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-single-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-single-buildx    
-
-
       - name: Build production image
         uses: docker/build-push-action@v5
         with:
@@ -101,11 +92,6 @@ jobs:
           push: false
           load: true
           tags: example-image
-          cache-from: type=local,src=/tmp/.buildx-cache
-          # Note the mode=max here
-          # More: https://github.com/moby/buildkit#--export-cache-options
-          # And: https://github.com/docker/buildx#--cache-tonametypetypekeyvalue
-          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
           build-args: |
             ENVS_DIR=${{ github.event.inputs.ENVS_DIR }}
             ENV_NAME=${{ github.event.inputs.ENV_NAME }}
