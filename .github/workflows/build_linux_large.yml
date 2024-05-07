@@ -113,7 +113,7 @@ jobs:
 
       - name: start container
         run: |
-          docker run -d --name example-container example-image cd /tmp ; 7z a -t7z -v400m ${{ github.event.inputs.ENV_NAME }}.7z ${{ github.event.inputs.ENVS_DIR }}
+          docker run -d --name example-container example-image ls ${{ github.event.inputs.ENV_NAME }}.7z ${{ github.event.inputs.ENVS_DIR }}
 
       - name: Copy zipped files
         run: |
