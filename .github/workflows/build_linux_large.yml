@@ -113,9 +113,8 @@ jobs:
 
       - name: start container
         run: |
-          mkdir -p /home/runner/work/artifacts
-          ls ${{ github.event.inputs.ENVS_DIR }}
-          docker run -d -v /home/runner/work/artifacts:/tmp --name example-container example-image sh -c "7z a -t7z -v400m /tmp/${{ github.event.inputs.ENV_NAME }}.7z ${{ github.event.inputs.ENVS_DIR }}"
+          mkdir -p /home/runner/work/artifacts          
+          docker run -d -v /home/runner/work/artifacts:/tmp --name example-container example-image sh -c "ls ${{ github.event.inputs.ENVS_DIR }}"
 
       - name: Copy zipped files
         run: |
