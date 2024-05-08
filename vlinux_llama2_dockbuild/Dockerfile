@@ -127,6 +127,8 @@ RUN useradd -u ${USER_ID} ${USER_NAME} -p 111111 && \
 
 # RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}
 
+RUN ls ${ENVS_DIR}
+
 # RUN ls -l /tmp
 # ENTRYPOINT ["/bin/bash", "-c", "7z a -t7z -v400m /tmp/${ENV_NAME}.7z ${ENVS_DIR}"]
 # /bin/bash -c "7z a -t7z -v400m /tmp/${{ github.event.inputs.ENV_NAME }}.7z ${{ github.event.inputs.ENVS_DIR }}"
