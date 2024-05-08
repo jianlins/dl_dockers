@@ -84,7 +84,6 @@ RUN mkdir -p ${ENVS_DIR}/ivy
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 COPY environment.yml /tmp/environment.yml
-COPY zipenv.sh /tmp/zipenv.sh
 WORKDIR /tmp
 
 # https://github.com/conda-forge/miniforge-images/blob/master/ubuntu/Dockerfile
