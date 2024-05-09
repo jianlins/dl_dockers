@@ -72,30 +72,50 @@ RUN mkdir -p ${ENVS_DIR}/${ENV_NAME}
 RUN mkdir -p ${ENVS_DIR}/ivy
 
 
+RUN sed -i 's/^#force_color_prompt=yes/force_color_prompt=yes/' /etc/skel/.bashrc && \
+   # Add call to conda init script see https://stackoverflow.com/a/58081608/4413446
+   echo 'eval "$(command conda shell.bash hook 2> /dev/null)"' >> /etc/skel/.bashrc
+
+   
 WORKDIR /tmp
 
-# https://github.com/conda-forge/miniforge-images/blob/master/ubuntu/Dockerfile
-# https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-RUN rm -rf /var/lib/apt/lists/* && \
-    wget --no-hsts --quiet https://github.com/conda-forge/miniforge/releases/latest/download/${MINIFORGE_VERSION}/${MINIFORGE_NAME}-Linux-$(uname -m).sh -O /tmp/miniforge.sh && \
-    /bin/bash /tmp/miniforge.sh -b -p ${CONDA_DIR} && \
-    rm /tmp/miniforge.sh && \
-    conda clean --tarballs --index-cache --packages --yes && \
-    find ${CONDA_DIR} -follow -type f -name '*.a' -delete && \
-    find ${CONDA_DIR} -follow -type f -name '*.pyc' -delete && \
-    conda clean --force-pkgs-dirs --all --yes  && \
-    echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> /etc/skel/.bashrc && \
-    echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> ~/.bashrc
+COPY initial-condarc "${CONDA_DIR}/.condarc"
+WORKDIR /tmp
 
+RUN set -x && \
+    arch=$(uname -m) && \
+    if [ "${arch}" = "x86_64" ]; then \
+        # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
+        arch="64"; \
+    fi && \
+    wget -qO /tmp/micromamba.tar.bz2 \
+        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
+    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
+    rm /tmp/micromamba.tar.bz2 && \
+    PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
+    if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
+    # Install the packages
+    ./micromamba install \
+        --root-prefix="${CONDA_DIR}" \
+        --prefix="${CONDA_DIR}" \
+        --yes \
+        "${PYTHON_SPECIFIER}" \
+        'mamba' && \
+    rm micromamba && \
+    # Pin major.minor version of python
+    mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
+    mamba clean --all -f -y && \
+    which mamba && \
+    chmod -R 775 "${CONDA_DIR}" 
 
 
 SHELL ["/bin/bash", "-c"] 
 
 RUN /bin/bash -c "ls  ${ENVS_DIR}"
 
-RUN conda init bash \
+RUN mamba init bash \
     && . ~/.bashrc \
-    && conda env create -p ${ENVS_DIR}/${ENV_NAME} python=3.8 && conda clean --all -f -y 
+    && mamba env create -p ${ENVS_DIR}/${ENV_NAME} python=3.8 && mamba clean --all -f -y 
 
 RUN 7z a -t7z -v400m /tmp/${ENV_NAME}.7z ${ENVS_DIR} && ls /tmp
 RUN echo 'zipped'
