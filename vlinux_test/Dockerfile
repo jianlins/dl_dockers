@@ -68,7 +68,7 @@ RUN apt-get update --yes && \
 
 # set up home directory /home/root by default
 RUN mkdir -p ${HOME}
-RUN mkdir -p ${ENVS_DIR}
+RUN mkdir -p ${ENVS_DIR}/${ENV_NAME}
 RUN mkdir -p ${ENVS_DIR}/ivy
 
 
@@ -94,7 +94,7 @@ RUN /bin/bash -c "ls  ${ENVS_DIR}"
 
 RUN mamba init bash \
     && . ~/.bashrc \
-    && mamba env create -p ${ENVS_DIR}/${ENV_NAME} python=3.8 pip && mamba clean --all -f -y 
+    && mamba env create -p ${ENVS_DIR}/${ENV_NAME} python=3.8 && mamba clean --all -f -y 
 
 RUN 7z a -t7z -v400m /tmp/${ENV_NAME}.7z ${ENVS_DIR} && ls /tmp
 RUN echo 'zipped'
