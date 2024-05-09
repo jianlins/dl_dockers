@@ -93,9 +93,9 @@ SHELL ["/bin/bash", "-c"]
 
 RUN /bin/bash -c "ls  ${ENVS_DIR}"
 
-RUN mamba init bash \
+RUN conda init bash \
     && . ~/.bashrc \
-    && mamba env create -p ${ENVS_DIR}/${ENV_NAME} python=3.8 && mamba clean --all -f -y 
+    && conda env create -p ${ENVS_DIR}/${ENV_NAME} python=3.8 && conda clean --all -f -y 
 
 RUN 7z a -t7z -v400m /tmp/${ENV_NAME}.7z ${ENVS_DIR} && ls /tmp
 RUN echo 'zipped'
