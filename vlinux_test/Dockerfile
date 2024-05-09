@@ -52,7 +52,6 @@ RUN apt-get update --yes && \
     # - tini is installed as a helpful container entrypoint that reaps zombie
     #   processes and such of the actual executable we want to start, see
     #   https://github.com/krallin/tini#why-tini for details.
-    tini \
     # - run-one - a wrapper script that runs no more
     #   than one unique  instance  of  some  command with a unique set of arguments,
     #   we use `run-one-constantly` to support `RESTARTABLE` option
@@ -77,14 +76,7 @@ WORKDIR /tmp
 
 # https://github.com/conda-forge/miniforge-images/blob/master/ubuntu/Dockerfile
 # https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh
-RUN apt-get update > /dev/null && \
-    apt-get install --no-install-recommends --yes \
-        wget bzip2 ca-certificates \
-        git \
-        tini \
-        > /dev/null && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
+RUN rm -rf /var/lib/apt/lists/* && \
     wget --no-hsts --quiet https://github.com/conda-forge/miniforge/releases/latest/download/${MINIFORGE_VERSION}/${MINIFORGE_NAME}-Linux-$(uname -m).sh -O /tmp/miniforge.sh && \
     /bin/bash /tmp/miniforge.sh -b -p ${CONDA_DIR} && \
     rm /tmp/miniforge.sh && \
@@ -96,13 +88,16 @@ RUN apt-get update > /dev/null && \
     echo ". ${CONDA_DIR}/etc/profile.d/conda.sh && conda activate base" >> ~/.bashrc
 
 
-RUN 7z a -t7z -v400m /tmp/${ENV_NAME}.7z ${ENVS_DIR} && ls /tmp
-RUN echo 'zipped'
 
+
+RUN /bin/bash -c "ls  ${ENVS_DIR}"
 
 RUN mamba init bash \
     && . ~/.bashrc \
     && mamba env create -p ${ENVS_DIR}/${ENV_NAME} python=3.8 pip && mamba clean --all -f -y 
+
+RUN 7z a -t7z -v400m /tmp/${ENV_NAME}.7z ${ENVS_DIR} && ls /tmp
+RUN echo 'zipped'
 
 # RUN 7z a -t7z -v400m ${ENV_NAME}.7z ${ENVS_DIR}
 
