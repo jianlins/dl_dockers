@@ -8,7 +8,7 @@ on:
         description: 'From which folder, the Dockerfiles will be built'  
         type: string   
         required: false
-        default: 'vlinux_llama2_dockbuild'
+        default: 'vlinux_test'
       ENVS_DIR:
           description: 'the envs directory on VINCI machine'  
           type: string   
