@@ -89,6 +89,7 @@ RUN rm -rf /var/lib/apt/lists/* && \
 
 
 
+SHELL ["/bin/bash", "-c"] 
 
 RUN /bin/bash -c "ls  ${ENVS_DIR}"
 
