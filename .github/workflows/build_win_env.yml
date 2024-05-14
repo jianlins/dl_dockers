@@ -155,8 +155,6 @@ jobs:
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         python -m spacy download en_core_web_sm
         python -m spacy download en_core_web_md
-        python -m spacy download en_core_web_trf
-
 
     # - name: copy cached jars
     #   run: |
