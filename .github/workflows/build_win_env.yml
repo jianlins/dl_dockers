@@ -69,7 +69,9 @@ jobs:
     - name: Check Setting Folder
       run: |
         pwd
-        ls ${{ github.event.inputs.build_folder }}
+        if ( '${{ github.event.inputs.sparknlp_gpu }}' =='' ){
+          ls ${{ github.event.inputs.build_folder }}
+        }
     
     - name: Cache Miniforge Environment
       uses: actions/cache@v4
@@ -147,7 +149,7 @@ jobs:
         #   } else {
         #     echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
         #   }
-        if ( -not ${{ github.event.inputs.sparknlp_gpu }}){
+        if ( '${{ github.event.inputs.sparknlp_gpu }}' =='' ){
           python -c "import sparknlp; spark = sparknlp.start(params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
         }else{
           python -c "import sparknlp; spark = sparknlp.start(gpu=True, params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
