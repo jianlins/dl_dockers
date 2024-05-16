@@ -69,9 +69,9 @@ jobs:
     - name: Check Setting Folder
       run: |
         pwd
-        if ( -z "${{ github.event.inputs.sparknlp_gpu }}" ){
+        if [ -z "${{ github.event.inputs.sparknlp_gpu }}" ]; then
           ls ${{ github.event.inputs.build_folder }}
-        }
+        fi
       shell: bash
     
     - name: Cache Miniforge Environment
