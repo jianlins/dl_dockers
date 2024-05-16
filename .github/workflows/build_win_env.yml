@@ -147,7 +147,7 @@ jobs:
         #   } else {
         #     echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
         #   }
-        if ("${{ github.event.inputs.download_jars" }} == ''){
+        if ("${{ github.event.inputs.download_jars }}" == ''){
           python -c "import sparknlp; spark = sparknlp.start(params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
         }else{
           python -c "import sparknlp; spark = sparknlp.start(gpu=True, params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
