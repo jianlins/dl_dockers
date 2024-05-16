@@ -142,12 +142,16 @@ jobs:
       run: |
         echo "PYSPARK_JARS_IVY=${{ env.PYSPARK_JARS_IVY }}"
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        if (!(Test-Path -Path "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-${{ github.event.inputs.sparknlp_version }}.jar")) {
-            curl -Lo "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar" https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar
-          } else {
-            echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
-          }
-        python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.appName('Spark NLP').master('local[*]').config('spark.jars.ivy', '${{ github.event.inputs.target_folder }}/ivy').config('spark.jars.packages', 'com.johnsnowlabs.nlp:spark-nlp${{ github.event.inputs.sparknlp_gpu }}_2.12:${{ github.event.inputs.sparknlp_version }}').getOrCreate(); spark.stop();"
+        # if (!(Test-Path -Path "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp-gpu-assembly-${{ github.event.inputs.sparknlp_version }}.jar")) {
+        #     curl -Lo "${{ env.PYSPARK_JARS_IVY }}/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar" https://s3.amazonaws.com/auxdata.johnsnowlabs.com/public/jars/spark-nlp${{ github.event.inputs.sparknlp_gpu }}-assembly-${{ github.event.inputs.sparknlp_version }}.jar
+        #   } else {
+        #     echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
+        #   }
+        if ("${{ github.event.inputs.download_jars" }} == ''){
+          python -c "import sparknlp; spark = sparknlp.start(params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
+        }else{
+          python -c "import sparknlp; spark = sparknlp.start(gpu=True, params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
+        }
     
     - name: download spacy models
       if: ${{ github.event.inputs.download_spacy_model == 'true' }}
