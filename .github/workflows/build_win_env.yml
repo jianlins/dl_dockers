@@ -148,12 +148,11 @@ jobs:
         #   } else {
         #     echo "JAR already exists in ${{ env.PYSPARK_JARS_IVY }}/jars"
         #   }
-        if [ -z "${{ github.event.inputs.sparknlp_gpu }}" ]; then
+        if ( [string]::IsNullOrEmpty("${{ github.event.inputs.sparknlp_gpu }}")){
           python -c "import sparknlp; spark = sparknlp.start(params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
-        else
+        }else{
           python -c "import sparknlp; spark = sparknlp.start(gpu=True, params={'spark.jars.ivy':'${{ github.event.inputs.target_folder }}/ivy'}); spark.stop();"
-        fi
-      shell: bash
+        }
     
     - name: download spacy models
       if: ${{ github.event.inputs.download_spacy_model == 'true' }}
