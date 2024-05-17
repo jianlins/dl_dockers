@@ -48,6 +48,11 @@ on:
         type: int
         required: false
         default: 7
+      remove_cache:
+        description: "whether remove the ivy cache, some setups might require it in air-gap environment"
+        type: string
+        required: false
+        default: 'false'
 
 permissions:
   actions: write
@@ -176,6 +181,10 @@ jobs:
       run: |
         ls ${{ github.event.inputs.target_folder }}/ivy
         ls ${{ github.event.inputs.target_folder }}/ivy/jars
+
+    - name: check jar folder
+      if: ${{ github.event.inputs.remove_cache == 'true' }}
+      run: |    
         Remove-Item -Path ${{ github.event.inputs.target_folder }}/ivy/cache/* -Recurse -Force
 
         
