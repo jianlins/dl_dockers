@@ -12,7 +12,7 @@ on:
         description: 'Envs path (must be on D drive)'
         type: string
         required: false
-        default: 'D:/conda_envs_jianlins/'
+        default: 'D:/conda_envs_jianlins'
       download_jars:
         description: "whether download jars for pyspark"
         type: string
