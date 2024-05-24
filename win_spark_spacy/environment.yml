@@ -6,7 +6,6 @@ dependencies:
   - python=3.8
   - pip
   - ipywidgets
-  - ipympl
   - cython
   - notebook
   - jupyterlab
@@ -16,16 +15,11 @@ dependencies:
   - pip:
     - medspacy
     - git+https://github.com/medspacy/medspacy_io.git
-     - loguru
+    - loguru
     - findspark
-    - pyspark==3.5.1
+    - pyspark==3.4.2
     - spark-nlp==5.3.3
-    - spark-nlp-display
-    - pandas
-    - py4j
+    - pandas    
     - py7zr
-    - pyarrow==14
-    - spacy==3.5.4
-    - spacy-legacy==3.0.12
-    - spacy-loggers==1.0.5
+    - pyarrow
 prefix: D:\annaconda_env_jianlin\win_spark_spacy
