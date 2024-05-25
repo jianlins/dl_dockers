@@ -22,6 +22,7 @@ dependencies:
     - pandas    
     - py7zr
     - joblib
+    - pyodbc
     - scikit-learn
     - imbalanced-learn
     - pyarrow
