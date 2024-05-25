@@ -1,4 +1,4 @@
-name: win_spark_spacy
+name: win_spark_spacy_sklearn
 channels:
   - conda-forge
   - defaults
@@ -26,4 +26,4 @@ dependencies:
     - imbalanced-learn
     - pyarrow
     - sqlalchemy
-prefix: D:\annaconda_env_jianlin\win_spark_spacy
+prefix: D:\conda_envs_jianlins\win_spark_spacy_sklearn
