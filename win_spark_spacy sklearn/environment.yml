@@ -1,0 +1,29 @@
+name: win_spark_spacy
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - ipywidgets
+  - cython
+  - notebook
+  - jupyterlab
+  - conda-forge::imbalanced-learn
+  - conda-forge::scikit-learn
+  - conda-forge::jupytext
+  - pip:
+    - medspacy
+    - git+https://github.com/medspacy/medspacy_io.git
+    - loguru
+    - findspark
+    - pyspark==3.4.2
+    - spark-nlp==5.3.3
+    - pandas    
+    - py7zr
+    - joblib
+    - scikit-learn
+    - imbalanced-learn
+    - pyarrow
+    - sqlalchemy
+prefix: D:\annaconda_env_jianlin\win_spark_spacy
