@@ -15,11 +15,11 @@ dependencies:
   # github runner doesn't have a gpu, it seems not working , disable for now. 
   # might work using https://github.com/gpgpu-sim/gpgpu-sim_distribution, check it later
   # - nvidia/label/cuda-11.8.0::cutatoolkit
-  - pandas=2.0.3
+  - pandas
   - pip
-  - numpy=1.24.3
+  - numpy
   - openpyxl=3.0.10
-  - sqlalchemy=2.0.21
+  - sqlalchemy
   - ipympl
   - cython=0.29
   - loguru
@@ -43,7 +43,7 @@ dependencies:
     - transformers>=4.31.0
     # dependency version conflict, fix it later
     # - medpspacy-io
-    - simpletransformers==0.70.0
+    - simpletransformers
     - nltk==3.8.1
     - bioc==2.0
     - tqdm==4.65
