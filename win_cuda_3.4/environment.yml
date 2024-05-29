@@ -83,4 +83,6 @@ dependencies:
     - googleapis-common-protos
     - flask
     - flask-restful
+    - ninja
+    - torch-ort
 
