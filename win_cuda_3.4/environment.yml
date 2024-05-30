@@ -85,4 +85,5 @@ dependencies:
     - flask-restful
     - ninja
     - torch-ort
+    - onnxruntime-gpu
 
