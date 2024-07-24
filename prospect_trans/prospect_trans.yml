@@ -247,7 +247,7 @@ dependencies:
       - markdown==3.6
       - matplotlib==3.7.5
       - medspacy==1.2.0
-      - medspacy-io==0.1.0.dev34
+      - git+https://github.com/medspacy/medspacy_io.git
       - medspacy-quickumls==3.2
       - medspacy-unqlite==0.9.6
       - multidict==6.0.5
