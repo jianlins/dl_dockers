@@ -192,7 +192,7 @@ jobs:
         cd ${{ github.event.inputs.build_folder }}     
         pwd
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}   
-        if (Test-Path -Path "./myscript.sh") {
+        if (Test-Path -Path "./post_build.ps1") {
           pwsh ./post_build.ps1
         }else{
           pwd 
