@@ -190,6 +190,8 @@ jobs:
     - name: run post build script
       shell: bash
       run: |
+        pwd
+        ls
         if [ -f "./post_build.sh" ]; then
           ./post_build.sh
         else
