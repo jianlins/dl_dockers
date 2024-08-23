@@ -3,6 +3,8 @@
 conda activate tvm-build
 git clone --recursive https://github.com/microsoft/T-MAC.git
 cd T-MAC
+pip install . -v
+cat build/t-mac-envs.sh
 cd 3rdparty\tvm
 mkdir build
 cp cmake\config.cmake build
