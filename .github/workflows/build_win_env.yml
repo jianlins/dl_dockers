@@ -190,7 +190,8 @@ jobs:
     - name: run post build script
       shell: bash
       run: |
-        cd ${{ github.event.inputs.build_folder }}        
+        cd ${{ github.event.inputs.build_folder }}     
+        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}   
         if [ -f "./post_build.sh" ]; then
           ./post_build.sh
         else
