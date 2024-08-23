@@ -188,9 +188,9 @@ jobs:
         Remove-Item -Path ${{ github.event.inputs.target_folder }}/ivy/cache/* -Recurse -Force
 
     - name: run post build script
-      shell: bash
       run: |
         cd ${{ github.event.inputs.build_folder }}     
+        pwd
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}   
         if [ -f "./post_build.ps1" ]; then
           pwsh ./post_build.ps1
