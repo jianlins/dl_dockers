@@ -190,8 +190,7 @@ jobs:
     - name: run post build script
       shell: bash
       run: |
-        pwd
-        ls
+        cd ${{ github.event.inputs.build_folder }}        
         if [ -f "./post_build.sh" ]; then
           ./post_build.sh
         else
