@@ -192,13 +192,13 @@ jobs:
         cd ${{ github.event.inputs.build_folder }}     
         pwd
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}   
-        if [ -f "./post_build.ps1" ]; then
+        if (Test-Path -Path "./myscript.sh") {
           pwsh ./post_build.ps1
-        else
+        }else{}
           pwd 
           ls
-          echo "./post_build.ps1 doesn't exist. Skip executing it."
-        fi
+          Write-Output "./post_build.ps1 doesn't exist. Skip executing it."
+        }
         
     - name: Check for 7-Zip installation
       run: |
