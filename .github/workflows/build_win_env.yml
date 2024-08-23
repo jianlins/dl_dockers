@@ -7,7 +7,7 @@ on:
         description: "From which folder's environment.yml, the conda environment will be built"
         type: string   
         required: false
-        default: 'win_spark_spacy'
+        default: 'win_TMAC'
       target_folder:
         description: 'Envs path (must be on D drive)'
         type: string
@@ -17,7 +17,7 @@ on:
         description: "whether download jars for pyspark"
         type: string
         required: false
-        default: 'true'
+        default: 'false'
       sparknlp_version:
         description: "sparknlp fat jar version"
         type: string
@@ -32,7 +32,7 @@ on:
         description: "whether download sm spacy models"
         type: string
         required: false
-        default: 'true'
+        default: 'false'
       zip_vol_size:
         description: 'Max 7zip volumn size'
         type: string
