@@ -13,5 +13,3 @@ ls
 $env:MANUAL_BUILD = "1"
 $env:PYTHONPATH = "$pwd\3rdparty\tvm\python"
 pip install . -v  # or pip install -e . -v
-
-pip install . -v  # or pip install -e . -v
