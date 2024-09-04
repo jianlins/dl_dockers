@@ -19,3 +19,9 @@ dependencies:
   - bzip2
   - make
   - zlib
+  - jupyterlab
+  - loguru
+  - pip:    
+    - medspacy
+    - git+https://github.com/medspacy/medspacy_io.git
+    - pyodbc
