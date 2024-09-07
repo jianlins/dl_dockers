@@ -44,7 +44,7 @@ dependencies:
     # - git+https://github.com/jianlins/medspacy.git
     - medspacy
     - git+https://github.com/medspacy/medspacy_io.git
-    - transformers>=4.31.0
+    - transformers>=4.44.2
     # dependency version conflict, fix it later
     # - medpspacy-io
     - simpletransformers==0.64.5
