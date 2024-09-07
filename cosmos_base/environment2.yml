@@ -60,7 +60,7 @@ dependencies:
     - accelerate
     - lightning==2.1.2
     - install-jdk    
-    - pyspark==3.5.1
+    - pyspark==3.4.3
     - spark-nlp==5.3.3
     - gensim
     

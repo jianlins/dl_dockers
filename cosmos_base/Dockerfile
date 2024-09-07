@@ -9,7 +9,7 @@ ARG openjdk_version="8"
 # Spark dependencies
 # Default values can be overridden at build time
 # (ARGS are in lower case to distinguish them from ENV)
-ARG spark_version="3.5.1"
+ARG spark_version="3.4.3"
 ARG hadoop_version="3"
 ARG scala_version
 
