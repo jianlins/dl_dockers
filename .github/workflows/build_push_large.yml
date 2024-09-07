@@ -9,11 +9,11 @@ on:
         type: string   
         required: false
         default: 'cosmos_base'
-      tag:
-          description: 'Customize image tag'  
-          type: string   
-          required: false
-          default: 'latest'
+      tags:
+        description: 'Comma-separated list of image tags'
+        type: string
+        required: false
+        default: 'latest'
       hub_username:
         description: 'Docker hub username'  
         type: string   
@@ -120,7 +120,13 @@ jobs:
           pwd
           ls
           cd ${{ github.event.inputs.build_folder }}
-          docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
+          docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:temp .
+          
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          for tag in "${TAG_ARRAY[@]}"; do
+            docker tag ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:temp ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+          done
           
       - name: list images
         run: docker images
@@ -132,7 +138,11 @@ jobs:
 
       - name: publish
         run: |
-          docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          for tag in "${TAG_ARRAY[@]}"; do
+            docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+          done
 
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
