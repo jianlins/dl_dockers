@@ -17,7 +17,7 @@ on:
         description: 'Docker hub username'  
         type: string   
         required: false
-        default: 'berniegan'
+        default: 'brokenjade'
 
 jobs:
   build_docker:
@@ -46,8 +46,9 @@ jobs:
       - name: Build
         run: |
           pwd
+          cd ${{ github.event.inputs.build_folder }}          
           ls
-          cd ${{ github.event.inputs.build_folder }}
+          cat Dockerfile          
           docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
           
       - name: list images
