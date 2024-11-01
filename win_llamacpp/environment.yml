@@ -1,0 +1,12 @@
+name: cpp
+
+# The conda channels to lookup the dependencies
+channels:
+  - conda-forge
+  - anaconda
+
+# The packages to install to the environment
+dependencies:
+  - python=3.10
+  - pip:    
+    - llama-cpp-python[server]  --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
