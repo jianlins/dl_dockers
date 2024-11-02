@@ -8,7 +8,7 @@ on:
         description: 'From which folder, the Dockerfiles will be built'  
         type: string   
         required: false
-        default: 'cosmos_base'
+        default: 'cosmos_llamacpp'
       tags:
         description: 'Comma-separated list of image tags'
         type: string
