@@ -2,7 +2,6 @@ name: build_push_large
 # this workflow added maximize-build-space action to get larger disc to build.
 run-name: B&DL ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
 on:
-  push:
   workflow_dispatch:
     inputs:
       build_folder:
