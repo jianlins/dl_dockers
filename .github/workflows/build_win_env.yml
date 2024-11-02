@@ -18,6 +18,11 @@ on:
         type: string
         required: false
         default: 'false'
+      download_hadoop:
+        description: "whether download hadoop dll for pyspark"
+        type: string
+        required: false
+        default: 'false'
       sparknlp_version:
         description: "sparknlp fat jar version"
         type: string
@@ -115,12 +120,14 @@ jobs:
         conda env export
 
     - name: Set HADOOP_HOME environment variable
+      if: ${{ github.event.inputs.download_hadoop == 'true' }}
       run: |
         New-Item -ItemType Directory -Force -Path "C:\hadoop\bin"
         echo "HADOOP_HOME=C:\hadoop" | Out-File -FilePath $env:GITHUB_ENV -Append
         echo "C:\hadoop\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
     - name: Download Hadoop DLLs for Windows
+      if: ${{ github.event.inputs.download_hadoop == 'true' }}
       env:
         PYSPARK_JARS_IVY: ${{ github.event.inputs.target_folder }}/ivy
       run: |
@@ -188,12 +195,14 @@ jobs:
         Remove-Item -Path ${{ github.event.inputs.target_folder }}/ivy/cache/* -Recurse -Force
 
     - name: run post build script
+      shell: pwsh {0}
       run: |
         cd ${{ github.event.inputs.build_folder }}     
         pwd
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}   
         if (Test-Path -Path "./post_build.ps1") {
-          pwsh ./post_build.ps1
+          # sometimes the activate above doesn't work for the following ps1
+          pwsh ./post_build.ps1 ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }} 
         }else{
           pwd 
           ls

@@ -1,4 +1,8 @@
 # This is a simple bash script that prints a message and the current date
+(Get-Command -Name python).Source
+echo "conda activate $args[0]"
+conda activate $args[0]
+(Get-Command -Name python).Source
 git clone --recursive https://github.com/microsoft/T-MAC.git
 cd T-MAC
 pip install --no-input -r requirements.txt
