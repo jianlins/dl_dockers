@@ -12,7 +12,7 @@ FROM ${BASE_CUDA_DEV_CONTAINER} AS build
 ARG CUDA_DOCKER_ARCH=default
 
 RUN apt-get update && \
-    apt-get install -y build-essential git cmake libcurl4-openssl-dev
+    apt-get install -y build-essential git cmake libcurl4-openssl-dev wget curl
 
 WORKDIR /app
 
