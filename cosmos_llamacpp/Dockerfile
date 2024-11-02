@@ -28,7 +28,7 @@ RUN if [ "${CUDA_DOCKER_ARCH}" != "default" ]; then \
         export CMAKE_ARGS="-DCMAKE_CUDA_ARCHITECTURES=${CUDA_DOCKER_ARCH}"; \
     fi && \
     cmake -B build -DGGML_CUDA=ON -DLLAMA_CURL=ON ${CMAKE_ARGS} -DCMAKE_EXE_LINKER_FLAGS=-Wl,--allow-shlib-undefined . && \
-    cmake --build build --config Release --target llama-server -j$(nproc)
+    cmake --build build --config Release --target llama-server -j$(nproc) && ls
 
 FROM ${BASE_CUDA_RUN_CONTAINER} AS runtime
 
