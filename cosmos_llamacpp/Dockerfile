@@ -19,9 +19,9 @@ WORKDIR /app
 COPY . .
 # git clone llama cpp repo
 RUN wget https://github.com/ggerganov/llama.cpp/archive/refs/tags/b4009.zip -O llamacpp.zip && ls && unzip llamacpp.zip && ls &&  mv llama.cpp* llamacpp
-RUN cp -R llamacpp/* /app && ls /app && cd /app
+RUN cp -R llamacpp/* /app/* && cd /app
 
-
+RUN ls /app
 
 # Use the default CUDA archs if not specified
 RUN if [ "${CUDA_DOCKER_ARCH}" != "default" ]; then \
