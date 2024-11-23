@@ -20,7 +20,7 @@ WORKDIR /app
 
 COPY . .
 # git clone llama cpp repo
-RUN wget https://github.com/ggerganov/llama.cpp/archive/refs/tags/b4009.zip -O llamacpp.zip && ls && unzip llamacpp.zip && ls &&  mv llama.cpp* llamacpp
+RUN wget https://github.com/ggerganov/llama.cpp/archive/refs/tags/b4153.zip -O llamacpp.zip && ls && unzip llamacpp.zip && rm *.zip && ls &&  mv llama.cpp* llamacpp
 RUN cp -R llamacpp/* /app/* && cd /app
 
 RUN ls /app
