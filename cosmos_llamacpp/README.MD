@@ -1,1 +1,4 @@
-Use p7zip with container to extract 7zip file, as you might not be able to install p7zip on the host.
+Build a container to use [llama.cpp](https://github.com/ggerganov/llama.cpp)
+Reference: 
+* https://github.com/ggerganov/llama.cpp/blob/master/.devops/full-cuda.Dockerfile
+* https://github.com/ggerganov/llama.cpp/blob/master/.devops/llama-server-cuda.Dockerfile
