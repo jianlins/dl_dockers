@@ -30,9 +30,8 @@ RUN if [ "${CUDA_DOCKER_ARCH}" != "default" ]; then \
     cmake -B build -DGGML_NATIVE=OFF -DGGML_CUDA=ON -DLLAMA_CURL=ON ${CMAKE_ARGS} -DCMAKE_EXE_LINKER_FLAGS=-Wl,--allow-shlib-undefined . && \
     cmake --build build --config Release -j$(nproc) && \
     mkdir /llamacpp && \
-    cp -a build/. /llamacpp 
-
-RUN find build -name "*.so" -exec cp {} /llamacpp
+    cp -a build/. /llamacpp \
+    find build -name "*.so" -exec cp {} /llamacpp \;
 
 # 1. **Search**: It searches the `build` directory and all its subdirectories for files with a `.so` extension.
 # 2. **Execute**: For each `.so` file found, it executes the `cp` (copy) command to copy that file to the `/llamacpp` directory.
