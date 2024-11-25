@@ -30,7 +30,11 @@ RUN if [ "${CUDA_DOCKER_ARCH}" != "default" ]; then \
     cmake -B build -DGGML_NATIVE=OFF -DGGML_CUDA=ON -DLLAMA_CURL=ON ${CMAKE_ARGS} -DCMAKE_EXE_LINKER_FLAGS=-Wl,--allow-shlib-undefined . && \
     cmake --build build --config Release -j$(nproc) && \
     mkdir /llamacpp && \
-    cp -a build/. /llamacpp    
+    cp -a build/. /llamacpp  && \
+    find build -name "*.so" -exec cp {} /llamacpp \
+
+# 1. **Search**: It searches the `build` directory and all its subdirectories for files with a `.so` extension.
+# 2. **Execute**: For each `.so` file found, it executes the `cp` (copy) command to copy that file to the `/llamacpp` directory.
 
 RUN pwd && ls
 
@@ -39,9 +43,7 @@ FROM ${BASE_CUDA_RUN_CONTAINER} AS runtime
 RUN apt-get update && \
     apt-get install -y libcurl4-openssl-dev libgomp1 curl
 
-COPY --from=build /app/build/ggml/src/libggml.so /libggml.so
-COPY --from=build /app/build/src/libllama.so /libllama.so
-COPY --from=build /app/lib/ /
+COPY --from=build /llamacpp/*.so /
 COPY --from=build /app/build/bin/llama-server /llama-server
 COPY --from=build /app/build/bin/llama-cli /llama-cli
 
