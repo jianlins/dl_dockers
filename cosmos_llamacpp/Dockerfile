@@ -45,13 +45,18 @@ FROM ${BASE_CUDA_RUN_CONTAINER} AS runtime
 RUN apt-get update && \
     apt-get install -y libcurl4-openssl-dev libgomp1 curl
 
-COPY --from=build /llamacpp/*.so /
-COPY --from=build /app/build/bin/llama-server /llama-server
-COPY --from=build /app/build/bin/llama-cli /llama-cli
+COPY --from=build /app /app
+COPY --from=build /llamacpp /llamacpp
+COPY --from=build /app/build/bin/. /llamacpp
+# COPY --from=build /llamacpp/*.so /
+# COPY --from=build /app/build/bin/llama-server /llama-server
+# COPY --from=build /app/build/bin/llama-cli /llama-cli
+
+ENV PATH="/llamacpp:${PATH}"
 
 # Must be set to 0.0.0.0 so it can listen to requests from host machine
 ENV LLAMA_ARG_HOST=0.0.0.0
 
 HEALTHCHECK CMD [ "curl", "-f", "http://localhost:8080/health" ]
 
-CMD [ "/llama-server" ]
+CMD ["/llamacpp/llama-server"]
