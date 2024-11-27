@@ -4,6 +4,7 @@ param($location)
 echo 'done'
 echo "conda activate location:" $location
 conda activate $location
+nvcc --version
 
 [System.Environment]::SetEnvironmentVariable('CUDA_HOME', '$location\Library', [System.EnvironmentVariableTarget]::User)
 $currentPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User)
