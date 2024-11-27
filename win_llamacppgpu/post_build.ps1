@@ -2,7 +2,8 @@
 echo 'done'
 echo "conda activate $args[0]"
 conda activate $args[0]
-CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python[server]
+$env:CMAKE_ARGS="-DGGML_CUDA=on"
+pip install llama-cpp-python[server]
 # git clone --recursive https://github.com/microsoft/T-MAC.git
 # cd T-MAC
 # pip install --no-input -r requirements.txt
