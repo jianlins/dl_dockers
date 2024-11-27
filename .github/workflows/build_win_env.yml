@@ -90,8 +90,7 @@ jobs:
       with:
         miniforge-version: latest         
         activate-environment: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        environment-file: ${{ github.event.inputs.build_folder }}/environment.yml
-        python-version: 3.5
+        environment-file: ${{ github.event.inputs.build_folder }}/environment.yml        
         auto-activate-base: false        
     
     - name: Create Conda Environment
