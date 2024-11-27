@@ -1,7 +1,8 @@
+param($location)
 # This is a simple bash script that prints a message and the current date
+
 echo 'done'
-$location=$args[0]
-echo "conda activate" $location
+echo "conda activate location:" $location
 conda activate $location
 
 [System.Environment]::SetEnvironmentVariable('CUDA_HOME', '$location\Library', [System.EnvironmentVariableTarget]::User)
