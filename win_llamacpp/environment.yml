@@ -2,11 +2,11 @@ name: cpp
 
 # The conda channels to lookup the dependencies
 channels:
-  - conda-forge
-  - anaconda
+  - conda-forge 
 
 # The packages to install to the environment
 dependencies:
   - python=3.10
+  - nvidia/label/cuda-11.8.0::cuda-nvcc
   - pip:    
     - llama-cpp-python[server]
