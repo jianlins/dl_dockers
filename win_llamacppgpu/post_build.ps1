@@ -1,6 +1,7 @@
 # This is a simple bash script that prints a message and the current date
 echo 'done'
-conda activate win_llamacppgpu
+echo "conda activate $args[0]"
+conda activate $args[0]
 CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python[server]
 # git clone --recursive https://github.com/microsoft/T-MAC.git
 # cd T-MAC
