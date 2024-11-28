@@ -21,5 +21,5 @@ Write-Output "CUDAToolkit_INCLUDE_DIRECTORIES has been set to: $cudaInclude"
 Write-Output "Updated PATH: $newPath"
 
 # use my precompiled (with cuda enabled) wheel file
-wget https://github.com/jianlins/llama-cpp-python/releases/download/main-cu118/llama_cpp_python-0.3.2-cp310-cp310-win_amd64.whl 
-pip install "llama_cpp_python-0.3.2-cp310-cp310-win_amd64.whl[server]" --verbose
+Invoke-WebRequest -Uri https://github.com/jianlins/llama-cpp-python/releases/download/main-cu118/llama_cpp_python-0.3.2-cp310-cp310-win_amd64.whl  -OutFile "llama_cpp_python.whl"
+pip install "llama_cpp_python.whl[server]" --verbose
