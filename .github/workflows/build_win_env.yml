@@ -91,7 +91,6 @@ jobs:
       run: |
         cd ${{ github.event.inputs.build_folder }}     
         pwd
-        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}   
         if (Test-Path -Path ".\pre_build.ps1") {
           # sometimes the activate above doesn't work for the following ps1
           pwsh .\pre_build.ps1 ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }} 
