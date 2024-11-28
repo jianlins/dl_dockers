@@ -29,4 +29,4 @@ Write-Output "CUDAToolkit_ROOT has been set to: $cudaHome"
 Write-Output "Updated PATH: $newPath"
 
 $env:CMAKE_ARGS="-DGGML_CUDA=on"
-pip install llama-cpp-python[server]
+pip install llama-cpp-python[server] --verbose
