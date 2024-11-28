@@ -14,7 +14,7 @@ ls $location\Library\bin\cuda*
 
 $cudaHome = "$location\Library"
 $cudaInclude ="$cudaHome\include"
-[System.Environment]::SetEnvironmentVariable('CUDA_HOME', $cudaHome, [System.EnvironmentVariableTarget]::User)
+[System.Environment]::SetEnvironmentVariable('CUDA_HOME', $cudaInclude, [System.EnvironmentVariableTarget]::User)
 [System.Environment]::SetEnvironmentVariable('CUDAToolkit_ROOT', $cudaInclude, [System.EnvironmentVariableTarget]::User)
 [System.Environment]::SetEnvironmentVariable('CUDAToolkit_INCLUDE_DIRECTORIES', $cudaInclude, [System.EnvironmentVariableTarget]::User)
 
