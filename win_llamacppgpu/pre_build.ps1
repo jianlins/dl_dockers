@@ -6,4 +6,4 @@ Invoke-WebRequest -Uri https://github.com/jianlins/llama-cpp-python/releases/dow
 pwd
 ls
 pip install "llama_cpp_python.whl" --verbose
-pip install "llama_cpp_python.whl[server]" --verbose
+pip install -I "llama_cpp_python.whl[server]" --verbose
