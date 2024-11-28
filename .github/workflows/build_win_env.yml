@@ -85,6 +85,22 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-${{ github.event.inputs.build_folder }}-
 
+      
+    - name: run pre build script
+      shell: pwsh {0}
+      run: |
+        cd ${{ github.event.inputs.build_folder }}     
+        pwd
+        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}   
+        if (Test-Path -Path ".\pre_build.ps1") {
+          # sometimes the activate above doesn't work for the following ps1
+          pwsh .\pre_build.ps1 ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }} 
+        }else{
+          pwd 
+          ls
+          Write-Output ".\pre_build.ps1 doesn't exist. Skip executing it."
+        }            
+
     - name: Install miniforge
       uses: conda-incubator/setup-miniconda@v3
       with:
@@ -92,6 +108,7 @@ jobs:
         activate-environment: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         environment-file: ${{ github.event.inputs.build_folder }}/environment.yml        
         auto-activate-base: false        
+
     
     - name: Create Conda Environment
       shell: pwsh
