@@ -12,7 +12,7 @@ on:
         description: 'Envs path (must be on D drive)'
         type: string
         required: false
-        default: 'D:/conda_envs_jianlins'
+        default: 'D:\conda_envs_jianlins'
       download_jars:
         description: "whether download jars for pyspark"
         type: string
@@ -196,14 +196,14 @@ jobs:
       run: |
         cd ${{ github.event.inputs.build_folder }}     
         pwd
-        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}   
-        if (Test-Path -Path "./post_build.ps1") {
+        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}   
+        if (Test-Path -Path ".\post_build.ps1") {
           # sometimes the activate above doesn't work for the following ps1
-          pwsh ./post_build.ps1 ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }} 
+          pwsh .\post_build.ps1 ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }} 
         }else{
           pwd 
           ls
-          Write-Output "./post_build.ps1 doesn't exist. Skip executing it."
+          Write-Output ".\post_build.ps1 doesn't exist. Skip executing it."
         }
         
     - name: Check for 7-Zip installation
