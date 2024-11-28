@@ -6,9 +6,11 @@ Write-Output "conda activate location: $location"
 conda activate $location
 nvcc --version
 
-$cudaHome = "$envPath\Library"
+$cudaHome = "$location\Library"
 [System.Environment]::SetEnvironmentVariable('CUDA_HOME', $cudaHome, [System.EnvironmentVariableTarget]::User)
 [System.Environment]::SetEnvironmentVariable('CUDAToolkit_ROOT', $cudaHome, [System.EnvironmentVariableTarget]::User)
+[System.Environment]::SetEnvironmentVariable('CUDAToolkit_INCLUDE_DIRECTORIES', $cudaHome, [System.EnvironmentVariableTarget]::User)
+
 
 
 $currentPath = [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User)
