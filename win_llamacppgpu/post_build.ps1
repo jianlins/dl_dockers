@@ -5,11 +5,18 @@ echo 'done'
 Write-Output "conda activate location: $location"
 conda activate $location
 nvcc --version
+echo "Check dll & h files:"
+
+ls $location\Library\include\cuda*
+ls $location\Library\lib\x64\cuda*
+ls $location\Library\bin\cuda*
+
 
 $cudaHome = "$location\Library"
+$cudaInclude ="$cudaHome\include"
 [System.Environment]::SetEnvironmentVariable('CUDA_HOME', $cudaHome, [System.EnvironmentVariableTarget]::User)
 [System.Environment]::SetEnvironmentVariable('CUDAToolkit_ROOT', $cudaHome, [System.EnvironmentVariableTarget]::User)
-[System.Environment]::SetEnvironmentVariable('CUDAToolkit_INCLUDE_DIRECTORIES', $cudaHome, [System.EnvironmentVariableTarget]::User)
+[System.Environment]::SetEnvironmentVariable('CUDAToolkit_INCLUDE_DIRECTORIES', $cudaInclude, [System.EnvironmentVariableTarget]::User)
 
 
 
