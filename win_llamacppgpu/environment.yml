@@ -7,6 +7,6 @@ channels:
 # The packages to install to the environment
 dependencies:
   - python=3.10
-  - nvidia/label/cuda-11.8.0::cuda-toolkit
-  - nvidia/label/cuda-11.8.0::cuda-nvcc
+  # - nvidia/label/cuda-11.8.0::cuda-toolkit
+  # - nvidia/label/cuda-11.8.0::cuda-nvcc
   - pip
