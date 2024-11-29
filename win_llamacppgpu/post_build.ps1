@@ -25,3 +25,4 @@ Invoke-WebRequest -Uri https://github.com/jianlins/llama-cpp-python/releases/dow
 pwd
 ls
 pip install "llama_cpp_python-0.3.2-cp310-cp310-win_amd64.whl[server]" --verbose
+python -c "import llama_cpp; print(llama_cpp.__version__);"
