@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.10
   - pip
   - ipywidgets
   - cython
@@ -19,7 +19,9 @@ dependencies:
     - findspark
     - pyspark==3.4.2
     - spark-nlp==5.3.3
+    - sklearn-crfsuite
     - pandas    
+    - scipy
     - py7zr
     - joblib
     - pyodbc
