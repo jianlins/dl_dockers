@@ -202,8 +202,8 @@ jobs:
         ls ${{ github.event.inputs.target_folder }}/ivy
         ls ${{ github.event.inputs.target_folder }}/ivy/jars
 
-    - name: check jar folder
-      if: ${{ github.event.inputs.remove_cache == 'true' }}
+    - name: clear jar cache folder
+      if: ${{ github.event.inputs.download_jars == 'true' && github.event.inputs.remove_cache == 'true' }}
       run: |    
         Remove-Item -Path ${{ github.event.inputs.target_folder }}/ivy/cache/* -Recurse -Force
 
