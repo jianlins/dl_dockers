@@ -4,7 +4,7 @@ channels:
   - defaults
   - pytorch
 dependencies:
-  - python=3.8
+  - python=3.10
   - pytorch::pytorch
   - pytorch::torchvision
   # - pytorch::torchaudio
@@ -30,7 +30,6 @@ dependencies:
   - conda-forge::imbalanced-learn=0.11.0
   - conda-forge::scikit-learn=1.3.2
   - conda-forge::jupytext
-  - conda-forge::spacy=3.5.4
   - conda-forge::pyarrow=14.0.1
   - pip:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
@@ -87,4 +86,10 @@ dependencies:
     - ninja
     - torch-ort
     - onnxruntime-gpu
+    - langchain
+    - langchain-core
+    - langchain-community
+    - langchain-experimental
+    - langserve[all]
+    - langchain-cli
 
