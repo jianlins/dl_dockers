@@ -3,9 +3,7 @@ name: cpp
 # The conda channels to lookup the dependencies
 channels:
   - conda-forge 
-
 # The packages to install to the environment
 dependencies:
   - python=3.12
-  - pip:  
-    - llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+  - pip
