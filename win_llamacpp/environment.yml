@@ -8,5 +8,4 @@ channels:
 dependencies:
   - python=3.12
   - pip:  
-    - --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
-    - llama-cpp-python[server]
+    - llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
