@@ -1,6 +1,5 @@
 # This is a simple bash script that prints a message and the current date
-
-pip install 'llama-cpp-python[server]' --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
+CMAKE_ARGS="-DGGML_CUDA=on" pip install 'llama-cpp-python[server]' --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu124
 echo 'done'
 # git clone --recursive https://github.com/microsoft/T-MAC.git
 # cd T-MAC
