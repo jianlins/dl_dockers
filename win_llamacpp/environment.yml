@@ -6,6 +6,7 @@ channels:
 
 # The packages to install to the environment
 dependencies:
-  - python=3.10
-  - pip:    
+  - python=3.12
+  - pip:  
+    - --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu125
     - llama-cpp-python[server]
