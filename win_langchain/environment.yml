@@ -42,8 +42,6 @@ dependencies:
     - jupyterlab-widgets
     - wheel
     - joblib
-    - itsdangerous<2.1.0
-    - accelerate
     - pyspark==3.4.2
     - spark-nlp==5.3.3  
     - pyarrow
