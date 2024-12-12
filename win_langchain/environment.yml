@@ -22,8 +22,6 @@ dependencies:
     - pandas
     - loguru
     - matplotlib
-    - seaborn
-    - bokeh
     - install-jdk
     - gensim
     - xgboost
