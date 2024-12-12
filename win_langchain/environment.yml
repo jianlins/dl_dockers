@@ -49,7 +49,7 @@ dependencies:
     - pyarrow
     - findspark
     - spark-nlp-display
-    - dspy-ai==2.4.0
+    - dspy-ai
     - datasets
     - py7zr
     - langchain
