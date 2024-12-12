@@ -11,7 +11,7 @@ dependencies:
     # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
     # may consider torchdynamo in later versions
     # https://pytorch.org/docs/stable/dynamo/installation.html
-    - setuptools
+    - setuptools==65
     - medspacy
     - nltk==3.8.1
     - bioc==2.0
