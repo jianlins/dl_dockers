@@ -29,11 +29,6 @@ markdown
 jupyterlab-widgets
 wheel
 joblib
-pyspark==3.4.2
-spark-nlp==5.3.3  
-pyarrow
-findspark
-spark-nlp-display
 dspy-ai
 datasets
 py7zr
