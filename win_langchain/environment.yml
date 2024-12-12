@@ -1,4 +1,4 @@
-name: win_dspy
+name: win_langchain
 channels:
   - nvidia
   - defaults
