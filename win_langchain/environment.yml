@@ -1,0 +1,52 @@
+name: win_dspy
+channels:
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - jupyterlab
+  - pip:
+    # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch/layers
+    # may consider torchdynamo in later versions
+    # https://pytorch.org/docs/stable/dynamo/installation.html
+    - setuptools==65
+    - medspacy
+    - nltk==3.8.1
+    - bioc==2.0
+    - tqdm
+    - pandas
+    - loguru
+    - openpyxl
+    - imbalanced-learn
+    - scikit-learn
+    - sklearn-crfsuite
+    - pytest
+    - cython==0.29
+    - sqlalchemy
+    - xlrd
+    - ipympl
+    - ipywidgets
+    - jupytext
+    - wheel
+    - joblib
+    - itsdangerous<2.1.0
+    - accelerate
+    - pyspark==3.4.2
+    - spark-nlp==5.3.3  
+    - pyarrow
+    - findspark
+    - dspy-ai==2.4.0
+    - datasets
+    - py7zr
+    - langchain
+    - langchain-core
+    - langchain-community
+    - langchain-experimental
+    - langgraph
+    - langchain-cli
+    - langsmith
+    - langchain-openai
+    - langchain-huggingface
+    - langchain-anthropic
+
