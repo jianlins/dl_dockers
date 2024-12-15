@@ -9,5 +9,5 @@ dependencies:
   - python=3.10
   - nvidia/label/cuda-12.4.0::cuda
   - nvidia/label/cuda-12.4.0::cuda-nvcc
-  - blast
+  - anaconda::openblas
   - pip
