@@ -24,5 +24,7 @@ Write-Output "Updated PATH: $newPath"
 # Invoke-WebRequest -Uri https://github.com/jianlins/llama-cpp-python/releases/download/main-cu118/llama_cpp_python-0.3.2-cp310-cp310-win_amd64.whl  -OutFile ".\llama_cpp_python-0.3.2-cp310-cp310-win_amd64.whl"
 # pwd
 # ls
+[System.Environment]::SetEnvironmentVariable('DGGML_BLAS', 'ON', [System.EnvironmentVariableTarget]::User)
+[System.Environment]::SetEnvironmentVariable('DGGML_CUDA', 'on', [System.EnvironmentVariableTarget]::User)
 pip install "llama_cpp_python[server]" --verbose
 python -c "import llama_cpp; print(llama_cpp.__version__);"
