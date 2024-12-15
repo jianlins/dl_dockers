@@ -7,7 +7,7 @@ on:
         description: "From which folder's environment.yml, the conda environment will be built"
         type: string   
         required: false
-        default: 'win_langchain'
+        default: 'win_llamacppgpu'
       target_folder:
         description: 'Envs path (must be on D drive)'
         type: string
@@ -17,7 +17,7 @@ on:
         description: "whether download jars for pyspark"
         type: string
         required: false
-        default: 'true'
+        default: 'false'
       sparknlp_version:
         description: "sparknlp fat jar version"
         type: string
@@ -52,7 +52,7 @@ on:
         description: "whether remove the ivy cache, some setups might require it in air-gap environment"
         type: string
         required: false
-        default: 'true'
+        default: 'false'
 
 permissions:
   actions: write
