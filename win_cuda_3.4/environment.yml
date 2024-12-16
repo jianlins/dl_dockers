@@ -92,4 +92,4 @@ dependencies:
     - langchain-experimental
     - langserve[all]
     - langchain-cli
-
+    - jupyterlab-freeze
