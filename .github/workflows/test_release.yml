@@ -8,6 +8,11 @@ on:
         type: string   
         required: false
         default: 'win_llamacppgpu'
+      cuda:
+        description: "cuda version"
+        type: string   
+        required: false
+        default: '12.6.0'
 
 permissions:
   contents: write
