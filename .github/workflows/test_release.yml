@@ -75,18 +75,20 @@ jobs:
             }
 
 
+            const filePath = "${buildFolder}/environment.yml";
+
             // Append release URL to the description
             // Fetch the file from the GitHub repo
             try {
                 const { data: latestCommit } = await github.repos.getContent({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    path: ${buildFolder}/environment.yml,
+                    path: filePath,
                     ref: context.sha // Ensure it's tied to the workflow's latest commit
                 });
 
                 const fileUrl = latestCommit.html_url; // GitHub URL to the file
-                console.log(`Latest committed version of ${buildFolder}/environment.yml is at: ${fileUrl}`);
+                console.log(`Latest committed version of ${filePath} is at: ${fileUrl}`);
 
                 // Append release URL to the description
                 releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
