@@ -1,7 +1,13 @@
 name: test_release
 run-name: Build ${{ github.event.inputs.build_folder }}
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      build_folder:
+        description: "From which folder's environment.yml, the conda environment will be built"
+        type: string   
+        required: false
+        default: 'win_llamacppgpu'
 
 permissions:
   contents: write
