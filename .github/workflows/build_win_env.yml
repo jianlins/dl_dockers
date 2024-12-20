@@ -55,8 +55,7 @@ on:
         default: 'false'
 
 permissions:
-  actions: write
-  contents: read
+  contents: write
         
 jobs:
   create_env:
@@ -281,7 +280,35 @@ jobs:
         script: |
           const path = require('path');
           const fs = require('fs');
-          const release_id = '${{ steps.create_release.outputs.id }}';
+          
+          // Retrieve necessary information
+          const release_id = `${{ steps.create_release.outputs.id }}`;
+          const release_url = `${{ steps.create_release.outputs.html_url }}`;
+          const buildFolder = `${{ github.event.inputs.build_folder }}`;
+          const descriptionFilePath = `${buildFolder}/README.MD`;
+
+          let releaseDescription = '';
+
+          // Check for README file and load its content
+          if (fs.existsSync(descriptionFilePath)) {
+              releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
+              console.log("Successfully read release description from 'README.MD'");
+          } else {
+              console.warn("README.MD not found in the specified build folder. Proceeding without a detailed description.");
+          }
+
+
+          // Construct the environment.yml GitHub file URL manually
+          const branchOrCommitSha = context.sha; // Current commit SHA
+          const repoOwner = context.repo.owner;
+          const repoName = context.repo.repo;
+          const filePath = `${buildFolder}/environment.yml`;
+          const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${branchOrCommitSha}/${filePath}`;
+          console.log(`Constructed file URL: ${fileUrl}`);
+
+          // Append the file URL to the release description
+          releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
+
           for (let file of await fs.readdirSync('./zipped')) {
             if (path.extname(file) === '.zip') {
               console.log('uploadReleaseAsset', file);
