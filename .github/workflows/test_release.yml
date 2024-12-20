@@ -79,15 +79,3 @@ jobs:
                     body: releaseDescription
                 });
 
-            for (let file of await fs.readdirSync(buildFolder)) {
-                if (path.extname(file) === '.yml') {
-                console.log('uploadReleaseAsset', file);
-                await github.repos.uploadReleaseAsset({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    release_id: release_id,
-                    name: file,
-                    data: await fs.readFileSync('${{ github.event.inputs.build_folder }}/${file}`)
-                });
-                }
-            }
