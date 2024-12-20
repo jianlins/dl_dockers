@@ -75,6 +75,38 @@ jobs:
         pwd
         ls ${{ github.event.inputs.build_folder }}        
       shell: bash
+
+    - name: Determine tag name
+      id: tag
+      shell: bash
+      run: |
+        BUILD_NUMBER="$(git rev-list --count HEAD)"
+        SHORT_HASH="$(git rev-parse --short=7 HEAD)"
+        if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
+          echo "name=b${BUILD_NUMBER}-${{ github.event.inputs.cuda }}" >> $GITHUB_OUTPUT
+        else
+          SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
+          echo "name=b${BUILD_NUMBER}-${SHORT_HASH}-${{ github.event.inputs.build_folder }}" >> $GITHUB_OUTPUT
+        fi
+  
+    - name: Debug Permissions
+      run: |
+        echo "Permissions for this GITHUB_TOKEN:"
+        gh auth status
+        gh repo view
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.name }}
+        release_name: ${{ steps.tag.outputs.name }}
+        draft: false
+        prerelease: false          
     
     - name: Cache Miniforge Environment
       uses: actions/cache@v4
@@ -222,37 +254,7 @@ jobs:
         }
 
         
-    - name: Determine tag name
-      id: tag
-      shell: bash
-      run: |
-        BUILD_NUMBER="$(git rev-list --count HEAD)"
-        SHORT_HASH="$(git rev-parse --short=7 HEAD)"
-        if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
-          echo "name=b${BUILD_NUMBER}-${{ github.event.inputs.cuda }}" >> $GITHUB_OUTPUT
-        else
-          SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
-          echo "name=b${BUILD_NUMBER}-${SHORT_HASH}-${{ github.event.inputs.build_folder }}" >> $GITHUB_OUTPUT
-        fi
-  
-    - name: Debug Permissions
-      run: |
-        echo "Permissions for this GITHUB_TOKEN:"
-        gh auth status
-        gh repo view
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.tag.outputs.name }}
-        release_name: ${{ steps.tag.outputs.name }}
-        draft: false
-        prerelease: false     
+ 
 
     - name: Check for 7-Zip installation
       run: |
