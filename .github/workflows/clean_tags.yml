@@ -1,7 +1,7 @@
 name: Remove Unused Tags
 
 on:
-  workflow_dispatch # Allows manual trigger of the workflow.
+  workflow_dispatch: # Allows manual trigger of the workflow.
 
 jobs:
   clean_unused_tags:
@@ -16,12 +16,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gh
 
-      - name: Authenticate GitHub CLI
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "${GITHUB_TOKEN}" | gh auth login --with-token
-
       - name: Get All Tags
         id: get_tags
         run: |
@@ -32,21 +26,21 @@ jobs:
 
       - name: Get Releases
         id: get_releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api repos/${{ github.repository }}/releases --paginate | jq -r '.[].tag_name' > releases_tags.txt
+          gh api repos/${{ github.repository }}/releases --paginate -q '.[].tag_name' > releases_tags.txt
           echo "Release tags fetched:"
           cat releases_tags.txt
 
       - name: Compare Tags to Releases and Delete Unused Tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Identify unused tags
           UNUSED_TAGS=$(grep -Fvx -f releases_tags.txt all_tags.txt || true)
           echo "Unused Tags:"
           echo "$UNUSED_TAGS"
           
-          # Delete unused tags locally and from remote
+          # Delete unused tags locally and remotely
           for TAG in $UNUSED_TAGS; do
             echo "Deleting unused tag: $TAG"
             git tag -d "$TAG" || echo "Failed to delete local tag $TAG"
