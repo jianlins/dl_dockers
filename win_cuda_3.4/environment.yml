@@ -93,3 +93,6 @@ dependencies:
     - langserve[all]
     - langchain-cli
     - jupyterlab-freeze
+    - scipy
+    - sympy
+    - statsmodels

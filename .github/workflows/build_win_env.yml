@@ -248,3 +248,46 @@ jobs:
         name: ${{ github.event.inputs.build_folder }}
         path: zipped/*.7z.*
         retention-days: ${{ github.event.inputs.retention_days }}
+
+    - name: Determine tag name
+      id: tag
+      shell: bash
+      run: |
+        BUILD_NUMBER="$(git rev-list --count HEAD)"
+        SHORT_HASH="$(git rev-parse --short=7 HEAD)"
+        if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
+          echo "name=b${BUILD_NUMBER}-${{ github.event.inputs.cuda }}" >> $GITHUB_OUTPUT
+        else
+          SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
+          echo "name=WinFull-${SAFE_NAME}-b${BUILD_NUMBER}-${SHORT_HASH}-${{ github.event.inputs.build_folder }}" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create release
+      id: create_release
+      uses: anzz1/action-create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.name }}
+
+    - name: Upload release
+      id: upload_release
+      uses: actions/github-script@v3
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const path = require('path');
+          const fs = require('fs');
+          const release_id = '${{ steps.create_release.outputs.id }}';
+          for (let file of await fs.readdirSync('./zipped')) {
+            if (path.extname(file) === '.zip') {
+              console.log('uploadReleaseAsset', file);
+              await github.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release_id,
+                name: file,
+                data: await fs.readFileSync(`./zipped/${file}`)
+              });
+            }
+          }
