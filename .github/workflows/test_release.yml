@@ -57,7 +57,7 @@ jobs:
         script: |
             echo 'release_id: ${{ steps.create_release.outputs.id }}'
             echo 'release_url: ${{ steps.create_release.outputs.html_url }}'
-            const descriptionFilePath = './release_description.txt';
+            const descriptionFilePath = '${{ github.event.inputs.build_folder }}/README.MD';
             let releaseDescription = '';
             if (fs.existsSync(descriptionFilePath)) {
                 releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
