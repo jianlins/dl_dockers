@@ -58,6 +58,8 @@ jobs:
             echo 'release_id: ${{ steps.create_release.outputs.id }}'
             echo 'release_url: ${{ steps.create_release.outputs.html_url }}'
             const descriptionFilePath = '${{ github.event.inputs.build_folder }}/README.MD';
+            const buildFolder = '${{ github.event.inputs.build_folder }}';
+
             let releaseDescription = '';
             if (fs.existsSync(descriptionFilePath)) {
                 releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
@@ -65,7 +67,7 @@ jobs:
             } else {
                 console.warn("Release description file 'release_description.txt' not found. Proceeding without a description.");
             }
-            releaseDescription += `\n\n[View the latest README.MD file](${fileUrl})`;
+            releaseDescription += `\n\n[View the latest README.MD file](${{ steps.create_release.outputs.html_url }})`;
 
             const path = require('path');
             const fs = require('fs');
@@ -77,7 +79,7 @@ jobs:
                     body: releaseDescription
                 });
 
-            for (let file of await fs.readdirSync('${{ github.event.inputs.build_folder }}')) {
+            for (let file of await fs.readdirSync(buildFolder)) {
                 if (path.extname(file) === '.yml') {
                 console.log('uploadReleaseAsset', file);
                 await github.repos.uploadReleaseAsset({
