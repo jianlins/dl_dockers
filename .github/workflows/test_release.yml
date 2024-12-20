@@ -75,17 +75,6 @@ jobs:
             }
 
 
-            const filePath = "${buildFolder}/environment.yml";
-            const { data: latestCommit } = await github.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: filePath,
-                ref: context.sha // Ensure it's tied to the workflow's current ref (latest commit in the branch)
-            });
-
-            const fileUrl = latestCommit.html_url; // This gives the GitHub URL to the file
-            console.log(`Latest committed version of ${filePath} is at: ${fileUrl}`);
-
             // Append release URL to the description
             // Fetch the file from the GitHub repo
             try {
