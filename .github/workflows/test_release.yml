@@ -55,48 +55,60 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const fs = require('fs');
-          const path = require('path');
-          
-          // Retrieve necessary information
-          const release_id = `${{ steps.create_release.outputs.id }}`;
-          const release_url = `${{ steps.create_release.outputs.html_url }}`;
-          const buildFolder = `${{ github.event.inputs.build_folder }}`;
-          const descriptionFilePath = `${buildFolder}/README.MD`;
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Retrieve necessary information
+            const release_id = `${{ steps.create_release.outputs.id }}`;
+            const release_url = `${{ steps.create_release.outputs.html_url }}`;
+            const buildFolder = `${{ github.event.inputs.build_folder }}`;
+            const descriptionFilePath = `${buildFolder}/README.MD`;
 
-          let releaseDescription = '';
+            let releaseDescription = '';
 
-          // Check for README file and load its content
-          if (fs.existsSync(descriptionFilePath)) {
-            releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
-            console.log("Successfully read release description from 'README.MD'");
-          } else {
-            console.warn("README.MD not found in the specified build folder. Proceeding without a detailed description.");
-          }
+            // Check for README file and load its content
+            if (fs.existsSync(descriptionFilePath)) {
+                releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
+                console.log("Successfully read release description from 'README.MD'");
+            } else {
+                console.warn("README.MD not found in the specified build folder. Proceeding without a detailed description.");
+            }
 
-          // Append release URL to the description
-          releaseDescription += `\n\n[View the latest README.MD file](${release_url})`;
 
-          // Update the release with the description
-          await github.repos.updateRelease({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            release_id,
-            body: releaseDescription,
-          });
+            const filePath = "${buildFolder}/environment.yml";
+            const { data: latestCommit } = await github.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path: filePath,
+                ref: context.sha // Ensure it's tied to the workflow's current ref (latest commit in the branch)
+            });
 
-          // Upload assets from the specified build folder
-          const files = fs.readdirSync(buildFolder);
-          for (const file of files) {
-            if (path.extname(file).toLowerCase() === '.yml') {
-              console.log(`Uploading file: ${file}`);
-              await github.repos.uploadReleaseAsset({
+            const fileUrl = latestCommit.html_url; // This gives the GitHub URL to the file
+            console.log(`Latest committed version of ${filePath} is at: ${fileUrl}`);
+
+            // Append release URL to the description
+            releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
+
+            // Update the release with the description
+            await github.repos.updateRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id,
-                name: file,
-                data: fs.readFileSync(path.join(buildFolder, file)),
-              });
+                body: releaseDescription,
+            });
+
+            // Upload assets from the specified build folder
+            const files = fs.readdirSync(buildFolder);
+            for (const file of files) {
+                if (path.extname(file).toLowerCase() === '.yml') {
+                console.log(`Uploading file: ${file}`);
+                await github.repos.uploadReleaseAsset({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    release_id,
+                    name: file,
+                    data: fs.readFileSync(path.join(buildFolder, file)),
+                });
+                }
             }
-          }
 
