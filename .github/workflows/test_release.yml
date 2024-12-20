@@ -87,7 +87,24 @@ jobs:
             console.log(`Latest committed version of ${filePath} is at: ${fileUrl}`);
 
             // Append release URL to the description
-            releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
+            // Fetch the file from the GitHub repo
+            try {
+                const { data: latestCommit } = await github.repos.getContent({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    path: filePath,
+                    ref: context.sha // Ensure it's tied to the workflow's latest commit
+                });
+
+                const fileUrl = latestCommit.html_url; // GitHub URL to the file
+                console.log(`Latest committed version of ${filePath} is at: ${fileUrl}`);
+
+                // Append release URL to the description
+                releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
+            } catch (error) {
+                console.error(`Error fetching environment.yml from the repository: ${error.message}`);
+                throw error; // Terminate on failure
+            }
 
             // Update the release with the description
             await github.repos.updateRelease({
