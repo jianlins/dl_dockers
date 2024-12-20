@@ -81,12 +81,12 @@ jobs:
                 const { data: latestCommit } = await github.repos.getContent({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    path: filePath,
+                    path: ${buildFolder}/environment.yml,
                     ref: context.sha // Ensure it's tied to the workflow's latest commit
                 });
 
                 const fileUrl = latestCommit.html_url; // GitHub URL to the file
-                console.log(`Latest committed version of ${filePath} is at: ${fileUrl}`);
+                console.log(`Latest committed version of ${buildFolder}/environment.yml is at: ${fileUrl}`);
 
                 // Append release URL to the description
                 releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
