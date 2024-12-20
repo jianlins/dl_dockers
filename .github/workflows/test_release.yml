@@ -87,11 +87,6 @@ jobs:
             releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
 
 
-            releaseDescription += "### Workflow Inputs Provided:\n";
-            for (const [key, value] of Object.entries(github.event.inputs)) {
-                releaseDescription += `- **${key}**: ${value}\n`;
-            }
-
             // Update the release with the description
             await github.repos.updateRelease({
                 owner: context.repo.owner,
