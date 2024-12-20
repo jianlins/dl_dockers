@@ -261,6 +261,14 @@ jobs:
           echo "name=b${BUILD_NUMBER}-${SHORT_HASH}-${{ github.event.inputs.build_folder }}" >> $GITHUB_OUTPUT
         fi
 
+    - name: Debug Permissions
+      run: |
+        echo "Permissions for this GITHUB_TOKEN:"
+        gh auth status
+        gh repo view
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
