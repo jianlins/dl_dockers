@@ -135,9 +135,7 @@ jobs:
       uses: conda-incubator/setup-miniconda@v3
       with:
         miniforge-version: latest         
-        activate-environment: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        environment-file: ${{ github.event.inputs.build_folder }}/environment.yml        
-        auto-activate-base: false        
+        auto-activate-base: true
 
     
     - name: Create Conda Environment
@@ -148,11 +146,11 @@ jobs:
         # Check if the environment directory exists
         if (Test-Path -Path $envPath) {
           Write-Host "Environment ${{ github.event.inputs.build_folder }} already exists under ${{ github.event.inputs.target_folder }}. Will try update..."
-          # conda env update -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          conda env update -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         } else {
           # Environment doesn't exist, proceed to create a new one
           Write-Host "Creating new environment ${{ github.event.inputs.build_folder }} under ${{ github.event.inputs.target_folder }}."
-          # conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         }
         echo "clean up cache..."
         conda clean --all -f -y
