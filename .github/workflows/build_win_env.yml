@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       build_folder:
-        description: "From which folder's environment.yml, the conda environment will be built"
+        description: "From which folder's environment.yml, the conda environment will be built. Don't use any whitespace."
         type: string   
         required: false
         default: 'win_cuda_3.4'
@@ -83,10 +83,10 @@ jobs:
         BUILD_NUMBER="$(git rev-list --count HEAD)"
         SHORT_HASH="$(git rev-parse --short=7 HEAD)"
         if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
-          echo "name=${{ github.event.inputs.build_folder }}-${{ github.event.inputs.cuda }}-b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          echo "name=${{ github.event.inputs.build_folder }}-b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
         else
           SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
-          echo "name=${{ github.event.inputs.build_folder }}-${{ github.event.inputs.cuda }}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
+          echo "name=${{ github.event.inputs.build_folder }}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
         fi
   
     - name: Debug Permissions
