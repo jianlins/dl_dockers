@@ -320,7 +320,7 @@ jobs:
           // Append the file URL to the release description
           releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
           releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
-          pwd
+        
           for (let file of await fs.readdirSync('./zipped')) {
               console.log('uploadReleaseAsset', file);
               await github.repos.uploadReleaseAsset({
