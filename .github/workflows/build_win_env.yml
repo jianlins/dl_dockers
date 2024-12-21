@@ -322,8 +322,7 @@ jobs:
           // Append the file URL to the release description
           releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
           pwd
-          for (let file of await fs.readdirSync('zipped')) {
-            if (path.extname(file) === '.zip') {
+          for (let file of await fs.readdirSync('./zipped')) {
               console.log('uploadReleaseAsset', file);
               await github.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
@@ -332,5 +331,4 @@ jobs:
                 name: file,
                 data: await fs.readFileSync(`zipped/${file}`)
               });
-            }
           }
