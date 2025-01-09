@@ -7,7 +7,7 @@ on:
         description: 'From which folder, the Dockerfiles will be built'  
         type: string   
         required: false
-        default: 'sparknlp_gpu'
+        default: 'cosmos_llamacpp'
       tag:
           description: 'Customize image tag'  
           type: string   
