@@ -18,7 +18,12 @@ WORKDIR /app
 
 COPY . .
 # git clone llama cpp repo
-RUN wget https://github.com/ggerganov/llama.cpp/archive/refs/tags/b4174.zip -O llamacpp.zip && ls && unzip llamacpp.zip && rm *.zip &&  ls &&  mv llama.cpp* llamacpp
+RUN wget $(curl -s https://api.github.com/repos/ggerganov/llama.cpp/releases/latest | grep "zipball_url" | cut -d '"' -f 4) -O llamacpp.zip && \
+    ls && \
+    unzip llamacpp.zip && \
+    rm *.zip && \
+    ls && \
+    mv llama.cpp* llamacpp
 RUN cp -r llamacpp/. /app && cd /app
 
 RUN ls /app
