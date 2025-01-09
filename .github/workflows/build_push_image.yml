@@ -65,6 +65,7 @@ jobs:
           tags=${{ github.event.inputs.tags }}
           IFS=',' read -ra TAG_ARRAY <<< "$tags"
           for tag in "${TAG_ARRAY[@]}"; do
+            echo ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
             docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
           done
 
