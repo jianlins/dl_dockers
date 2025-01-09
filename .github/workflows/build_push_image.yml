@@ -51,12 +51,22 @@ jobs:
           cat Dockerfile          
           docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
           
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          for tag in "${TAG_ARRAY[@]}"; do
+            docker tag ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:temp ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+          done
+          
       - name: list images
         run: docker images
 
       - name: publish
         run: |
-          docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          for tag in "${TAG_ARRAY[@]}"; do
+            docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+          done
 
       - name: Update Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
