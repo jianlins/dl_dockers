@@ -1,10 +1,10 @@
-name: llama2
+name: win_dev
 channels:
   - pytorch
   - conda-forge
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.10
   - pytorch::pytorch
   - conda-forge::faiss-cpu
   - menuinst
@@ -21,7 +21,7 @@ dependencies:
   - conda-forge::scikit-learn
   - conda-forge::jupytext
   - pip:
-    - git+https://github.com/jianlins/medspacy.git
+    - medspacy
     - git+https://github.com/medspacy/medspacy_io.git
     - beautifulsoup4
     - bioc
@@ -52,8 +52,8 @@ dependencies:
     - install-jdk
     - tensorflow
     - tensorflow-text
-    - pyspark==3.5.1
-    - spark-nlp==5.2.3
+    - pyspark==3.4.2
+    - spark-nlp==5.3.3
     - gensim
     - python-dateutil
     - pyodbc
@@ -61,8 +61,6 @@ dependencies:
     - xlrd
     - spark-nlp-display
     - openpyxl
-    - git+https://github.com/facebookresearch/llama-recipes.git
-    - git+https://github.com/facebookresearch/llama.git
     - findspark
     - flask
     - flask-restful
@@ -83,9 +81,6 @@ dependencies:
     - py7zr
     - pyarrow
     - pydantic
-    - spacy==3.5.4
-    - spacy-legacy==3.0.12
-    - spacy-loggers==1.0.5
     - sqlalchemy
     - sqlparse
     - statsmodels
@@ -101,4 +96,6 @@ dependencies:
     - ninja
     - pyyaml
     - requests
-prefix: D:\annaconda_env_jianlin\win_llama2
+    - dspy-ai
+    - 
+prefix: D:\annaconda_env_jianlin\win_dev

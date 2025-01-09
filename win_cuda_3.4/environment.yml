@@ -96,3 +96,4 @@ dependencies:
     - scipy
     - sympy
     - statsmodels
+    - pickleshare
