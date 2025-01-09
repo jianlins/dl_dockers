@@ -49,7 +49,7 @@ jobs:
           cd ${{ github.event.inputs.build_folder }}          
           ls
           cat Dockerfile          
-          docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} .
+          docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:temp .
           
           tags=${{ github.event.inputs.tags }}
           IFS=',' read -ra TAG_ARRAY <<< "$tags"
