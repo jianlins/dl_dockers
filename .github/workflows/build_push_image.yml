@@ -1,5 +1,5 @@
 name: build_push_image
-run-name: B&D ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }}  
+run-name: B&D ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tags }}  
 on:
   workflow_dispatch:
     inputs:
@@ -8,8 +8,8 @@ on:
         type: string   
         required: false
         default: 'cosmos_llamacpp'
-      tag:
-          description: 'Customize image tag'  
+      tags:
+          description: 'Customize image tags'  
           type: string   
           required: false
           default: 'latest'
@@ -42,7 +42,7 @@ jobs:
         with:
           username: ${{ github.event.inputs.hub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
       - name: Test
         run: |
           tags=${{ github.event.inputs.tags }}
