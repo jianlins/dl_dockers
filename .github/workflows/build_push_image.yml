@@ -42,6 +42,11 @@ jobs:
         with:
           username: ${{ github.event.inputs.hub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Test
+        run: |
+          for tag in "${TAG_ARRAY[@]}"; do
+              echo ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+          done
 
       - name: Build
         run: |
