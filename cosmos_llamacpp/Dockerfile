@@ -22,7 +22,7 @@ RUN wget $(curl -s https://api.github.com/repos/ggerganov/llama.cpp/releases/lat
 RUN unzip llamacpp.zip && \
     rm *.zip && \
     ls && \
-    mv llama.cpp* llamacpp
+    mv *llama.cpp* llamacpp
 RUN cp -r llamacpp/. /app && cd /app
 
 RUN ls /app
