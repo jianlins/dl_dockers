@@ -8,8 +8,8 @@ dependencies:
   - pytorch::pytorch
   - pytorch::torchvision
   # - pytorch::torchaudio
-  - pytorch::pytorch-cuda=11.8
-  - nvidia/label/cuda-11.8.0::cuda-nvcc
+  - pytorch::pytorch-cuda=12.4
+  - nvidia/label/cuda-12.4.0::cuda-nvcc
   - faiss-gpu
   - conda-forge:cudnn
   - pytorch::torchtext
@@ -44,7 +44,7 @@ dependencies:
     # dependency version conflict, fix it later
     # - medpspacy-io
     - simpletransformers
-    - nltk==3.8.1
+    - nltk
     - bioc==2.0
     - tqdm==4.65
     - tensorboard
