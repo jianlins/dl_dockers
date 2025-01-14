@@ -35,6 +35,7 @@ dependencies:
     - statsmodels
     - bioc==2.0
     - tqdm
+    - spacy
     - tensorboard
     - pytest
     - setuptools
