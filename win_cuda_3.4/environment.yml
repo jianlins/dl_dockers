@@ -86,14 +86,19 @@ dependencies:
     - ninja
     - torch-ort
     - onnxruntime-gpu
-    - langchain
-    - langchain-core
-    - langchain-community
-    - langchain-experimental
-    - langserve[all]
-    - langchain-cli
     - jupyterlab-freeze
     - scipy
     - sympy
     - statsmodels
     - pickleshare
+    - langchain
+    - langchain-core
+    - langchain-community
+    - langchain-experimental
+    - langgraph
+    - langchain-cli
+    - langserve[all]    
+    - langsmith
+    - langchain-openai
+    - langchain-huggingface
+    - langchain-anthropic    
