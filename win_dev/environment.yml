@@ -98,5 +98,15 @@ dependencies:
     - pyyaml
     - requests
     - dspy-ai
+    - langchain
+    - langchain-core
+    - langchain-community
+    - langchain-experimental
+    - langgraph
+    - langchain-cli
+    - langsmith
+    - langchain-openai
+    - langchain-huggingface
+    - langchain-anthropic
  
 prefix: D:\annaconda_env_jianlin\win_dev

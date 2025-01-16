@@ -8,3 +8,5 @@ Include latest transformers at the moment
 https://github.com/huggingface/transformers/releases/tag/v4.48.0
 
 Use python3.10
+
+Add langchain
