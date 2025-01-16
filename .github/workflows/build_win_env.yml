@@ -12,7 +12,7 @@ on:
         description: 'Envs path (must be on D drive)'
         type: string
         required: false
-        default: 'D:\conda_envs'
+        default: 'D:\conda_envs_jianlins'
       download_jars:
         description: "whether download jars for pyspark"
         type: string
@@ -32,7 +32,7 @@ on:
         description: "whether download sm spacy models"
         type: string
         required: false
-        default: 'false'
+        default: 'true'
       zip_vol_size:
         description: 'Max 7zip volumn size'
         type: string
