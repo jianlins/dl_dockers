@@ -110,16 +110,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.name }}
-          release_name: ${{ steps.tag.outputs.name }}
-          draft: false
-          prerelease: false            
+        
 
       - name: Cache Miniforge Environment
         uses: actions/cache@v4
@@ -170,6 +161,17 @@ jobs:
           conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env export
       
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: ${{ steps.tag.outputs.name }}
+          draft: false
+          prerelease: false    
+                    
       - name: Cache Ivy jars
         if: ${{ github.event.inputs.download_jars == 'true' }}
         uses: actions/cache@v4
