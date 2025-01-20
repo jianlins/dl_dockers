@@ -38,7 +38,7 @@ on:
         description: 'Max 7zip volumn size'
         type: string
         required: false
-        default: '400m' 
+        default: '800m' 
       zip_jar_only:  
         description: "whether zip jars file only"
         type: string
