@@ -173,7 +173,9 @@ jobs:
           conda init
           source /home/runner/.bashrc
           conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          conda env export
+          mkdir -p zipped
+          conda env export -> zipped/detailed_environment.yml
+          cat zipped/detailed_environment.yml
       
                     
       # - name: Cache Ivy jars
@@ -215,6 +217,8 @@ jobs:
           ls ${{ github.event.inputs.target_folder }}
           pwd
           ls ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          
+      
 
       - name: check jar folder
         if: ${{ github.event.inputs.download_jars == 'true' }}
@@ -230,9 +234,6 @@ jobs:
           pwd
           ls -l ${{ github.event.inputs.target_folder }}
           7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}
-          source /home/runner/.bashrc
-          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          conda env export -> zipped/detailed_environment.yml
           ls zipped
 
       - name: Compress and split ivy folder
