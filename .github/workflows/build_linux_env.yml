@@ -59,18 +59,24 @@ jobs:
 
       - name: check space
         shell: bash
-        run: df -h
+        run: |
+          df -h
+          FOLDER_PATH=${{ github.event.inputs.build_folder }}
+          PARENT_FOLDER=$(dirname "$FOLDER_PATH")
+          mount $PARENT_FOLDER /mnt
+          mkdir -p $FOLDER_PATH
 
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-codeql: 'true'
-          temp-reserve-mb: '2048'
-          root-reserve-mb: '2048'
-          # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
-          build-mount-path: '/home'
+      # https://github.com/easimon/maximize-build-space/issues/48 This actiona won't work reliably any more
+      # - name: Maximize build space
+      #   uses: easimon/maximize-build-space@master
+      #   with:
+      #     remove-dotnet: 'true'
+      #     remove-android: 'true'
+      #     remove-codeql: 'true'
+      #     temp-reserve-mb: '2048'
+      #     root-reserve-mb: '2048'
+      #     # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
+      #     build-mount-path: '/home'
 
       - name: recheck space
         shell: bash
