@@ -61,13 +61,13 @@ jobs:
         shell: bash
         run: |
           df -h
-          FOLDER_PATH=${{ github.event.inputs.build_folder }}
-          echo $FOLDER_PATH
+          FOLDER_PATH=${{ github.event.inputs.target_folder }}
+          echo "FOLDER_PATH $FOLDER_PATH"
           PARENT_FOLDER=$(dirname "$FOLDER_PATH")
-          echo $PARENT_FOLDER
+          echo "PARENT_FOLDER $PARENT_FOLDER"
           sudo mount --bind /home /mnt
-          sudo mkdir -p ${{ github.event.inputs.build_folder }}
-          sudo chmod 777 -R ${{ github.event.inputs.build_folder }}
+          sudo mkdir -p ${{ github.event.inputs.target_folder }}
+          sudo chmod 777 -R ${{ github.event.inputs.target_folder }}
 
       # https://github.com/easimon/maximize-build-space/issues/48 This actiona won't work reliably any more
       # - name: Maximize build space
