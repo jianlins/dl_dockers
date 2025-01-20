@@ -63,8 +63,9 @@ jobs:
           df -h
           FOLDER_PATH=${{ github.event.inputs.build_folder }}
           PARENT_FOLDER=$(dirname "$FOLDER_PATH")
-          mount $PARENT_FOLDER /mnt
-          mkdir -p $FOLDER_PATH
+          sudo mount $PARENT_FOLDER /mnt
+          sudo mkdir -p $FOLDER_PATH
+          sudo chmod 777 -R $PARENT_FOLDER
 
       # https://github.com/easimon/maximize-build-space/issues/48 This actiona won't work reliably any more
       # - name: Maximize build space
