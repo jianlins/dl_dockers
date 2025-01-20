@@ -161,6 +161,8 @@ jobs:
 
       - name: check final environment settings
         run: |
+          conda init
+          source /home/runner/.bashrc
           conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env export
       
@@ -236,6 +238,7 @@ jobs:
           pwd
           7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}_ivy.7z ${{ github.event.inputs.target_folder }}/ivy
           ls zipped
+          source /home/runner/.bashrc
           conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env export -> zipped/detailed_environment.yml
 
