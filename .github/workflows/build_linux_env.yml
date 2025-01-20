@@ -8,7 +8,7 @@ on:
         description: "From which folder's environment.yml, the conda environment will be built"
         type: string   
         required: false
-        default: 'vlinux_llama2'
+        default: 'vlinux_cuda'
       target_folder:
         description: 'Envs path (must be on D drive)'
         type: string
@@ -68,6 +68,39 @@ jobs:
           remove-dotnet: 'true'
           # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
           build-mount-path: '${{ github.event.inputs.target_folder }}/'
+
+
+      - name: Determine tag name
+        id: tag
+        shell: bash
+        run: |
+          BUILD_NUMBER="$(git rev-list --count HEAD)"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"
+          if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
+            echo "name=${{ github.event.inputs.build_folder }}-b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          else
+            SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
+            echo "name=${{ github.event.inputs.build_folder }}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
+          fi
+    
+      - name: Debug Permissions
+        run: |
+          echo "Permissions for this GITHUB_TOKEN:"
+          gh auth status
+          gh repo view
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: ${{ steps.tag.outputs.name }}
+          draft: false
+          prerelease: false            
 
       - name: Cache Miniforge Environment
         uses: actions/cache@v4
@@ -186,4 +219,61 @@ jobs:
           name: ${{ github.event.inputs.build_folder }}
           path: zipped/*.7z.*
           retention-days: ${{ github.event.inputs.retention_days }}   
-      
+
+      - name: Upload release
+        id: upload_release
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |          
+            const path = require('path');
+            const fs = require('fs');
+            
+            // Retrieve necessary information
+            const release_id = `${{ steps.create_release.outputs.id }}`;
+            const release_url = `${{ steps.create_release.outputs.html_url }}`;
+            const buildFolder = `${{ github.event.inputs.build_folder }}`;
+            const descriptionFilePath = `${buildFolder}/README.MD`;
+  
+            let releaseDescription = '';
+  
+            // Check for README file and load its content
+            if (fs.existsSync(descriptionFilePath)) {
+                releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
+                console.log("Successfully read release description from 'README.MD'");
+            } else {
+                console.warn("README.MD not found in the specified build folder. Proceeding without a detailed description.");
+            }
+  
+  
+            // Construct the environment.yml GitHub file URL manually
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+            const filePath = `${buildFolder}/environment.yml`;
+            const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${{ steps.tag.outputs.name }}/${filePath}`;
+            console.log(`Constructed file URL: ${fileUrl}`);
+  
+  
+            // Append the file URL to the release description
+            releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
+            releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
+  
+            // Update the release with the description
+            await github.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id,
+                body: releaseDescription,
+            });
+          
+            for (let file of await fs.readdirSync('./zipped')) {
+                console.log('uploadReleaseAsset', file);
+                await github.repos.uploadReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: release_id,
+                  name: file,
+                  data: await fs.readFileSync(`zipped/${file}`)
+                });
+            }
+              
