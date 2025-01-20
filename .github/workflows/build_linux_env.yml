@@ -53,7 +53,7 @@ on:
 jobs:
   run_docker:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4      
 
