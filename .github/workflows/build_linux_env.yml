@@ -70,8 +70,8 @@ jobs:
           echo "FOLDER_PATH $FOLDER_PATH"
           PARENT_FOLDER=$(dirname "$FOLDER_PATH")
           echo "PARENT_FOLDER $PARENT_FOLDER"
-          sudo mount --bind $PARENT_FOLDER /mnt
           sudo mkdir -p $PARENT_FOLDER
+          sudo mount --bind /mnt $PARENT_FOLDER           
           sudo chmod 777 -R $PARENT_FOLDER
           echo "Remove unused pkgs"
           sudo rm -rf /usr/share/dotnet
