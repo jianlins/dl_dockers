@@ -14,11 +14,6 @@ on:
         type: string
         required: false
         default: '/home/vhaslcshij/workspace'
-      user_name:
-        description: 'your username on linux machine, to set the folder/file permission'
-        type: string
-        required: true
-        default: 'vhaslcshij'
       download_jars:
         description: "whether download jars for pyspark"
         type: string
@@ -79,7 +74,9 @@ jobs:
 
       - name: recheck space
         shell: bash
-        run: df -h      
+        run: |
+          df -h      
+          id
       
       # - name: create softlink to mnt
       #   shell: bash
@@ -126,7 +123,6 @@ jobs:
           pwd
           sudo mkdir -p ${{ github.event.inputs.target_folder }}
           sudo mkdir -p ${{ github.event.inputs.target_folder }}/ivy
-          sudo chown -R ${{ github.event.inputs.user_name }}:${{ github.event.inputs.user_name }} ${{ github.event.inputs.target_folder }}
           sudo chmod 777 -R ${{ github.event.inputs.target_folder }}
           ls -l ${{ github.event.inputs.target_folder }}
 
