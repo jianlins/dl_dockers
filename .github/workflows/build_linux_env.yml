@@ -75,8 +75,6 @@ jobs:
           sudo docker image prune --all --force
           echo "Now recheck the spaces"
           df -h
-          echo "list /"
-          ls -l /
 
       # https://github.com/easimon/maximize-build-space/issues/48 This actiona won't work reliably any more
       # - name: Maximize build space
