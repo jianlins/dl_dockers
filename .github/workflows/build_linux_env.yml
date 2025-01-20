@@ -61,21 +61,24 @@ jobs:
         shell: bash
         run: df -h
 
-      # - name: install 7zip
-      #   run: |
-      #     sudo apt update
-      #     sudo apt install p7zip-full p7zip-rar
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          overprovision-lvm: 'true'          
-          remove-dotnet: 'true'
-          # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
-          build-mount-path: '${{ github.event.inputs.target_folder }}/'
+      # - name: Maximize build space
+      #   uses: easimon/maximize-build-space@master
+      #   with:
+      #     overprovision-lvm: 'true'          
+      #     remove-dotnet: 'true'
+      #     # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
+      #     build-mount-path: '${{ github.event.inputs.target_folder }}/'
 
-      - name: recheck space
+      # - name: recheck space
+      #   shell: bash
+      #   run: df -h      
+      
+      - name: create softlink to mnt
         shell: bash
-        run: df -h          
+        run: |
+          mkdir -p ${{ github.event.inputs.target_folder }}
+          mkdir -p /mnt/${{ github.event.inputs.build_folder }}
+          ln -s /mnt/${{ github.event.inputs.build_folder }} ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
 
       - name: Determine tag name
         id: tag
@@ -112,10 +115,10 @@ jobs:
       - name: Cache Miniforge Environment
         uses: actions/cache@v4
         with:
-          path: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          path: ${{ github.event.inputs.build_folder }}/${{ github.event.inputs.target_folder }}
           key: ${{ runner.os }}-${{ github.event.inputs.build_folder }}-${{ hashFiles('${{ github.event.inputs.build_folder }}/environment.yml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ github.event.inputs.build_folder }}-
+            ${{ runner.os }}-${{ github.event.inputs.build_folder }}-/${{ github.event.inputs.target_folder }}
 
 
       - name: mkdir
