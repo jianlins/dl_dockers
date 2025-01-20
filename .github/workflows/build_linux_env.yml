@@ -66,8 +66,8 @@ jobs:
           PARENT_FOLDER=$(dirname "$FOLDER_PATH")
           echo "PARENT_FOLDER $PARENT_FOLDER"
           sudo mount --bind /home /mnt
-          sudo mkdir -p ${{ github.event.inputs.target_folder }}
-          sudo chmod 777 -R ${{ github.event.inputs.target_folder }}
+          sudo mkdir -p $PARENT_FOLDER
+          sudo chmod 777 -R $PARENT_FOLDER
 
       # https://github.com/easimon/maximize-build-space/issues/48 This actiona won't work reliably any more
       # - name: Maximize build space
