@@ -74,7 +74,6 @@ jobs:
           remove-codeql: 'true'
           temp-reserve-mb: '2048'
           root-reserve-mb: '2048'
-          build-mount-path-ownership: ${{ github.event.inputs.user_name }}:${{ github.event.inputs.user_name }}
           # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
           build-mount-path: '${{ github.event.inputs.target_folder }}/'
 
