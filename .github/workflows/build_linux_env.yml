@@ -70,7 +70,7 @@ jobs:
           temp-reserve-mb: '2048'
           root-reserve-mb: '2048'
           # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
-          build-mount-path: '${{ github.event.inputs.target_folder }}/'
+          build-mount-path: '/home'
 
       - name: recheck space
         shell: bash
