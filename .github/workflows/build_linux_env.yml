@@ -14,6 +14,11 @@ on:
         type: string
         required: false
         default: '/home/vhaslcshij/workspace'
+      user_name:
+        description: 'your username on linux machine, to set the folder/file permission'
+        type: string
+        required: true
+        default: 'vhaslcshij'
       download_jars:
         description: "whether download jars for pyspark"
         type: string
@@ -115,7 +120,7 @@ jobs:
       - name: Cache Miniforge Environment
         uses: actions/cache@v4
         with:
-          path: ${{ github.event.inputs.build_folder }}/${{ github.event.inputs.target_folder }}
+          path: ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           key: ${{ runner.os }}-${{ github.event.inputs.build_folder }}-${{ hashFiles('${{ github.event.inputs.build_folder }}/environment.yml') }}
           restore-keys: |
             ${{ runner.os }}-${{ github.event.inputs.build_folder }}-/${{ github.event.inputs.target_folder }}
@@ -127,9 +132,9 @@ jobs:
           pwd
           sudo mkdir -p ${{ github.event.inputs.target_folder }}
           sudo mkdir -p ${{ github.event.inputs.target_folder }}/ivy
-          sudo chown -R vhaslcshij:vhaslcshij /home/vhaslcshij
-          sudo chmod 777 -R /home/vhaslcshij
-          ls -l /home/vhaslcshij
+          sudo chown -R ${{ github.event.inputs.user_name }}:${{ github.event.inputs.user_name }} ${{ github.event.inputs.target_folder }}
+          sudo chmod 777 -R ${{ github.event.inputs.target_folder }}
+          ls -l ${{ github.event.inputs.target_folder }}
 
       - name: install miniforge
         uses: conda-incubator/setup-miniconda@v3
