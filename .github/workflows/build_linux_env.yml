@@ -129,17 +129,15 @@ jobs:
           # environment-file: ${{ github.event.inputs.build_folder }}/environment.yml  
             
 
-      - name: Clean Conda Environment
+      - name: Create Conda Environment
         run: |
           cd ${{ github.event.inputs.build_folder }}
           conda config --set verbosity 2
           # conda env update -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          # if [ -d "${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}" ]; then
-          #   conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          # else
-          #   conda env create -f environment.yml -p ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-          # fi
+          
+      - name: clean up
+        run: |
           echo "clean up cache..."
           conda clean --all -f -y
           pip cache purge  
@@ -212,6 +210,8 @@ jobs:
           pwd
           7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}_ivy.7z ${{ github.event.inputs.target_folder }}/ivy
           ls zipped
+          conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+          conda env export -> zipped/detailed_environment.yml
 
       - name: Upload compressed parts as artifacts
         uses: actions/upload-artifact@v4
