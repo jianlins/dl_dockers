@@ -174,7 +174,7 @@ jobs:
           source /home/runner/.bashrc
           conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           mkdir -p zipped
-          conda env export -> zipped/detailed_environment.yml
+          conda env export > zipped/detailed_environment.yml
           cat zipped/detailed_environment.yml
       
                     
