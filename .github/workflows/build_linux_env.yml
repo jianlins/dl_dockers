@@ -228,6 +228,7 @@ jobs:
         if: ${{ github.event.inputs.zip_jar_only == 'false' }}
         run: |
           pwd
+          ls -l ${{ github.event.inputs.target_folder }}
           7z a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ github.event.inputs.build_folder }}.7z ${{ github.event.inputs.target_folder }}
           ls zipped
 
