@@ -58,9 +58,13 @@ jobs:
       - uses: actions/checkout@v4      
 
       - name: check&mount space
+        id: id_device
         shell: bash
         run: |
           df -h
+          device=$(df -h | grep '/mnt' | awk '{print $1}')
+          echo "mnt device: $device"
+          echo "DEVICE=${device}" >> $GITHUB_OUTPUT
           FOLDER_PATH=${{ github.event.inputs.target_folder }}
           echo "FOLDER_PATH $FOLDER_PATH"
           PARENT_FOLDER=$(dirname "$FOLDER_PATH")
@@ -157,7 +161,10 @@ jobs:
 
       - name: recheck space
         shell: bash
-        run: df -h         
+        run: |
+          df -h         
+          df -h /mnt
+          df -h ${{ steps.id_device.outputs.DEVICE }}
 
       - name: check final environment settings
         run: |
