@@ -156,11 +156,13 @@ jobs:
           echo "clean up cache..."
           conda clean --all -f -y
           pip cache purge  
-      
+
+      - name: recheck space
+        shell: bash
+        run: df -h         
+
       - name: check final environment settings
         run: |
-          conda init
-          source /home/runner/.bashrc
           conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
           conda env export
       
