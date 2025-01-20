@@ -57,6 +57,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4      
 
+      - name: check space
+        shell: bash
+        run: df -h
+
       # - name: install 7zip
       #   run: |
       #     sudo apt update
@@ -69,6 +73,9 @@ jobs:
           # instead of using default value to mount to build path, ${{ github.event.inputs.target_folder }}/ is really the place we need more spaces.
           build-mount-path: '${{ github.event.inputs.target_folder }}/'
 
+      - name: recheck space
+        shell: bash
+        run: df -h          
 
       - name: Determine tag name
         id: tag
