@@ -61,6 +61,7 @@ jobs:
         id: id_device
         shell: bash
         run: |
+          pwd
           df -h
           device=$(df -h | grep '/mnt' | awk '{print $1}')
           echo "mnt device: $device"
