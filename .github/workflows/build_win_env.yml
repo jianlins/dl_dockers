@@ -97,16 +97,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.tag.outputs.name }}
-        release_name: ${{ steps.tag.outputs.name }}
-        draft: false
-        prerelease: false          
+      
     
     - name: Cache Miniforge Environment
       uses: actions/cache@v4
@@ -284,7 +275,16 @@ jobs:
         path: zipped/*.7z.*
         retention-days: ${{ github.event.inputs.retention_days }}
 
-
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.name }}
+        release_name: ${{ steps.tag.outputs.name }}
+        draft: false
+        prerelease: false   
 
     - name: Upload release
       id: upload_release
