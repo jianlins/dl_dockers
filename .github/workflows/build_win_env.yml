@@ -157,9 +157,13 @@ jobs:
         pip cache purge
 
     - name: check final environment settings
+      shell: bash
       run: |
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
-        conda env export
+        mkdir -p zipped
+        conda env export > zipped/detailed_environment.yml
+        cat zipped/detailed_environment.yml
+
 
     - name: Set HADOOP_HOME environment variable
       if: ${{ github.event.inputs.download_jars == 'true' }}
