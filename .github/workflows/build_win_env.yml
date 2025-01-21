@@ -157,7 +157,6 @@ jobs:
         pip cache purge
 
     - name: check final environment settings
-      shell: bash
       run: |
         conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
         mkdir -p zipped
