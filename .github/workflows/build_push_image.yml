@@ -38,18 +38,21 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
+        if: ${{ github.event.inputs.hub_username != '' }}
         uses: docker/login-action@v3
         with:
           username: ${{ github.event.inputs.hub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Test
+        id: tag
         run: |
           tags=${{ github.event.inputs.tags }}
           IFS=',' read -ra TAG_ARRAY <<< "$tags"
           for tag in "${TAG_ARRAY[@]}"; do
               echo ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
           done
+          echo "tag0=${TAG_ARRAY[0]}" >> $GITHUB_OUTPUT
 
       - name: Build
         run: |
@@ -69,6 +72,7 @@ jobs:
         run: docker images
 
       - name: publish
+        if: ${{ github.event.inputs.hub_username != '' }}
         run: |
           tags=${{ github.event.inputs.tags }}
           IFS=',' read -ra TAG_ARRAY <<< "$tags"
@@ -78,6 +82,7 @@ jobs:
           done
 
       - name: Update Docker Hub Description
+        if: ${{ github.event.inputs.hub_username != '' }}
         uses: peter-evans/dockerhub-description@v4
         with:
           username: ${{ github.event.inputs.hub_username }}
@@ -100,7 +105,8 @@ jobs:
         run: |
           # Export the image to a tar file
           mkdir -p artifacts
-          docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${TAG_ARRAY[0]} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar
+          echo "docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar"
+          docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar
 
       - name: Install 7zip
         run: sudo apt-get install -y p7zip-full
@@ -108,7 +114,7 @@ jobs:
       - name: Split Docker image into volumes
         run: |
           cd artifacts
-          7z a -v2g docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-image.tar
+          7z a -v2g docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-${{ github.event.inputs.build_folder }}.tar
 
       - name: Create Release
         id: create_release
