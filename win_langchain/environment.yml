@@ -1,4 +1,4 @@
-name: win_langchain
+name: win_llm
 channels:
   - nvidia
   - defaults
@@ -6,7 +6,6 @@ dependencies:
   - python=3.10
   - pip
   - jupyterlab
-  - conda-forge::faiss-cpu
   - pip:
     - pyspark==3.4.2
     - spark-nlp==5.3.3  

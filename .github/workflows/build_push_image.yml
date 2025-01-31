@@ -96,3 +96,36 @@ jobs:
       #     name: ${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}
       #     path: /tmp/${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}.tar
       #     retention-days: 3
+      - name: Save image as a tar for later use
+        run: |
+          # Export the image to a tar file
+          mkdir -p artifacts
+          docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${TAG_ARRAY[0]} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar
+
+      - name: Install 7zip
+        run: sudo apt-get install -y p7zip-full
+
+      - name: Split Docker image into volumes
+        run: |
+          cd artifacts
+          7z a -v2g docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-image.tar
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}
+          release_name: Docker image ${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tags }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/docker-${{ github.event.inputs.build_folder }}-volumes.*
+          tag_name: ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
