@@ -1,0 +1,1 @@
+Simply transfer open-webui docker image to tar file release
