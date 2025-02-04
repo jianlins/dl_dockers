@@ -53,10 +53,14 @@ jobs:
         id: tag
         shell: bash
         run: |
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          echo "tag0=${TAG_ARRAY[0]}" >> $GITHUB_OUTPUT
           BUILD_NUMBER="$(git rev-list --count HEAD)"
           SHORT_HASH="$(git rev-parse --short=7 HEAD)"
           if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
             echo "name=Docker ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}-b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+            echo 
           else
             SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
             echo "name=Docker ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
