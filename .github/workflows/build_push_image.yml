@@ -18,6 +18,11 @@ on:
         type: string   
         required: false
         default: 'brokenjade'
+      zip_vol_size:
+        description: 'Max 7zip volumn size'
+        type: string
+        required: false
+        default: '800m'
 
 jobs:
   build_docker:
@@ -114,7 +119,7 @@ jobs:
       - name: Split Docker image into volumes
         run: |
           cd artifacts
-          7z a -v2g docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-${{ github.event.inputs.build_folder }}.tar
+          7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-${{ github.event.inputs.build_folder }}.tar
 
       - name: Create Release
         id: create_release
@@ -129,9 +134,55 @@ jobs:
 
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: artifacts/docker-${{ github.event.inputs.build_folder }}-volumes.*
           tag_name: ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |          
+            const path = require('path');
+            const fs = require('fs');
+            
+            // Retrieve necessary information
+            const release_id = `${{ steps.create_release.outputs.id }}`;
+            const release_url = `${{ steps.create_release.outputs.html_url }}`;
+            const buildFolder = `${{ github.event.inputs.build_folder }}`;
+            const descriptionFilePath = `${buildFolder}/README.MD`;
+  
+            let releaseDescription = '';
+  
+            // Check for README file and load its content
+            if (fs.existsSync(descriptionFilePath)) {
+                releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
+                console.log("Successfully read release description from 'README.MD'");
+            } else {
+                console.warn("README.MD not found in the specified build folder. Proceeding without a detailed description.");
+            }
+  
+  
+            // Construct the environment.yml GitHub file URL manually
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+            const filePath = `${buildFolder}/Dockerfile`;
+            const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${{ steps.tag.outputs.name }}/${filePath}`;
+            console.log(`Constructed file URL: ${fileUrl}`);
+  
+  
+            // Append the file URL to the release description
+            releaseDescription += `\n\nView the corresponding [Dockerfile](${fileUrl}) file used for this release.`;
+            releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
+            releaseDescription += `\n\nThis environment was built with following workflow settings: `;
+            releaseDescription += `\nbuild_folder: ${{ github.event.inputs.build_folder }}`;
+            releaseDescription += `\ntags: ${{ github.event.inputs.tags }}`;
+            releaseDescription += `\nhub_username: ${{ github.event.inputs.hub_username }}`;
+            releaseDescription += `\nzip_vol_size: ${{ github.event.inputs.zip_vol_size }}`;
+  
+            // Update the release with the description
+            await github.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id,
+                body: releaseDescription,
+            });
       
