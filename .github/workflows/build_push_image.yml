@@ -49,15 +49,18 @@ jobs:
           username: ${{ github.event.inputs.hub_username }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Test
+      - name: Determine tag name
         id: tag
+        shell: bash
         run: |
-          tags=${{ github.event.inputs.tags }}
-          IFS=',' read -ra TAG_ARRAY <<< "$tags"
-          for tag in "${TAG_ARRAY[@]}"; do
-              echo ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
-          done
-          echo "tag0=${TAG_ARRAY[0]}" >> $GITHUB_OUTPUT
+          BUILD_NUMBER="$(git rev-list --count HEAD)"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"
+          if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
+            echo "name=${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}-b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+          else
+            SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
+            echo "name=${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Build
         run: |
@@ -128,8 +131,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}
-          release_name: Docker image ${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tags }}
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: ${{ steps.tag.outputs.name }}
           draft: false
           prerelease: false
 
