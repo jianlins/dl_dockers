@@ -119,7 +119,8 @@ jobs:
       - name: Split Docker image into volumes
         run: |
           cd artifacts
-          7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-${{ github.event.inputs.build_folder }}.tar
+          mkdir zipped
+          7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-${{ github.event.inputs.build_folder }}.tar
 
       - name: Create Release
         id: create_release
@@ -137,7 +138,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: artifacts/docker-${{ github.event.inputs.build_folder }}-volumes.*
           tag_name: ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |          
@@ -185,4 +185,14 @@ jobs:
                 release_id,
                 body: releaseDescription,
             });
-      
+
+            for (let file of await fs.readdirSync('./artifacts/zipped')) {
+              console.log('uploadReleaseAsset', file);
+              await github.repos.uploadReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id: release_id,
+                name: file,
+                data: await fs.readFileSync(`artifacts/zipped/${file}`)
+              });
+            }      
