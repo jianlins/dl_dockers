@@ -194,13 +194,13 @@ jobs:
                 body: releaseDescription,
             });
 
-            for (let file of await fs.readdirSync('./artifacts/zipped')) {
+            for (let file of await fs.readdirSync('./zipped')) {
               console.log('uploadReleaseAsset', file);
               await github.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release_id,
                 name: file,
-                data: await fs.readFileSync(`artifacts/zipped/${file}`)
+                data: await fs.readFileSync(`zipped/${file}`)
               });
             }      
