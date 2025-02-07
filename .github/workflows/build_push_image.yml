@@ -147,6 +147,7 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}
           github-token: ${{secrets.GITHUB_TOKEN}}
+          run: pwd
           script: |          
             const path = require('path');
             const fs = require('fs');
@@ -198,13 +199,13 @@ jobs:
 
 
 
-            for (let file of await fs.readdirSync('artifacts/zipped')) {
+            for (let file of await fs.readdirSync('zipped')) {
               console.log('uploadReleaseAsset', file);
               await github.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release_id,
                 name: file,
-                data: fs.createReadStream(`artifacts/zipped/${file}`)
+                data: fs.createReadStream(`zipped/${file}`)
               });
             }      
