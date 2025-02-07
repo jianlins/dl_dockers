@@ -158,6 +158,9 @@ jobs:
             const descriptionFilePath = `${buildFolder}/README.MD`;
   
             let releaseDescription = '';
+
+            const core = require('@actions/core');
+            core.info(`Current working directory: ${process.cwd()}`);
   
             // Check for README file and load its content
             if (fs.existsSync(descriptionFilePath)) {
@@ -193,8 +196,7 @@ jobs:
                 body: releaseDescription,
             });
 
-            const core = require('@actions/core');
-            core.info(`Current working directory: ${process.cwd()}`);
+
 
             for (let file of await fs.readdirSync('artifacts/zipped')) {
               console.log('uploadReleaseAsset', file);
