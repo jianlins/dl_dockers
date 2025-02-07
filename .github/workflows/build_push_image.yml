@@ -130,6 +130,11 @@ jobs:
           mkdir zipped
           7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-${{ github.event.inputs.build_folder }}.tar
 
+      - name: check zipped
+        run: |
+          pwd
+          ls artifacts/zipped
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -194,13 +199,13 @@ jobs:
                 body: releaseDescription,
             });
 
-            for (let file of await fs.readdirSync('./zipped')) {
+            for (let file of await fs.readdirSync('artifacts/zipped')) {
               console.log('uploadReleaseAsset', file);
               await github.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release_id,
                 name: file,
-                data: await fs.readFileSync(`zipped/${file}`)
+                data: await fs.readFileSync(`artifacts/zipped/${file}`)
               });
             }      
