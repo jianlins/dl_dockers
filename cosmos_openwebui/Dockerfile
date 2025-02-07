@@ -7,5 +7,6 @@ RUN python -c "import os; from sentence_transformers import SentenceTransformer;
     chown -R $UID:$GID /app/backend/data/
 
 RUN du -h /app/onnx/hub
+RUN du -h /root/.cache
 
 # copy embedding weight from build
