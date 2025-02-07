@@ -199,6 +199,8 @@ jobs:
                 body: releaseDescription,
             });
 
+            console.log("Current working directory:", process.cwd());
+
             for (let file of await fs.readdirSync('artifacts/zipped')) {
               console.log('uploadReleaseAsset', file);
               await github.repos.uploadReleaseAsset({
