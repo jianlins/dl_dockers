@@ -9,4 +9,3 @@ RUN python -c "import os; from sentence_transformers import SentenceTransformer;
 RUN ls /app/onnx
 
 # copy embedding weight from build
-COPY /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx
