@@ -57,15 +57,9 @@ jobs:
           IFS=',' read -ra TAG_ARRAY <<< "$tags"
           echo "tag0=${TAG_ARRAY[0]}" >> $GITHUB_OUTPUT
           BUILD_NUMBER="$(git rev-list --count HEAD)"
-          SHORT_HASH="$(git rev-parse --short=7 HEAD)"
-          if [[ "${{ env.BRANCH_NAME }}" == "master" ]]; then
-            echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}" >> $GITHUB_OUTPUT
-            echo 
-          else
-            SAFE_NAME=$(echo "${{ env.BRANCH_NAME }}" | tr '/' '-')
-            echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT
-          fi
-          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"          
+          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT          
+          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}"
 
       - name: Build
         run: |
