@@ -1,4 +1,4 @@
-FROM ghcr.io/open-webui/open-webui:main
+FROM ghcr.io/open-webui/open-webui:main as base
 ENV HF_HOME="/app/onnx"
 RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 RUN python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ['RAG_EMBEDDING_MODEL'], device='cpu')" && \
@@ -6,6 +6,6 @@ RUN python -c "import os; from sentence_transformers import SentenceTransformer;
     python -c "import os; import tiktoken; tiktoken.get_encoding(os.environ['TIKTOKEN_ENCODING_NAME'])"; \    
     chown -R $UID:$GID /app/backend/data/
 
-RUN ls -l /app/onnx/hub
+RUN du -h /app/onnx/hub
 
 # copy embedding weight from build
