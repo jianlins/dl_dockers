@@ -6,6 +6,6 @@ RUN python -c "import os; from sentence_transformers import SentenceTransformer;
     python -c "import os; import tiktoken; tiktoken.get_encoding(os.environ['TIKTOKEN_ENCODING_NAME'])"; \    
     chown -R $UID:$GID /app/backend/data/
 
-RUN ls /app/onnx/hub
+RUN ls -l /app/onnx/hub
 
 # copy embedding weight from build
