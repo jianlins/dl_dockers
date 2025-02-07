@@ -206,6 +206,6 @@ jobs:
                 repo: context.repo.repo,
                 release_id: release_id,
                 name: file,
-                data: await fs.readFileSync(`artifacts/zipped/${file}`)
+                data: fs.createReadStream(`artifacts/zipped/${file}`)
               });
             }      
