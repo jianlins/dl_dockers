@@ -7,7 +7,7 @@ on:
         description: 'From which folder, the Dockerfiles will be built'  
         type: string   
         required: false
-        default: 'cosmos_llamacpp'
+        default: 'cosmos_openwebui'
       tags:
           description: 'Customize image tags'  
           type: string   
