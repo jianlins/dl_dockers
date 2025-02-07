@@ -1,4 +1,4 @@
-FROM ghcr.io/open-webui/open-webui:main AS build
+FROM ghcr.io/open-webui/open-webui:main
 
 
 RUN python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ['RAG_EMBEDDING_MODEL'], device='cpu')" && \
@@ -10,4 +10,4 @@ RUN python -c "import os; from sentence_transformers import SentenceTransformer;
 
 # copy embedding weight from build
 RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
-COPY --from=build /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx
+COPY /app/onnx /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx
