@@ -1,5 +1,5 @@
 FROM ghcr.io/open-webui/open-webui:main
-ENV TRANSFORMERS_CACHE="/app/onnx"
+ENV HF_HOME="/app/onnx"
 RUN mkdir -p /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2
 RUN python -c "import os; from sentence_transformers import SentenceTransformer; SentenceTransformer(os.environ['RAG_EMBEDDING_MODEL'], device='cpu')" && \
     python -c "import os; from faster_whisper import WhisperModel; WhisperModel(os.environ['WHISPER_MODEL'], device='cpu', compute_type='int8', download_root=os.environ['WHISPER_MODEL_DIR'])"; \
