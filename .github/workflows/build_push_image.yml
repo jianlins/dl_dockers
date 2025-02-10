@@ -146,12 +146,16 @@ jobs:
           script: |          
             const path = require('path');
             const fs = require('fs');
+            # const core = require('@actions/core');
             
-            // Retrieve necessary information
-            const release_id = `${{ steps.create_release.outputs.id }}`;
-            const release_url = `${{ steps.create_release.outputs.html_url }}`;
-            const buildFolder = `${{ github.event.inputs.build_folder }}`;
+            # // Log current working directory
+            # core.info(`Current working directory: ${process.cwd()}`);
+            
+            // Define paths
+            const buildFolder = '${{ github.event.inputs.build_folder }}';
             const descriptionFilePath = `${buildFolder}/README.MD`;
+            const artifactDirectory = '/home/runner/work/dl_dockers/dl_dockers/artifacts/zipped';
+            
   
             let releaseDescription = '';
   
