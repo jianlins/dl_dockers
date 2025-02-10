@@ -136,7 +136,18 @@ jobs:
           name: ${{ github.event.inputs.build_folder }}
           path: artifacts/zipped/*.7z.*
           retention-days: ${{ github.event.inputs.retention_days }}
-              
+
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: ${{ steps.tag.outputs.name }}
+          draft: false
+          prerelease: false             
 
       - name: Upload release
         id: upload_release
@@ -146,19 +157,16 @@ jobs:
           script: |          
             const path = require('path');
             const fs = require('fs');
-            # const core = require('@actions/core');
             
-            # // Log current working directory
-            # core.info(`Current working directory: ${process.cwd()}`);
-            
-            // Define paths
-            const buildFolder = '${{ github.event.inputs.build_folder }}';
+            // Retrieve necessary information
+            const release_id = `${{ steps.create_release.outputs.id }}`;
+            const release_url = `${{ steps.create_release.outputs.html_url }}`;
+            const buildFolder = `${{ github.event.inputs.build_folder }}`;
             const descriptionFilePath = `${buildFolder}/README.MD`;
-            const artifactDirectory = '/home/runner/work/dl_dockers/dl_dockers/artifacts/zipped';
-            
   
             let releaseDescription = '';
-  
+
+
             // Check for README file and load its content
             if (fs.existsSync(descriptionFilePath)) {
                 releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
@@ -171,20 +179,19 @@ jobs:
             // Construct the environment.yml GitHub file URL manually
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
-            const filePath = `${buildFolder}/environment.yml`;
+            const filePath = `${buildFolder}/Dockerfile`;
             const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${{ steps.tag.outputs.name }}/${filePath}`;
             console.log(`Constructed file URL: ${fileUrl}`);
   
   
             // Append the file URL to the release description
-            releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
+            releaseDescription += `\n\nView the corresponding [Dockerfile](${fileUrl}) file used for this release.`;
             releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
             releaseDescription += `\n\nThis environment was built with following workflow settings: `;
-            releaseDescription += `\ndownload_jars: ${{ github.event.inputs.download_jars }}`;
-            releaseDescription += `\nsparknlp_version: ${{ github.event.inputs.sparknlp_version }}`;
-            releaseDescription += `\nsparknlp_gpu: ${{ github.event.inputs.sparknlp_gpu }}`;
-            releaseDescription += `\ndownload_spacy_model: ${{ github.event.inputs.download_spacy_model }}`;
-            releaseDescription += `\nzip_jar_only: ${{ github.event.inputs.zip_jar_only }}`;          
+            releaseDescription += `\nbuild_folder: ${{ github.event.inputs.build_folder }}`;
+            releaseDescription += `\ntags: ${{ github.event.inputs.tags }}`;
+            releaseDescription += `\nhub_username: ${{ github.event.inputs.hub_username }}`;
+            releaseDescription += `\nzip_vol_size: ${{ github.event.inputs.zip_vol_size }}`;     
   
             // Update the release with the description
             await github.repos.updateRelease({
