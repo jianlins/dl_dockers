@@ -206,15 +206,29 @@ jobs:
                 body: releaseDescription,
             });
 
+            const artifactDirectory = '/home/runner/work/dl_dockers/dl_dockers/artifacts/zipped';
+
+            // Check if directory exists
+            if (!fs.existsSync(artifactDirectory)) {
+              console.error('Artifacts directory does not exist:', artifactDirectory);
+              return;
+            }
+
+            // Fetch files from directory
+            const artifactFiles = fs.readdirSync(artifactDirectory);
+            if (artifactFiles.length === 0) {
+              console.warn('No files found in artifacts directory:', artifactDirectory);
+            }
 
 
-            for (let file of await fs.readdirSync('/home/runner/work/dl_dockers/dl_dockers/${{ github.event.inputs.build_folder }}/${{ github.event.inputs.build_folder }}/artifacts/zipped')) {
-              console.log('uploadReleaseAsset', file);
+            for (const file of artifactFiles) {
+              console.log('Uploading release asset:', file);
               await github.repos.uploadReleaseAsset({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 release_id: release_id,
                 name: file,
-                data: fs.createReadStream(`/home/runner/work/dl_dockers/dl_dockers/${{ github.event.inputs.build_folder }}/${{ github.event.inputs.build_folder }}/artifacts/zipped/${file}`)
+                data: fs.createReadStream(path.join(artifactDirectory, file)), 
               });
-            }      
+            }
+     
