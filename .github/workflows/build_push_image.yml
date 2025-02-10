@@ -154,24 +154,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.build_folder }}-${{ github.event.inputs.tags }}
           github-token: ${{secrets.GITHUB_TOKEN}}
-          run: pwd
-          script: |          
+          script: |
             const path = require('path');
             const fs = require('fs');
-            
-            // Retrieve necessary information
-            const release_id = `${{ steps.create_release.outputs.id }}`;
-            const release_url = `${{ steps.create_release.outputs.html_url }}`;
-            const buildFolder = `${{ github.event.inputs.build_folder }}`;
-            const descriptionFilePath = `${buildFolder}/README.MD`;
-  
-            let releaseDescription = '';
-
             const core = require('@actions/core');
+            
+            // Log current working directory
             core.info(`Current working directory: ${process.cwd()}`);
-  
+            
+            // Define paths
+            const buildFolder = '${{ github.event.inputs.build_folder }}';
+            const descriptionFilePath = `${buildFolder}/README.MD`;
+            const artifactDirectory = 'artifacts/zipped';
+            
+            let releaseDescription = '';
+            
             // Check for README file and load its content
             if (fs.existsSync(descriptionFilePath)) {
                 releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
@@ -179,17 +177,15 @@ jobs:
             } else {
                 console.warn("README.MD not found in the specified build folder. Proceeding without a detailed description.");
             }
-  
-  
-            // Construct the environment.yml GitHub file URL manually
+            
+            // Construct the Dockerfile GitHub URL
             const repoOwner = context.repo.owner;
             const repoName = context.repo.repo;
             const filePath = `${buildFolder}/Dockerfile`;
             const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${{ steps.tag.outputs.name }}/${filePath}`;
             console.log(`Constructed file URL: ${fileUrl}`);
-  
-  
-            // Append the file URL to the release description
+            
+            // Append information to release description
             releaseDescription += `\n\nView the corresponding [Dockerfile](${fileUrl}) file used for this release.`;
             releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
             releaseDescription += `\n\nThis environment was built with following workflow settings: `;
@@ -197,38 +193,51 @@ jobs:
             releaseDescription += `\ntags: ${{ github.event.inputs.tags }}`;
             releaseDescription += `\nhub_username: ${{ github.event.inputs.hub_username }}`;
             releaseDescription += `\nzip_vol_size: ${{ github.event.inputs.zip_vol_size }}`;
-  
+            
             // Update the release with the description
             await github.repos.updateRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                release_id,
-                body: releaseDescription,
+                release_id: '${{ steps.create_release.outputs.id }}',
+                body: releaseDescription
             });
-
-            const artifactDirectory = '/home/runner/work/dl_dockers/dl_dockers/artifacts/zipped';
-
-            // Check if directory exists
+            
+            // Verify artifact directory exists
             if (!fs.existsSync(artifactDirectory)) {
-              console.error('Artifacts directory does not exist:', artifactDirectory);
-              return;
+                core.setFailed(`Artifacts directory does not exist: ${artifactDirectory}`);
+                process.exit(1);
             }
-
-            // Fetch files from directory
+            
+            // Get list of files to upload
             const artifactFiles = fs.readdirSync(artifactDirectory);
+            
+            // Log files for debugging
             if (artifactFiles.length === 0) {
-              console.warn('No files found in artifacts directory:', artifactDirectory);
+                console.warn('No files found in artifact directory:', artifactDirectory);
+            } else {
+                console.log('Files to upload:', artifactFiles);
             }
-
-
-            for (const file of artifactFiles) {
-              console.log('Uploading release asset:', file);
-              await github.repos.uploadReleaseAsset({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: release_id,
-                name: file,
-                data: fs.createReadStream(path.join(artifactDirectory, file)), 
-              });
+            
+            // Upload each file
+            try {
+                await Promise.all(
+                    artifactFiles.map(file => {
+                        console.log('Uploading release asset:', file);
+                        const filePath = path.join(artifactDirectory, file);
+                        
+                        return github.repos.uploadReleaseAsset({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            release_id: '${{ steps.create_release.outputs.id }}',
+                            name: file,
+                            data: fs.createReadStream(filePath)
+                        });
+                    })
+                );
+                
+                console.log('All files uploaded successfully!');
+            } catch (error) {
+                core.setFailed(`Error uploading files: ${error.message}`);
+                throw error;
             }
-     
+      
