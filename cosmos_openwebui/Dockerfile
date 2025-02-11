@@ -7,5 +7,8 @@ RUN python -c "import os; from sentence_transformers import SentenceTransformer;
 
 
 RUN du -h /app/backend/data/
+
+FROM ghcr.io/open-webui/open-webui:main
+
 COPY --chown=$UID:$GID --from=build /app/backend/data /app/backend/data
 # copy embedding weight from build
