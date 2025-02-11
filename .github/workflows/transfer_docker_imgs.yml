@@ -60,6 +60,8 @@ jobs:
           original_string=${{ github.event.inputs.image_path }}
           file_name="${original_string//\//_}"
           file_name="${file_name//:/_}"
+          file_name="${file_name//./_}"
+          file_name="${file_name//-/_}"
           echo "file_name=${file_name}" >> $GITHUB_OUTPUT   
           echo "docker save ${{ github.event.inputs.image_path }} -o artifacts/${file_name}.tar"
           docker save ${{ github.event.inputs.image_path }} -o artifacts/${file_name}.tar
