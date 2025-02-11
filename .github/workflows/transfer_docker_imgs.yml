@@ -36,13 +36,16 @@ jobs:
         id: tag
         shell: bash
         run: |
-          tags=${{ github.event.inputs.tags }}
-          IFS=',' read -ra TAG_ARRAY <<< "$tags"
-          echo "tag0=${TAG_ARRAY[0]}" >> $GITHUB_OUTPUT
+          original_string=${{ github.event.inputs.image_path }}
+          file_name="${original_string//\//_}"
+          file_name="${file_name//:/_}"
+          file_name="${file_name//./_}"
+          file_name="${file_name//-/_}"  
           BUILD_NUMBER="$(git rev-list --count HEAD)"
-          SHORT_HASH="$(git rev-parse --short=7 HEAD)"          
-          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT          
-          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"         
+          echo "name=${file_name}${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT          
+          echo "name=${file_name}-b${BUILD_NUMBER}-${SHORT_HASH}"
+          echo "file_name=${file_name}" >> $GITHUB_OUTPUT   
 
       - name: Build
         run: |
@@ -53,18 +56,11 @@ jobs:
         run: docker images
 
       - name: Save image as a tar for later use
-        id: save_image
         run: |
           # Export the image to a tar file
           mkdir -p artifacts
-          original_string=${{ github.event.inputs.image_path }}
-          file_name="${original_string//\//_}"
-          file_name="${file_name//:/_}"
-          file_name="${file_name//./_}"
-          file_name="${file_name//-/_}"
-          echo "file_name=${file_name}" >> $GITHUB_OUTPUT   
-          echo "docker save ${{ github.event.inputs.image_path }} -o artifacts/${file_name}.tar"
-          docker save ${{ github.event.inputs.image_path }} -o artifacts/${file_name}.tar
+          echo "docker save ${{ github.event.inputs.image_path }} -o artifacts/${{ steps.tag.outputs.file_name }}.tar"
+          docker save ${{ github.event.inputs.image_path }} -o artifacts/${{ steps.tag.outputs.file_name }}.tar
 
       - name: Install 7zip
         run: sudo apt-get install -y p7zip-full
@@ -73,7 +69,7 @@ jobs:
         run: |
           cd artifacts
           mkdir zipped
-          7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ steps.save_image.outputs.file_name }}.7z ${{ steps.save_image.outputs.file_name }}.tar
+          7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ steps.tag.outputs.file_name }}.7z ${{ steps.tag.outputs.file_name }}.tar
 
           
       - name: check zipped
