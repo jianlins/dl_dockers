@@ -1,0 +1,214 @@
+name: build_push_image
+run-name: B&D ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tags }}  
+on:
+  workflow_dispatch:
+    inputs:
+      build_folder:
+        description: 'From which folder, the Dockerfiles will be built'  
+        type: string   
+        required: false
+        default: 'cosmos_openwebui'
+      tags:
+          description: 'Customize image tags'  
+          type: string   
+          required: false
+          default: 'latest'
+      hub_username:
+        description: 'Docker hub username'  
+        type: string   
+        required: false
+        default: 'brokenjade'
+      zip_vol_size:
+        description: 'Max 7zip volumn size'
+        type: string
+        required: false
+        default: '800m'
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-${{ github.event.inputs.build_folder  }}
+          restore-keys: |
+            buildx-${{ github.event.inputs.build_folder  }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        if: ${{ github.event.inputs.hub_username != 'false' && github.event.inputs.hub_username != 'local' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ github.event.inputs.hub_username }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Determine tag name
+        id: tag
+        shell: bash
+        run: |
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          echo "tag0=${TAG_ARRAY[0]}" >> $GITHUB_OUTPUT
+          BUILD_NUMBER="$(git rev-list --count HEAD)"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"          
+          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT          
+          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}"
+
+      - name: Build
+        run: |
+          pwd
+          cd ${{ github.event.inputs.build_folder }}          
+          ls
+          cat Dockerfile          
+          docker build -t ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:temp .
+          
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          for tag in "${TAG_ARRAY[@]}"; do
+            docker tag ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:temp ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+          done
+          
+      - name: list images
+        run: docker images
+
+      - name: publish
+        if: ${{ github.event.inputs.hub_username != 'false' && github.event.inputs.hub_username != 'local' }}
+        run: |
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          for tag in "${TAG_ARRAY[@]}"; do
+            echo ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+            docker image push ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:$tag
+          done
+
+      - name: Update Docker Hub Description
+        if: ${{ github.event.inputs.hub_username != 'false' && github.event.inputs.hub_username != 'local' }}
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ github.event.inputs.hub_username }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}
+          readme-filepath: "${{ github.event.inputs.build_folder }}/README.MD"
+
+      # only works if built on self-hosted runners. Github runners do not have enough space for this.
+
+      # - name: Save image as a tar for later use 💾
+      #   run: docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tag }} -o /tmp/${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}.tar
+      #   shell: bash
+      # - name: Upload image as artifact 💾
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}
+      #     path: /tmp/${{ github.event.inputs.hub_username }}-${{ github.event.inputs.build_folder }}.tar
+      #     retention-days: 3
+      - name: Save image as a tar for later use
+        run: |
+          # Export the image to a tar file
+          mkdir -p artifacts
+          echo "docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar"
+          docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar
+
+      - name: Install 7zip
+        run: sudo apt-get install -y p7zip-full
+
+      - name: Split Docker image into volumes
+        run: |
+          cd artifacts
+          mkdir zipped
+          7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/docker-${{ github.event.inputs.build_folder }}-volumes.7z docker-${{ github.event.inputs.build_folder }}.tar
+
+          
+      - name: check zipped
+        run: |
+          pwd
+          ls artifacts/zipped
+
+      - name: Upload compressed parts as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.event.inputs.build_folder }}
+          path: artifacts/zipped/*.7z.*
+          retention-days: ${{ github.event.inputs.retention_days }}
+
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: ${{ steps.tag.outputs.name }}
+          draft: false
+          prerelease: false             
+
+      - name: Upload release
+        id: upload_release
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |          
+            const path = require('path');
+            const fs = require('fs');
+            
+            // Retrieve necessary information
+            const release_id = `${{ steps.create_release.outputs.id }}`;
+            const release_url = `${{ steps.create_release.outputs.html_url }}`;
+            const buildFolder = `${{ github.event.inputs.build_folder }}`;
+            const descriptionFilePath = `${buildFolder}/README.MD`;
+  
+            let releaseDescription = '';
+
+
+            // Check for README file and load its content
+            if (fs.existsSync(descriptionFilePath)) {
+                releaseDescription = fs.readFileSync(descriptionFilePath, 'utf8');
+                console.log("Successfully read release description from 'README.MD'");
+            } else {
+                console.warn("README.MD not found in the specified build folder. Proceeding without a detailed description.");
+            }
+  
+  
+            // Construct the environment.yml GitHub file URL manually
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+            const filePath = `${buildFolder}/Dockerfile`;
+            const fileUrl = `https://github.com/${repoOwner}/${repoName}/blob/${{ steps.tag.outputs.name }}/${filePath}`;
+            console.log(`Constructed file URL: ${fileUrl}`);
+  
+  
+            // Append the file URL to the release description
+            releaseDescription += `\n\nView the corresponding [Dockerfile](${fileUrl}) file used for this release.`;
+            releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
+            releaseDescription += `\n\nThis environment was built with following workflow settings: `;
+            releaseDescription += `\nbuild_folder: ${{ github.event.inputs.build_folder }}`;
+            releaseDescription += `\ntags: ${{ github.event.inputs.tags }}`;
+            releaseDescription += `\nhub_username: ${{ github.event.inputs.hub_username }}`;
+            releaseDescription += `\nzip_vol_size: ${{ github.event.inputs.zip_vol_size }}`;     
+  
+            // Update the release with the description
+            await github.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id,
+                body: releaseDescription,
+            });
+          
+            for (let file of await fs.readdirSync('./artifacts/zipped')) {
+                console.log('uploadReleaseAsset', file);
+                await github.repos.uploadReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: release_id,
+                  name: file,
+                  data: await fs.readFileSync(`artifacts/zipped/${file}`)
+                });
+            }
+      

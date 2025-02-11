@@ -1,0 +1,134 @@
+name: transfer_docker_imgs
+run-name: B&D ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tags }}  
+on:
+  workflow_dispatch:
+    inputs:
+      image_path:
+        description: 'docker image name, tag'  
+        type: string   
+        required: false
+        default: 'ghcr.io/open-webui/open-webui:main'
+      zip_vol_size:
+        description: 'Max 7zip volumn size'
+        type: string
+        required: false
+        default: '800m'
+
+jobs:
+  build_docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-${{ github.event.inputs.build_folder  }}
+          restore-keys: |
+            buildx-${{ github.event.inputs.build_folder  }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Determine tag name
+        id: tag
+        shell: bash
+        run: |
+          tags=${{ github.event.inputs.tags }}
+          IFS=',' read -ra TAG_ARRAY <<< "$tags"
+          echo "tag0=${TAG_ARRAY[0]}" >> $GITHUB_OUTPUT
+          BUILD_NUMBER="$(git rev-list --count HEAD)"
+          SHORT_HASH="$(git rev-parse --short=7 HEAD)"          
+          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}" >> $GITHUB_OUTPUT          
+          echo "name=Docker_${{ github.event.inputs.build_folder }}-${TAG_ARRAY[0]}-b${BUILD_NUMBER}-${SHORT_HASH}"
+
+      - name: Build
+        run: |
+          pwd
+          docker pull ${{ github.event.inputs.image_path }}
+          
+      - name: list images
+        run: docker images
+
+      - name: Save image as a tar for later use
+        id: save_image
+        run: |
+          # Export the image to a tar file
+          mkdir -p artifacts
+          original_string=${{ github.event.inputs.image_path }}
+          file_name="${original_string//\//_}"
+          file_name="${file_name//:/_}"
+          echo "file_name=${file_name}" >> $GITHUB_OUTPUT   
+          echo "docker save ${{ github.event.inputs.image_path }} -o artifacts/${file_name}.tar"
+          docker save ${{ github.event.inputs.image_path }} -o artifacts/${file_name}.tar
+
+      - name: Install 7zip
+        run: sudo apt-get install -y p7zip-full
+
+      - name: Split Docker image into volumes
+        run: |
+          cd artifacts
+          mkdir zipped
+          7z  a -t7z -v${{ github.event.inputs.zip_vol_size }} zipped/${{ steps.save_image.outputs.file_name }}.7z ${{ steps.save_image.outputs.file_name }}.tar
+
+          
+      - name: check zipped
+        run: |
+          pwd
+          ls artifacts/zipped
+
+    #   - name: Upload compressed parts as artifacts
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: ${{ github.event.inputs.build_folder }}
+    #       path: artifacts/zipped/*.7z.*
+    #       retention-days: ${{ github.event.inputs.retention_days }}
+
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: ${{ steps.tag.outputs.name }}
+          draft: false
+          prerelease: false             
+
+      - name: Upload release
+        id: upload_release
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |          
+            const path = require('path');
+            const fs = require('fs');
+            
+            // Retrieve necessary information
+            const release_id = `${{ steps.create_release.outputs.id }}`;
+            const release_url = `${{ steps.create_release.outputs.html_url }}`;
+  
+            let releaseDescription = '${{ github.event.inputs.image_path }}';
+  
+            // Update the release with the description
+            await github.repos.updateRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                release_id,
+                body: releaseDescription,
+            });
+          
+            for (let file of await fs.readdirSync('./artifacts/zipped')) {
+                console.log('uploadReleaseAsset', file);
+                await github.repos.uploadReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  release_id: release_id,
+                  name: file,
+                  data: await fs.readFileSync(`artifacts/zipped/${file}`)
+                });
+            }
+      
