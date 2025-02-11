@@ -1,5 +1,5 @@
 name: transfer_docker_imgs
-run-name: B&D ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ github.event.inputs.tags }}  
+run-name: Transfer ${{ github.event.inputs.image_path }}
 on:
   workflow_dispatch:
     inputs:
