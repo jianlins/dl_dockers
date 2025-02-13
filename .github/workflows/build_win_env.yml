@@ -149,7 +149,7 @@ jobs:
 
     - name: check final environment settings
       run: |
-        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}
         mkdir -p zipped
         conda env export > zipped/detailed_environment.yml
         cat zipped/detailed_environment.yml
@@ -205,7 +205,7 @@ jobs:
     - name: download spacy models
       if: ${{ github.event.inputs.download_spacy_model == 'true' }}
       run: |
-        conda activate ${{ github.event.inputs.target_folder }}/${{ github.event.inputs.build_folder }}
+        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}
         python -m spacy download en_core_web_sm
         python -m spacy download en_core_web_md
 
