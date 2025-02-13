@@ -2,7 +2,7 @@ name: win_openwebui
 channels:
   - defaults
 dependencies:
-  - python=3.121
+  - python=3.12
   - pip:
     - open-webui
 
