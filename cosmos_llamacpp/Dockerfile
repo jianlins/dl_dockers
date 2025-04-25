@@ -17,8 +17,6 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-https://github.com/ggml-org/llama.cpp/archive/refs/tags/b5191.zip
-
 COPY . .
 
 RUN echo "Attempting to download source code using GitHub API..." && \
