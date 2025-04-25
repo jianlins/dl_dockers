@@ -20,26 +20,27 @@ WORKDIR /app
 https://github.com/ggml-org/llama.cpp/archive/refs/tags/b5191.zip
 
 COPY . .
-# Use explicit if conditions to target only the source code zip
-RUN echo "Attempting to download source code zip from GitHub API..." && \
-    if curl -sL --connect-timeout 10 https://api.github.com/repos/ggerganov/llama.cpp/releases/latest -o release.json; then \
+
+RUN echo "Attempting to download source code using GitHub API..." && \
+    if curl -sL --connect-timeout 10 https://api.github.com/repos/ggml-org/llama.cpp/releases/latest -o release.json; then \
         echo "Successfully contacted GitHub API"; \
-        # Look specifically for the source code zip (typically the last zip_url in assets)
-        if source_url=$(jq -r '.assets[] | select(.name | test("*refs/tags*zip$")) | .browser_download_url' release.json) && [ -n "$source_url" ] && [ "$source_url" != "null" ]; then \
-            echo "Found source code URL: $source_url"; \
-            if wget -O llamacpp.zip "$source_url"; then \
+        if tag_name=$(jq -r .tag_name release.json) && [ -n "$tag_name" ] && [ "$tag_name" != "null" ]; then \
+            echo "Found release tag: $tag_name"; \
+            download_url="https://github.com/ggml-org/llama.cpp/archive/refs/tags/${tag_name}.zip"; \
+            echo "Downloading from: $download_url"; \
+            if wget -O llamacpp.zip "$download_url"; then \
                 echo "Successfully downloaded source code archive"; \
                 unzip llamacpp.zip && \
                 rm *.zip && \
-                # The directory name may be different, so check what we got
-                mv llama* llamacpp && \
+                # The directory name will be llama.cpp-{tag_name}
+                mv llama.cpp-* llamacpp && \
                 echo "Successfully extracted llama.cpp source code"; \
             else \
                 echo "Failed to download source code archive, falling back to git clone"; \
                 git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llamacpp; \
             fi; \
         else \
-            echo "Could not find source code zip in release assets, falling back to git clone"; \
+            echo "Could not extract tag name, falling back to git clone"; \
             git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llamacpp; \
         fi; \
     else \
