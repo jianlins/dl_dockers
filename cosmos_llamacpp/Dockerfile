@@ -17,13 +17,15 @@ RUN apt-get update && \
 
 WORKDIR /app
 
+https://github.com/ggml-org/llama.cpp/archive/refs/tags/b5191.zip
+
 COPY . .
 # Use explicit if conditions to target only the source code zip
 RUN echo "Attempting to download source code zip from GitHub API..." && \
     if curl -sL --connect-timeout 10 https://api.github.com/repos/ggerganov/llama.cpp/releases/latest -o release.json; then \
         echo "Successfully contacted GitHub API"; \
         # Look specifically for the source code zip (typically the last zip_url in assets)
-        if source_url=$(jq -r '.assets[] | select(.name | test("Source code.*zip$")) | .browser_download_url' release.json) && [ -n "$source_url" ] && [ "$source_url" != "null" ]; then \
+        if source_url=$(jq -r '.assets[] | select(.name | test("*refs/tags*zip$")) | .browser_download_url' release.json) && [ -n "$source_url" ] && [ "$source_url" != "null" ]; then \
             echo "Found source code URL: $source_url"; \
             if wget -O llamacpp.zip "$source_url"; then \
                 echo "Successfully downloaded source code archive"; \
