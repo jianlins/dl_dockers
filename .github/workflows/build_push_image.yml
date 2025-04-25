@@ -9,7 +9,7 @@ on:
         required: false
         default: 'cosmos_openwebui'
       tags:
-          description: 'Customize image tags'  
+          description: 'Customize image tags, use comma to separate multiple tags'  
           type: string   
           required: false
           default: 'latest'
