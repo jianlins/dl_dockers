@@ -18,15 +18,32 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY . .
-# Download the latest release with better error handling
-RUN curl -s https://api.github.com/repos/ggerganov/llama.cpp/releases/latest | \
-    jq -r .zipball_url | \
-    xargs wget -O llamacpp.zip && ls
-RUN unzip llamacpp.zip && \
-    rm *.zip && \
-    ls && \
-    mv *llama.cpp* llamacpp
-RUN cp -r llamacpp/. /app && cd /app
+# Use explicit if conditions with logging
+RUN echo "Attempting to download from GitHub API..." && \
+    if curl -sL --connect-timeout 10 https://api.github.com/repos/ggerganov/llama.cpp/releases/latest -o release.json; then \
+        echo "Successfully contacted GitHub API"; \
+        if zipball_url=$(jq -r .zipball_url release.json) && [ "$zipball_url" != "null" ]; then \
+            echo "Extracted zipball URL: $zipball_url"; \
+            if wget -O llamacpp.zip "$zipball_url"; then \
+                echo "Successfully downloaded archive"; \
+                unzip llamacpp.zip && \
+                rm *.zip && \
+                mv *llama.cpp* llamacpp && \
+                echo "Successfully extracted llama.cpp from release archive"; \
+            else \
+                echo "Failed to download archive, falling back to git clone"; \
+                git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llamacpp; \
+            fi; \
+        else \
+            echo "Failed to extract zipball URL, falling back to git clone"; \
+            git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llamacpp; \
+        fi; \
+    else \
+        echo "Failed to contact GitHub API, falling back to git clone"; \
+        git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llamacpp; \
+    fi && \
+    rm -f release.json && \
+    cp -r llamacpp/. /app && cd /app
 
 RUN ls /app
 
