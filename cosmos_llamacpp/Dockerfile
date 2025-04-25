@@ -13,13 +13,15 @@ FROM ${BASE_CUDA_DEV_CONTAINER} AS build
 ARG CUDA_DOCKER_ARCH=default
 
 RUN apt-get update && \
-    apt-get install -y build-essential git cmake libcurl4-openssl-dev wget curl unzip p7zip
+    apt-get install -y build-essential git cmake libcurl4-openssl-dev wget curl unzip p7zip jq
 
 WORKDIR /app
 
 COPY . .
-# git clone llama cpp repo
-RUN wget $(curl -s https://api.github.com/repos/ggerganov/llama.cpp/releases/latest | grep "zipball_url" | cut -d '"' -f 4) -O llamacpp.zip && ls
+# Download the latest release with better error handling
+RUN curl -s https://api.github.com/repos/ggerganov/llama.cpp/releases/latest | \
+    jq -r .zipball_url | \
+    xargs wget -O llamacpp.zip && ls
 RUN unzip llamacpp.zip && \
     rm *.zip && \
     ls && \
