@@ -18,24 +18,26 @@ RUN apt-get update && \
 WORKDIR /app
 
 COPY . .
-# Use explicit if conditions with logging
-RUN echo "Attempting to download from GitHub API..." && \
+# Use explicit if conditions to target only the source code zip
+RUN echo "Attempting to download source code zip from GitHub API..." && \
     if curl -sL --connect-timeout 10 https://api.github.com/repos/ggerganov/llama.cpp/releases/latest -o release.json; then \
         echo "Successfully contacted GitHub API"; \
-        if zipball_url=$(jq -r .zipball_url release.json) && [ "$zipball_url" != "null" ]; then \
-            echo "Extracted zipball URL: $zipball_url"; \
-            if wget -O llamacpp.zip "$zipball_url"; then \
-                echo "Successfully downloaded archive"; \
+        # Look specifically for the source code zip (typically the last zip_url in assets)
+        if source_url=$(jq -r '.assets[] | select(.name | test("Source code.*zip$")) | .browser_download_url' release.json) && [ -n "$source_url" ] && [ "$source_url" != "null" ]; then \
+            echo "Found source code URL: $source_url"; \
+            if wget -O llamacpp.zip "$source_url"; then \
+                echo "Successfully downloaded source code archive"; \
                 unzip llamacpp.zip && \
                 rm *.zip && \
-                mv *llama.cpp* llamacpp && \
-                echo "Successfully extracted llama.cpp from release archive"; \
+                # The directory name may be different, so check what we got
+                mv llama* llamacpp && \
+                echo "Successfully extracted llama.cpp source code"; \
             else \
-                echo "Failed to download archive, falling back to git clone"; \
+                echo "Failed to download source code archive, falling back to git clone"; \
                 git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llamacpp; \
             fi; \
         else \
-            echo "Failed to extract zipball URL, falling back to git clone"; \
+            echo "Could not find source code zip in release assets, falling back to git clone"; \
             git clone --depth 1 https://github.com/ggml-org/llama.cpp.git llamacpp; \
         fi; \
     else \
