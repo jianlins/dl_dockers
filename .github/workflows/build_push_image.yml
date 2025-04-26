@@ -112,8 +112,8 @@ jobs:
         run: |
           # Export the image to a tar file
           mkdir -p artifacts
-          echo "docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar"
-          docker save ${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar
+          echo "docker save docker.io/${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar"
+          docker save docker.io/${{ github.event.inputs.hub_username }}/${{ github.event.inputs.build_folder }}:${{ steps.tag.outputs.tag0 }} -o artifacts/docker-${{ github.event.inputs.build_folder }}.tar
 
       - name: Install 7zip
         run: sudo apt-get install -y p7zip-full
