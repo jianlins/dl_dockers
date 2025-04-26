@@ -7,6 +7,5 @@ RUN apk update && \
 # Create a working directory
 WORKDIR /data
 
-ENTRYPOINT ["7z", "x"]
 # Default arguments can be overridden at runtime
-CMD [""]
+CMD ["7z", "x"]
