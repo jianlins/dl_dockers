@@ -50,6 +50,7 @@ dependencies:
     - tensorboard
     - pytest
     - wheel
+    - py4jrush
     - joblib
     - itsdangerous<2.1.0
     - accelerate

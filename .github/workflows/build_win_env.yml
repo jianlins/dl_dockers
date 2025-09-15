@@ -70,6 +70,12 @@ jobs:
       with:
         python-version: '3.10'
     
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '8'
+    
     - name: Check Setting Folder
       run: |
         pwd
@@ -235,18 +241,70 @@ jobs:
       run: |
         cd ${{ github.event.inputs.build_folder }}     
         pwd
-        conda activate ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}   
+        Write-Host "=== POST-BUILD TESTING PHASE ===" -ForegroundColor Green
+        
         if (Test-Path -Path ".\post_build.ps1") {
-          # sometimes the activate above doesn't work for the following ps1
-          pwsh .\post_build.ps1 ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }} 
-        }else{
+          Write-Host "Found post_build.ps1, executing comprehensive tests..." -ForegroundColor Cyan
+          
+          # Execute the post-build script and capture the exit code
+          try {
+            pwsh .\post_build.ps1 ${{ github.event.inputs.target_folder }}\${{ github.event.inputs.build_folder }}
+            $exitCode = $LASTEXITCODE
+            
+            if ($exitCode -eq 0) {
+              Write-Host "🎉 POST-BUILD TESTS PASSED! Environment validation successful." -ForegroundColor Green
+              echo "POST_BUILD_TEST_STATUS=PASSED" >> $env:GITHUB_ENV
+              echo "POST_BUILD_TEST_MESSAGE=All tests passed successfully. Environment is ready for use." >> $env:GITHUB_ENV
+            } else {
+              Write-Host "❌ POST-BUILD TESTS FAILED! Exit code: $exitCode" -ForegroundColor Red
+              echo "POST_BUILD_TEST_STATUS=FAILED" >> $env:GITHUB_ENV
+              echo "POST_BUILD_TEST_MESSAGE=Tests failed with exit code $exitCode. Please check the test output above." >> $env:GITHUB_ENV
+              # Don't exit here - let the workflow continue to create release with test status
+            }
+          } catch {
+            Write-Host "❌ POST-BUILD SCRIPT EXECUTION FAILED: $_" -ForegroundColor Red
+            echo "POST_BUILD_TEST_STATUS=ERROR" >> $env:GITHUB_ENV
+            echo "POST_BUILD_TEST_MESSAGE=Script execution failed with error: $_" >> $env:GITHUB_ENV
+          }
+        } else {
+          Write-Host "⚠️  No post_build.ps1 found. Skipping post-build tests." -ForegroundColor Yellow
           pwd 
           ls
-          Write-Output ".\post_build.ps1 doesn't exist. Skip executing it."
+          echo "POST_BUILD_TEST_STATUS=SKIPPED" >> $env:GITHUB_ENV
+          echo "POST_BUILD_TEST_MESSAGE=No post_build.ps1 script found for this environment." >> $env:GITHUB_ENV
         }
 
+    - name: Display final test status
+      shell: pwsh
+      run: |
+        Write-Host "=== FINAL BUILD STATUS SUMMARY ===" -ForegroundColor Green
+        $testStatus = $env:POST_BUILD_TEST_STATUS
+        $testMessage = $env:POST_BUILD_TEST_MESSAGE
         
- 
+        switch ($testStatus) {
+          "PASSED" {
+            Write-Host "🎉 BUILD SUCCESSFUL with PASSING TESTS!" -ForegroundColor Green
+            Write-Host "Environment is validated and ready for use." -ForegroundColor Green
+          }
+          "FAILED" {
+            Write-Host "⚠️  BUILD COMPLETED but TESTS FAILED!" -ForegroundColor Yellow
+            Write-Host "Environment created but may have issues. Review test output." -ForegroundColor Yellow
+          }
+          "ERROR" {
+            Write-Host "⚠️  BUILD COMPLETED but TEST EXECUTION ERROR!" -ForegroundColor Yellow
+            Write-Host "Environment created but test validation had errors." -ForegroundColor Yellow
+          }
+          "SKIPPED" {
+            Write-Host "ℹ️  BUILD COMPLETED - Tests were skipped." -ForegroundColor Cyan
+            Write-Host "No post-build validation was performed." -ForegroundColor Cyan
+          }
+          default {
+            Write-Host "❓ BUILD COMPLETED - Test status unknown." -ForegroundColor Gray
+          }
+        }
+        
+        Write-Host "Test Details: $testMessage" -ForegroundColor Cyan
+        Write-Host "============================================" -ForegroundColor Green
 
     - name: Check for 7-Zip installation
       run: |
@@ -320,15 +378,50 @@ jobs:
           console.log(`Constructed file URL: ${fileUrl}`);
 
 
+          // Add post-build test status
+          const testStatus = process.env.POST_BUILD_TEST_STATUS || 'UNKNOWN';
+          const testMessage = process.env.POST_BUILD_TEST_MESSAGE || 'Test status unavailable';
+          
+          // Add test status badge
+          let testBadge = '';
+          switch(testStatus) {
+            case 'PASSED':
+              testBadge = '🎉 **TESTS PASSED**';
+              break;
+            case 'FAILED':
+              testBadge = '❌ **TESTS FAILED**';
+              break;
+            case 'ERROR':
+              testBadge = '⚠️ **TEST ERROR**';
+              break;
+            case 'SKIPPED':
+              testBadge = '⏭️ **TESTS SKIPPED**';
+              break;
+            default:
+              testBadge = '❓ **TEST STATUS UNKNOWN**';
+          }
+          
+          releaseDescription += `\n\n## 🧪 Post-Build Test Results\n`;
+          releaseDescription += `${testBadge}\n\n`;
+          releaseDescription += `**Status:** ${testStatus}\n\n`;
+          releaseDescription += `**Details:** ${testMessage}\n\n`;
+          
+          if (testStatus === 'PASSED') {
+            releaseDescription += `✅ This environment has been validated and is ready for production use.\n\n`;
+          } else if (testStatus === 'FAILED' || testStatus === 'ERROR') {
+            releaseDescription += `⚠️ **WARNING:** This environment may have issues. Please review the build logs before use.\n\n`;
+          }
+
           // Append the file URL to the release description
-          releaseDescription += `\n\nView the corresponding [environment.yml](${fileUrl}) file used for this release.`;
-          releaseDescription += `\n\nTo use it, unzip the folders inside and put them under ${{ github.event.inputs.target_folder }}`;
-          releaseDescription += `\n\nThis environment was built with following workflow settings: `;
-          releaseDescription += `\ndownload_jars: ${{ github.event.inputs.download_jars }}`;
-          releaseDescription += `\nsparknlp_version: ${{ github.event.inputs.sparknlp_version }}`;
-          releaseDescription += `\nsparknlp_gpu: ${{ github.event.inputs.sparknlp_gpu }}`;
-          releaseDescription += `\ndownload_spacy_model: ${{ github.event.inputs.download_spacy_model }}`;
-          releaseDescription += `\nzip_jar_only: ${{ github.event.inputs.zip_jar_only }}`;          
+          releaseDescription += `## 📋 Environment Configuration\n\n`;
+          releaseDescription += `View the corresponding [environment.yml](${fileUrl}) file used for this release.\n\n`;
+          releaseDescription += `**Installation:** Unzip the folders inside and put them under \`${{ github.event.inputs.target_folder }}\`\n\n`;
+          releaseDescription += `## ⚙️ Build Settings\n\n`;
+          releaseDescription += `- **download_jars:** ${{ github.event.inputs.download_jars }}\n`;
+          releaseDescription += `- **sparknlp_version:** ${{ github.event.inputs.sparknlp_version }}\n`;
+          releaseDescription += `- **sparknlp_gpu:** ${{ github.event.inputs.sparknlp_gpu }}\n`;
+          releaseDescription += `- **download_spacy_model:** ${{ github.event.inputs.download_spacy_model }}\n`;
+          releaseDescription += `- **zip_jar_only:** ${{ github.event.inputs.zip_jar_only }}\n`;          
 
           // Update the release with the description
           await github.repos.updateRelease({
