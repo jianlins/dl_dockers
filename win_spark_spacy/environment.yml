@@ -20,4 +20,4 @@ dependencies:
     - pyarrow
     - scikit-learn
     - imbalanced-learn
-prefix: D:\annaconda_env_jianlin\win_spark_spacy
+prefix: D:\conda_env_jianlin\win_spark_spacy
