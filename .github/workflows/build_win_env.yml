@@ -17,7 +17,7 @@ on:
         description: "whether download jars for pyspark"
         type: string
         required: false
-        default: 'false'
+        default: 'true'
       sparknlp_version:
         description: "sparknlp fat jar version"
         type: string
