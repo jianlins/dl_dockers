@@ -75,6 +75,28 @@ print(f"  HADOOP_CONF_DIR: {os.environ.get('HADOOP_CONF_DIR')}")
 print(f"  SPARK_LOCAL_IP: {os.environ.get('SPARK_LOCAL_IP')}")
 print(f"  SPARK_LOCAL_DIRS: {os.environ.get('SPARK_LOCAL_DIRS')}")
 
+# Check for workflow ivy jars configuration
+workflow_ivy_dir = None
+possible_ivy_paths = [
+    os.path.join(os.path.expanduser("~"), ".ivy2"),
+    "D:\\conda_envs_jianlins\\ivy",
+    os.path.join(os.path.dirname(os.path.dirname(python_executable)), "ivy")
+]
+
+for ivy_path in possible_ivy_paths:
+    jar_dir = os.path.join(ivy_path, "jars")
+    if os.path.exists(jar_dir):
+        jar_files = [f for f in os.listdir(jar_dir) if f.endswith('.jar')]
+        if jar_files:
+            workflow_ivy_dir = ivy_path
+            print(f"✅ Found workflow ivy jars at: {workflow_ivy_dir} ({len(jar_files)} jars)")
+            # Set environment variable for PySpark to use
+            os.environ['PYSPARK_JARS_IVY'] = workflow_ivy_dir
+            break
+
+if not workflow_ivy_dir:
+    print("⚠️ No workflow ivy jars found, will use default configuration")
+
 # JAR paths - will be set based on environment or default to empty
 jars_path = []
 drivers_path = ""
@@ -165,15 +187,24 @@ if __name__ == "__main__":
     try:
         # Try to use sparknlp.start() first for better compatibility
         import sparknlp
+        
+        # Prepare parameters for sparknlp.start()
+        spark_params = {
+            "spark.pyspark.python": python_executable,
+            "spark.pyspark.driver.python": python_executable,
+            "spark.sql.execution.arrow.pyspark.enabled": "false"
+        }
+        
+        # Add workflow ivy directory if available
+        if workflow_ivy_dir:
+            spark_params["spark.jars.ivy"] = workflow_ivy_dir.replace("\\", "/")
+            print(f"Using workflow ivy directory: {workflow_ivy_dir}")
+        
         spark = sparknlp.start(
             spark32=True,  # Use Spark 3.2+ optimizations
             memory="4g",
             real_time_output=False,
-            params={
-                "spark.pyspark.python": python_executable,
-                "spark.pyspark.driver.python": python_executable,
-                "spark.sql.execution.arrow.pyspark.enabled": "false"
-            }
+            params=spark_params
         )
         print("Successfully started Spark using sparknlp.start()")
     except Exception as e:
@@ -203,6 +234,11 @@ if __name__ == "__main__":
             .config("spark.sql.warehouse.dir", os.path.join(tempfile.gettempdir(), "spark-warehouse")) \
             .config("spark.driver.extraJavaOptions", "-Djava.io.tmpdir=" + tempfile.gettempdir()) \
             .config("spark.executor.extraJavaOptions", "-Djava.io.tmpdir=" + tempfile.gettempdir())
+        
+        # Add workflow ivy directory configuration if available
+        if workflow_ivy_dir:
+            spark_builder = spark_builder.config("spark.jars.ivy", workflow_ivy_dir.replace("\\", "/"))
+            print(f"Manual SparkSession: Using workflow ivy directory: {workflow_ivy_dir}")
         
         # Add JAR configuration if jars_path is not empty
         if jars_path:

@@ -125,19 +125,59 @@ try {
         }
     }
 
-    # Test 6: Test basic Spark NLP functionality
-    Write-Host "Test 6: Testing basic Spark NLP functionality..." -ForegroundColor Yellow
-    $sparkNLPTest = @"
+    # Test 6: Check for workflow ivy jars and test Spark NLP functionality
+    Write-Host "Test 6: Checking workflow ivy jars and testing Spark NLP functionality..." -ForegroundColor Yellow
+    
+    # Check for workflow-downloaded jars
+    $workflowIvyDir = $null
+    $possibleIvyPaths = @(
+        "$env:USERPROFILE\.ivy2",
+        "D:\conda_envs_jianlins\ivy",
+        "$((Split-Path $EnvPath -Parent))\ivy"
+    )
+    
+    foreach ($ivyPath in $possibleIvyPaths) {
+        if (Test-Path "$ivyPath\jars") {
+            $jarCount = (Get-ChildItem "$ivyPath\jars" -Filter "*.jar" -ErrorAction SilentlyContinue | Measure-Object).Count
+            if ($jarCount -gt 0) {
+                $workflowIvyDir = $ivyPath
+                Write-Host "✅ Found workflow ivy jars at: $workflowIvyDir ($jarCount jars)" -ForegroundColor Green
+                break
+            }
+        }
+    }
+    
+    if (-not $workflowIvyDir) {
+        Write-Host "⚠️ No workflow ivy jars found, will use default sparknlp.start()" -ForegroundColor Yellow
+    }
+    
+    # Test Spark NLP functionality with appropriate configuration
+    if ($workflowIvyDir) {
+        $sparkNLPTest = @"
 import sparknlp
 try:
-    spark = sparknlp.start(real_time_output=False, memory='4g')
-    print('✅ Spark NLP started successfully')
+    # Use workflow ivy directory for jars
+    spark = sparknlp.start(real_time_output=False, memory='4g', params={'spark.jars.ivy':'$($workflowIvyDir.Replace('\', '/'))/'})
+    print('✅ Spark NLP started successfully with workflow jars')
     spark.stop()
     print('✅ Spark NLP stopped successfully')
 except Exception as e:
     print(f'❌ Spark NLP test failed: {e}')
     exit(1)
 "@
+    } else {
+        $sparkNLPTest = @"
+import sparknlp
+try:
+    spark = sparknlp.start(real_time_output=False, memory='4g')
+    print('✅ Spark NLP started successfully (default configuration)')
+    spark.stop()
+    print('✅ Spark NLP stopped successfully')
+except Exception as e:
+    print(f'❌ Spark NLP test failed: {e}')
+    exit(1)
+"@
+    }
     
     try {
         $result = python -c $sparkNLPTest 2>&1
@@ -292,6 +332,24 @@ except Exception as e:
                 Write-Host "Warning: Could not set JAVA_HOME: $_"
             }
             
+            # Check for and set workflow ivy directory
+            $possibleIvyPaths = @(
+                "$env:USERPROFILE\.ivy2",
+                "D:\conda_envs_jianlins\ivy",
+                "$((Split-Path $envPath -Parent))\ivy"
+            )
+            
+            foreach ($ivyPath in $possibleIvyPaths) {
+                if (Test-Path "$ivyPath\jars") {
+                    $jarCount = (Get-ChildItem "$ivyPath\jars" -Filter "*.jar" -ErrorAction SilentlyContinue | Measure-Object).Count
+                    if ($jarCount -gt 0) {
+                        $env:PYSPARK_JARS_IVY = $ivyPath
+                        Write-Host "Set PYSPARK_JARS_IVY to workflow ivy: $ivyPath ($jarCount jars)"
+                        break
+                    }
+                }
+            }
+            
             Write-Host "Environment variables set:"
             Write-Host "PYSPARK_PYTHON: $env:PYSPARK_PYTHON"
             Write-Host "PYSPARK_DRIVER_PYTHON: $env:PYSPARK_DRIVER_PYTHON"
@@ -300,6 +358,7 @@ except Exception as e:
             Write-Host "HADOOP_HOME: $env:HADOOP_HOME"
             Write-Host "HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR"
             Write-Host "JAVA_HOME: $env:JAVA_HOME"
+            Write-Host "PYSPARK_JARS_IVY: $env:PYSPARK_JARS_IVY"
             
             # First try a simple Spark test to verify the environment
             Write-Host "Running preliminary Spark environment test..."

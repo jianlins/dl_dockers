@@ -14,7 +14,6 @@ dependencies:
   - conda-forge::jupytext
   - pip:
     - medspacy
-    - git+https://github.com/medspacy/medspacy_io.git
     - loguru
     - findspark
     - pyspark==3.4.2
