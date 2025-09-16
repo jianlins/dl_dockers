@@ -1,5 +1,6 @@
 name: win_spark_spacy
 channels:
+  - anaconda
   - conda-forge
   - defaults
 dependencies:
@@ -8,6 +9,11 @@ dependencies:
   - ipywidgets
   - notebook
   - jupyterlab
+  - pandas
+  - scikit-learn
+  - imbalanced-learn
+  - pyarrow
+  - anaconda::pyrush
   - conda-forge::jupytext
   - pip:
     - medspacy
@@ -15,9 +21,5 @@ dependencies:
     - findspark
     - pyspark==3.4.2
     - spark-nlp==5.3.3
-    - pandas    
     - py7zr
-    - pyarrow
-    - scikit-learn
-    - imbalanced-learn
 prefix: D:\conda_env_jianlin\win_spark_spacy

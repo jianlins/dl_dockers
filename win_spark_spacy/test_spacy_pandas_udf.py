@@ -77,9 +77,9 @@ print(f"  SPARK_LOCAL_DIRS: {os.environ.get('SPARK_LOCAL_DIRS')}")
 # Check for workflow ivy jars configuration
 workflow_ivy_dir = None
 possible_ivy_paths = [
-    os.path.join(os.path.expanduser("~"), ".ivy2"),
-    "D:\\conda_envs_jianlins\\ivy",
-    os.path.join(os.path.dirname(os.path.dirname(python_executable)), "ivy")
+    "D:\\conda_envs_jianlins\\ivy",  # Primary workflow ivy location
+    os.path.join(os.path.expanduser("~"), ".ivy2"),  # Default user ivy location
+    os.path.join(os.path.dirname(os.path.dirname(python_executable)), "ivy")  # Environment relative ivy
 ]
 
 for ivy_path in possible_ivy_paths:
@@ -88,13 +88,13 @@ for ivy_path in possible_ivy_paths:
         jar_files = [f for f in os.listdir(jar_dir) if f.endswith('.jar')]
         if jar_files:
             workflow_ivy_dir = ivy_path
-            print(f"✅ Found workflow ivy jars at: {workflow_ivy_dir} ({len(jar_files)} jars)")
+            print(f"[OK] Found workflow ivy jars at: {workflow_ivy_dir} ({len(jar_files)} jars)")
             # Set environment variable for PySpark to use
             os.environ['PYSPARK_JARS_IVY'] = workflow_ivy_dir
             break
 
 if not workflow_ivy_dir:
-    print("⚠️ No workflow ivy jars found, will use default configuration")
+    print("[WARNING] No workflow ivy jars found, will use default configuration")
 
 # JAR paths - will be set based on environment or default to empty
 jars_path = []
@@ -116,7 +116,7 @@ def batch_process(batch, batch_ids, rush):
             yield(batch_ids[j], 0)
         
 def process_partition_batch(iterator, batch_size=32):
-    from py4jrush import RuSH
+    from pyrush import RuSH
     import logging
     import traceback
     import os
@@ -358,7 +358,7 @@ if __name__ == "__main__":
     valid_counts = classified_final_df['svm'].notna().sum()
     assert valid_counts > 0, "No valid sentence counts found"
     
-    print("\n✅ All tests passed successfully!")
+    print("\n[OK] All tests passed successfully!")
     print(f"Processed {classified_final_df.shape[0]} documents")
     print(f"Average sentences per document: {classified_final_df['svm'].mean():.2f}")
     

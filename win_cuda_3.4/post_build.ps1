@@ -24,7 +24,7 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to activate conda environment at $EnvPath"
     }
-    Write-Host "✅ Environment activated successfully" -ForegroundColor Green
+    Write-Host "[OK] Environment activated successfully" -ForegroundColor Green
 
     # Test 2: Check Python version
     Write-Host "Test 2: Checking Python version..." -ForegroundColor Yellow
@@ -40,8 +40,7 @@ try {
         "import pandas as pd; print(f'Pandas: {pd.__version__}')",
         "import pyspark; print(f'PySpark: {pyspark.__version__}')",
         "import sparknlp; print(f'Spark NLP: {sparknlp.__version__}')",
-        "import spacy; print(f'spaCy: {spacy.__version__}')",
-        "from py4jrush import RuSH; print('RuSH: OK')",
+        "from pyrush import RuSH; print('RuSH: OK')",
         "import joblib; print(f'joblib: {joblib.__version__}')"
     )
     
@@ -49,13 +48,13 @@ try {
         try {
             $result = python -c $package 2>&1
             if ($LASTEXITCODE -eq 0) {
-                Write-Host "✅ $result" -ForegroundColor Green
+                Write-Host "[OK] $result" -ForegroundColor Green
             } else {
-                Write-Host "❌ Failed: $package" -ForegroundColor Red
+                Write-Host "[ERROR] Failed: $package" -ForegroundColor Red
                 Write-Host "Error: $result" -ForegroundColor Red
             }
         } catch {
-            Write-Host "❌ Exception testing: $package" -ForegroundColor Red
+            Write-Host "[ERROR] Exception testing: $package" -ForegroundColor Red
             Write-Host "Error: $_" -ForegroundColor Red
         }
     }
@@ -65,12 +64,12 @@ try {
     try {
         $spacyModels = python -c "import spacy; print([model for model in spacy.util.get_installed_models()])" 2>&1
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "✅ spaCy models available: $spacyModels" -ForegroundColor Green
+            Write-Host "[OK] spaCy models available: $spacyModels" -ForegroundColor Green
         } else {
-            Write-Host "❌ Failed to check spaCy models: $spacyModels" -ForegroundColor Red
+            Write-Host "[ERROR] Failed to check spaCy models: $spacyModels" -ForegroundColor Red
         }
     } catch {
-        Write-Host "❌ Exception checking spaCy models: $_" -ForegroundColor Red
+        Write-Host "[ERROR] Exception checking spaCy models: $_" -ForegroundColor Red
     }
 
     # Test 5: Check and configure Hadoop environment for Windows
@@ -80,16 +79,16 @@ try {
     $workflowHadoop = "C:\hadoop"
     
     if (Test-Path "$workflowHadoop\bin\winutils.exe") {
-        Write-Host "✅ Found workflow-configured Hadoop at: $workflowHadoop" -ForegroundColor Green
+        Write-Host "[OK] Found workflow-configured Hadoop at: $workflowHadoop" -ForegroundColor Green
         $env:HADOOP_HOME = $workflowHadoop
         $env:HADOOP_CONF_DIR = "$workflowHadoop\etc\hadoop"
         $env:PATH = "$workflowHadoop\bin;$env:PATH"
         
-        Write-Host "✅ Using workflow Hadoop configuration:" -ForegroundColor Green
+        Write-Host "[OK] Using workflow Hadoop configuration:" -ForegroundColor Green
         Write-Host "  HADOOP_HOME: $env:HADOOP_HOME" -ForegroundColor Cyan
         Write-Host "  HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR" -ForegroundColor Cyan
     } else {
-        Write-Host "⚠️ Workflow Hadoop not found, setting up minimal configuration..." -ForegroundColor Yellow
+        Write-Host "[WARNING] Workflow Hadoop not found, setting up minimal configuration..." -ForegroundColor Yellow
         
         # Create minimal Hadoop directory structure as fallback
         $tempHadoopDir = "$env:TEMP\hadoop_temp"
@@ -107,12 +106,12 @@ try {
             
             New-Item -ItemType Directory -Force -Path "$tempHadoopDir\etc\hadoop" | Out-Null
             
-            Write-Host "✅ Minimal Hadoop environment configured:" -ForegroundColor Green
+            Write-Host "[OK] Minimal Hadoop environment configured:" -ForegroundColor Green
             Write-Host "  HADOOP_HOME: $env:HADOOP_HOME" -ForegroundColor Cyan
             Write-Host "  HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR" -ForegroundColor Cyan
             
         } catch {
-            Write-Host "⚠️ Warning: Could not set up Hadoop environment: $_" -ForegroundColor Yellow
+            Write-Host "[WARNING] Could not set up Hadoop environment: $_" -ForegroundColor Yellow
         }
     }
     
@@ -141,14 +140,14 @@ try {
             $jarCount = (Get-ChildItem "$ivyPath\jars" -Filter "*.jar" -ErrorAction SilentlyContinue | Measure-Object).Count
             if ($jarCount -gt 0) {
                 $workflowIvyDir = $ivyPath
-                Write-Host "✅ Found workflow ivy jars at: $workflowIvyDir ($jarCount jars)" -ForegroundColor Green
+                Write-Host "[OK] Found workflow ivy jars at: $workflowIvyDir ($jarCount jars)" -ForegroundColor Green
                 break
             }
         }
     }
     
     if (-not $workflowIvyDir) {
-        Write-Host "⚠️ No workflow ivy jars found, will use default sparknlp.start()" -ForegroundColor Yellow
+        Write-Host "[WARNING] No workflow ivy jars found, will use default sparknlp.start()" -ForegroundColor Yellow
     }
     
     # Test Spark NLP functionality with appropriate configuration
@@ -158,7 +157,7 @@ import sparknlp
 try:
     # Use workflow ivy directory for jars
     spark = sparknlp.start(real_time_output=False, memory='4g', params={'spark.jars.ivy':'$($workflowIvyDir.Replace('\', '/'))/'})
-    print('✅ Spark NLP started successfully with workflow jars')
+    print('[OK] Spark NLP started successfully with workflow jars')
     spark.stop()
     print('✅ Spark NLP stopped successfully')
 except Exception as e:
