@@ -3,14 +3,11 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.10
   - pip
   - ipywidgets
-  - cython
   - notebook
   - jupyterlab
-  - conda-forge::imbalanced-learn
-  - conda-forge::scikit-learn
   - conda-forge::jupytext
   - pip:
     - medspacy
@@ -21,4 +18,6 @@ dependencies:
     - pandas    
     - py7zr
     - pyarrow
+    - scikit-learn
+    - imbalanced-learn
 prefix: D:\annaconda_env_jianlin\win_spark_spacy
