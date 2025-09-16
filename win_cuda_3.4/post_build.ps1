@@ -39,7 +39,7 @@ try {
         "import numpy as np; print(f'NumPy: {np.__version__}')",
         "import pandas as pd; print(f'Pandas: {pd.__version__}')",
         "import pyspark; print(f'PySpark: {pyspark.__version__}')",
-        "import sparknlp; print(f'Spark NLP: {sparknlp.__version__}')",
+        "import sparknlp; print(f'Spark NLP: {sparknlp.version()}')",
         "import spacy; print(f'spaCy: {spacy.__version__}')",
         "from py4jrush import RuSH; print('RuSH: OK')",
         "import joblib; print(f'joblib: {joblib.__version__}')"
@@ -104,8 +104,48 @@ except Exception as e:
     
     # Get the Python executable from the activated environment
     Write-Host "Getting Python executable path from environment..." -ForegroundColor Cyan
-    $pythonExe = & conda activate $EnvPath '&' where python 2>&1 | Select-Object -First 1
-    Write-Host "Python executable: $pythonExe" -ForegroundColor Cyan
+    
+    # Try multiple methods to find the correct Python executable
+    $pythonExe = $null
+    
+    # Method 1: Direct path construction
+    $possiblePaths = @(
+        (Join-Path $EnvPath "python.exe"),
+        (Join-Path $EnvPath "Scripts\python.exe"),
+        (Join-Path $EnvPath "bin\python.exe"),
+        (Join-Path $EnvPath "bin\python")
+    )
+    
+    foreach ($path in $possiblePaths) {
+        if (Test-Path $path) {
+            $pythonExe = $path
+            Write-Host "Found Python at: $pythonExe" -ForegroundColor Green
+            break
+        }
+    }
+    
+    # Method 2: If direct paths don't work, use environment activation and query
+    if (-not $pythonExe) {
+        Write-Host "Direct path detection failed, trying activation method..." -ForegroundColor Yellow
+        try {
+            # Activate and get python path in a subshell
+            $activateScript = "conda activate `"$EnvPath`"; python -c `"import sys; print(sys.executable)`""
+            $pythonExe = Invoke-Expression "cmd /c `"$activateScript`"" 2>$null | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -First 1
+            if ($pythonExe) {
+                Write-Host "Found Python via activation: $pythonExe" -ForegroundColor Green
+            }
+        } catch {
+            Write-Host "Activation method failed: $_" -ForegroundColor Yellow
+        }
+    }
+    
+    # Method 3: Fallback to 'python' command (will use PATH after activation)
+    if (-not $pythonExe) {
+        Write-Host "Using fallback 'python' command (will rely on PATH after activation)" -ForegroundColor Yellow
+        $pythonExe = "python"
+    }
+    
+    Write-Host "Final Python executable: $pythonExe" -ForegroundColor Cyan
     
     # Run the test with timeout
     Write-Host "Executing: python test_spacy_pandas_udf.py" -ForegroundColor Cyan
@@ -115,27 +155,60 @@ except Exception as e:
         param($envPath, $scriptDir, $pythonPath)
         
         Set-Location $scriptDir
+        Write-Host "Job started in directory: $(Get-Location)"
         
-        # Activate conda environment
-        conda activate $envPath
-        
-        # Set environment variables for PySpark
-        $env:PYSPARK_PYTHON = $pythonPath
-        $env:PYSPARK_DRIVER_PYTHON = $pythonPath
-        
-        # Additional Spark configuration for Windows
-        $env:SPARK_LOCAL_IP = "127.0.0.1"
-        $env:JAVA_HOME = (Get-Command java).Source | Split-Path -Parent | Split-Path -Parent
-        
-        Write-Host "Environment variables set:"
-        Write-Host "PYSPARK_PYTHON: $env:PYSPARK_PYTHON"
-        Write-Host "PYSPARK_DRIVER_PYTHON: $env:PYSPARK_DRIVER_PYTHON"
-        Write-Host "SPARK_LOCAL_IP: $env:SPARK_LOCAL_IP"
-        Write-Host "JAVA_HOME: $env:JAVA_HOME"
-        
-        # First try a simple Spark test to verify the environment
-        Write-Host "Running preliminary Spark environment test..."
-        $simpleTest = @"
+        try {
+            # Activate conda environment
+            Write-Host "Activating conda environment: $envPath"
+            conda activate $envPath
+            if ($LASTEXITCODE -ne 0) {
+                throw "Failed to activate conda environment"
+            }
+            
+            # Verify Python path and set environment variables
+            if ($pythonPath -and (Test-Path $pythonPath)) {
+                Write-Host "Using specified Python path: $pythonPath"
+                $env:PYSPARK_PYTHON = $pythonPath
+                $env:PYSPARK_DRIVER_PYTHON = $pythonPath
+            } else {
+                # Get Python path from activated environment
+                Write-Host "Getting Python path from activated environment..."
+                $activePython = python -c "import sys; print(sys.executable)" 2>$null
+                if ($activePython) {
+                    Write-Host "Found active Python: $activePython"
+                    $env:PYSPARK_PYTHON = $activePython
+                    $env:PYSPARK_DRIVER_PYTHON = $activePython
+                } else {
+                    Write-Host "Warning: Could not determine Python path, using 'python' command"
+                    $env:PYSPARK_PYTHON = "python"
+                    $env:PYSPARK_DRIVER_PYTHON = "python"
+                }
+            }
+            
+            # Additional Spark configuration for Windows
+            $env:SPARK_LOCAL_IP = "127.0.0.1"
+            
+            # Try to set JAVA_HOME
+            try {
+                $javaCmd = Get-Command java -ErrorAction SilentlyContinue
+                if ($javaCmd) {
+                    $env:JAVA_HOME = $javaCmd.Source | Split-Path -Parent | Split-Path -Parent
+                } else {
+                    Write-Host "Warning: Could not find Java command"
+                }
+            } catch {
+                Write-Host "Warning: Could not set JAVA_HOME: $_"
+            }
+            
+            Write-Host "Environment variables set:"
+            Write-Host "PYSPARK_PYTHON: $env:PYSPARK_PYTHON"
+            Write-Host "PYSPARK_DRIVER_PYTHON: $env:PYSPARK_DRIVER_PYTHON"
+            Write-Host "SPARK_LOCAL_IP: $env:SPARK_LOCAL_IP"
+            Write-Host "JAVA_HOME: $env:JAVA_HOME"
+            
+            # First try a simple Spark test to verify the environment
+            Write-Host "Running preliminary Spark environment test..."
+            $simpleTest = @"
 import sys
 import os
 print(f'Python path: {sys.executable}')
@@ -158,13 +231,18 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 "@
-        
-        $simpleResult = python -c $simpleTest 2>&1
-        Write-Host "Simple test output: $simpleResult"
-        
-        # Now run the main test
-        Write-Host "Running main test: test_spacy_pandas_udf.py"
-        python test_spacy_pandas_udf.py 2>&1
+            
+            $simpleResult = python -c $simpleTest 2>&1
+            Write-Host "Simple test output: $simpleResult"
+            
+            # Now run the main test
+            Write-Host "Running main test: test_spacy_pandas_udf.py"
+            python test_spacy_pandas_udf.py 2>&1
+            
+        } catch {
+            Write-Host "❌ Error in job execution: $_"
+            throw
+        }
     } -ArgumentList @($EnvPath, $scriptDir, $pythonExe)
     
     # Wait for job with timeout (10 minutes)
