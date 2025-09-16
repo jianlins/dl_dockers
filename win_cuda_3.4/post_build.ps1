@@ -39,7 +39,7 @@ try {
         "import numpy as np; print(f'NumPy: {np.__version__}')",
         "import pandas as pd; print(f'Pandas: {pd.__version__}')",
         "import pyspark; print(f'PySpark: {pyspark.__version__}')",
-        "import sparknlp; print(f'Spark NLP: {sparknlp.version()}')",
+        "import sparknlp; print(f'Spark NLP: {sparknlp.__version__}')",
         "import spacy; print(f'spaCy: {spacy.__version__}')",
         "from py4jrush import RuSH; print('RuSH: OK')",
         "import joblib; print(f'joblib: {joblib.__version__}')"
@@ -73,68 +73,56 @@ try {
         Write-Host "❌ Exception checking spaCy models: $_" -ForegroundColor Red
     }
 
-    # Test 5: Set up Hadoop environment for Windows
-    Write-Host "Test 5: Setting up Hadoop environment for Windows..." -ForegroundColor Yellow
+    # Test 5: Check and configure Hadoop environment for Windows
+    Write-Host "Test 5: Checking Hadoop environment for Windows..." -ForegroundColor Yellow
     
-    # Create temporary Hadoop directory and download required files
-    $tempHadoopDir = "$env:TEMP\hadoop_temp"
-    $hadoopBinDir = "$tempHadoopDir\bin"
+    # Check if Hadoop is already set up by the workflow (when download_jars=true)
+    $workflowHadoop = "C:\hadoop"
     
-    try {
-        if (-not (Test-Path $hadoopBinDir)) {
-            Write-Host "Creating temporary Hadoop directory: $hadoopBinDir" -ForegroundColor Cyan
-            New-Item -ItemType Directory -Force -Path $hadoopBinDir | Out-Null
-        }
+    if (Test-Path "$workflowHadoop\bin\winutils.exe") {
+        Write-Host "✅ Found workflow-configured Hadoop at: $workflowHadoop" -ForegroundColor Green
+        $env:HADOOP_HOME = $workflowHadoop
+        $env:HADOOP_CONF_DIR = "$workflowHadoop\etc\hadoop"
+        $env:PATH = "$workflowHadoop\bin;$env:PATH"
         
-        # Download winutils.exe if not present
-        $winutilsPath = "$hadoopBinDir\winutils.exe"
-        if (-not (Test-Path $winutilsPath)) {
-            Write-Host "Downloading winutils.exe..." -ForegroundColor Cyan
-            try {
-                Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/winutils.exe" -OutFile $winutilsPath -TimeoutSec 30
-                Write-Host "✅ Downloaded winutils.exe" -ForegroundColor Green
-            } catch {
-                Write-Host "⚠️ Failed to download winutils.exe: $_" -ForegroundColor Yellow
-                # Create a dummy winutils.exe file as fallback
-                "#!/bin/bash" | Out-File -FilePath $winutilsPath -Encoding ASCII
-            }
-        }
-        
-        # Download hadoop.dll if not present
-        $hadoopDllPath = "$hadoopBinDir\hadoop.dll"
-        if (-not (Test-Path $hadoopDllPath)) {
-            Write-Host "Downloading hadoop.dll..." -ForegroundColor Cyan
-            try {
-                Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/hadoop.dll" -OutFile $hadoopDllPath -TimeoutSec 30
-                Write-Host "✅ Downloaded hadoop.dll" -ForegroundColor Green
-            } catch {
-                Write-Host "⚠️ Failed to download hadoop.dll: $_" -ForegroundColor Yellow
-            }
-        }
-        
-        # Set Hadoop environment variables
-        $env:HADOOP_HOME = $tempHadoopDir
-        $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
-        $env:PATH = "$hadoopBinDir;$env:PATH"
-        
-        Write-Host "✅ Hadoop environment configured:" -ForegroundColor Green
+        Write-Host "✅ Using workflow Hadoop configuration:" -ForegroundColor Green
         Write-Host "  HADOOP_HOME: $env:HADOOP_HOME" -ForegroundColor Cyan
         Write-Host "  HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR" -ForegroundColor Cyan
+    } else {
+        Write-Host "⚠️ Workflow Hadoop not found, setting up minimal configuration..." -ForegroundColor Yellow
         
-        # Create required directories
-        $tempDirs = @("$env:TEMP\hive", "$env:TEMP\spark-warehouse")
-        foreach ($dir in $tempDirs) {
-            if (-not (Test-Path $dir)) {
-                New-Item -ItemType Directory -Force -Path $dir | Out-Null
-                Write-Host "  Created temp directory: $dir" -ForegroundColor Cyan
+        # Create minimal Hadoop directory structure as fallback
+        $tempHadoopDir = "$env:TEMP\hadoop_temp"
+        $hadoopBinDir = "$tempHadoopDir\bin"
+        
+        try {
+            if (-not (Test-Path $hadoopBinDir)) {
+                New-Item -ItemType Directory -Force -Path $hadoopBinDir | Out-Null
             }
+            
+            # Set basic environment variables (Spark can work with basic setup)
+            $env:HADOOP_HOME = $tempHadoopDir
+            $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
+            $env:PATH = "$hadoopBinDir;$env:PATH"
+            
+            New-Item -ItemType Directory -Force -Path "$tempHadoopDir\etc\hadoop" | Out-Null
+            
+            Write-Host "✅ Minimal Hadoop environment configured:" -ForegroundColor Green
+            Write-Host "  HADOOP_HOME: $env:HADOOP_HOME" -ForegroundColor Cyan
+            Write-Host "  HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR" -ForegroundColor Cyan
+            
+        } catch {
+            Write-Host "⚠️ Warning: Could not set up Hadoop environment: $_" -ForegroundColor Yellow
         }
-        
-    } catch {
-        Write-Host "⚠️ Warning: Hadoop setup encountered issues: $_" -ForegroundColor Yellow
-        Write-Host "Continuing with basic environment variables..." -ForegroundColor Yellow
-        $env:HADOOP_HOME = $tempHadoopDir
-        $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
+    }
+    
+    # Create required temp directories regardless of Hadoop setup
+    $tempDirs = @("$env:TEMP\hive", "$env:TEMP\spark-warehouse", "$env:TEMP\spark-local")
+    foreach ($dir in $tempDirs) {
+        if (-not (Test-Path $dir)) {
+            New-Item -ItemType Directory -Force -Path $dir | Out-Null
+            Write-Host "  Created temp directory: $dir" -ForegroundColor Cyan
+        }
     }
 
     # Test 6: Test basic Spark NLP functionality
@@ -251,17 +239,28 @@ except Exception as e:
             
             # Set up Hadoop environment for Windows (within job)
             Write-Host "Setting up Hadoop environment for Spark..."
-            $tempHadoopDir = "$env:TEMP\hadoop_temp"
-            $hadoopBinDir = "$tempHadoopDir\bin"
             
-            if (-not (Test-Path $hadoopBinDir)) {
-                New-Item -ItemType Directory -Force -Path $hadoopBinDir | Out-Null
+            # Check for workflow-configured Hadoop first
+            $workflowHadoop = "C:\hadoop"
+            if (Test-Path "$workflowHadoop\bin\winutils.exe") {
+                Write-Host "Using workflow-configured Hadoop: $workflowHadoop"
+                $env:HADOOP_HOME = $workflowHadoop
+                $env:HADOOP_CONF_DIR = "$workflowHadoop\etc\hadoop"
+                $env:PATH = "$workflowHadoop\bin;$env:PATH"
+            } else {
+                Write-Host "Using fallback Hadoop configuration..."
+                $tempHadoopDir = "$env:TEMP\hadoop_temp"
+                $hadoopBinDir = "$tempHadoopDir\bin"
+                
+                if (-not (Test-Path $hadoopBinDir)) {
+                    New-Item -ItemType Directory -Force -Path $hadoopBinDir | Out-Null
+                }
+                
+                # Set Hadoop environment variables
+                $env:HADOOP_HOME = $tempHadoopDir
+                $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
+                $env:PATH = "$hadoopBinDir;$env:PATH"
             }
-            
-            # Set Hadoop environment variables
-            $env:HADOOP_HOME = $tempHadoopDir
-            $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
-            $env:PATH = "$hadoopBinDir;$env:PATH"
             
             # Additional Spark configuration for Windows
             $env:SPARK_LOCAL_IP = "127.0.0.1"

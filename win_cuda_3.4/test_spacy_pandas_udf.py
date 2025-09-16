@@ -38,15 +38,25 @@ print(f"Using Python executable: {python_executable}")
 os.environ['PYSPARK_PYTHON'] = python_executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = python_executable
 
-# Set up Hadoop environment for Windows
-temp_hadoop_dir = os.path.join(tempfile.gettempdir(), "hadoop_temp")
-hadoop_bin_dir = os.path.join(temp_hadoop_dir, "bin")
-os.makedirs(hadoop_bin_dir, exist_ok=True)
-os.makedirs(os.path.join(temp_hadoop_dir, "etc", "hadoop"), exist_ok=True)
+# Set up Hadoop environment for Windows - check for existing setup first
+workflow_hadoop = "C:\\hadoop"
+if os.path.exists(os.path.join(workflow_hadoop, "bin", "winutils.exe")):
+    print(f"Using workflow-configured Hadoop: {workflow_hadoop}")
+    os.environ['HADOOP_HOME'] = workflow_hadoop
+    os.environ['HADOOP_CONF_DIR'] = os.path.join(workflow_hadoop, "etc", "hadoop")
+    # Ensure the conf directory exists
+    os.makedirs(os.environ['HADOOP_CONF_DIR'], exist_ok=True)
+else:
+    print("Workflow Hadoop not found, using fallback configuration...")
+    temp_hadoop_dir = os.path.join(tempfile.gettempdir(), "hadoop_temp")
+    hadoop_bin_dir = os.path.join(temp_hadoop_dir, "bin")
+    os.makedirs(hadoop_bin_dir, exist_ok=True)
+    os.makedirs(os.path.join(temp_hadoop_dir, "etc", "hadoop"), exist_ok=True)
+    
+    os.environ['HADOOP_HOME'] = temp_hadoop_dir
+    os.environ['HADOOP_CONF_DIR'] = os.path.join(temp_hadoop_dir, "etc", "hadoop")
 
-# Set Hadoop environment variables
-os.environ['HADOOP_HOME'] = temp_hadoop_dir
-os.environ['HADOOP_CONF_DIR'] = os.path.join(temp_hadoop_dir, "etc", "hadoop")
+# Set additional Spark/Hadoop environment variables
 os.environ['SPARK_LOCAL_IP'] = "127.0.0.1"
 os.environ['SPARK_LOCAL_DIRS'] = os.path.join(tempfile.gettempdir(), "spark-local")
 
