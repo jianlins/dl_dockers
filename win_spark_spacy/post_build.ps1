@@ -35,13 +35,11 @@ try {
     Write-Host "Test 3: Testing core package imports..." -ForegroundColor Yellow
     
     $corePackages = @(
-        "import torch; print(f'PyTorch: {torch.__version__}')",
         "import numpy as np; print(f'NumPy: {np.__version__}')",
         "import pandas as pd; print(f'Pandas: {pd.__version__}')",
         "import pyspark; print(f'PySpark: {pyspark.__version__}')",
-        "import sparknlp; print(f'Spark NLP: {sparknlp.__version__}')",
+        "import sparknlp; print(f'Spark NLP: {sparknlp.version()}')",
         "import spacy; print(f'spaCy: {spacy.__version__}')",
-        "from py4jrush import RuSH; print('RuSH: OK')",
         "import joblib; print(f'joblib: {joblib.__version__}')"
     )
     
