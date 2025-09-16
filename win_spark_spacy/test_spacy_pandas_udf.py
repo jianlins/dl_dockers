@@ -116,7 +116,7 @@ def batch_process(batch, batch_ids, rush):
             yield(batch_ids[j], 0)
         
 def process_partition_batch(iterator, batch_size=32):
-    from pyrush import RuSH
+    from PyRuSH import RuSH
     import logging
     import traceback
     import os
