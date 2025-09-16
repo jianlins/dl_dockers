@@ -38,6 +38,33 @@ print(f"Using Python executable: {python_executable}")
 os.environ['PYSPARK_PYTHON'] = python_executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = python_executable
 
+# Set up Hadoop environment for Windows
+temp_hadoop_dir = os.path.join(tempfile.gettempdir(), "hadoop_temp")
+hadoop_bin_dir = os.path.join(temp_hadoop_dir, "bin")
+os.makedirs(hadoop_bin_dir, exist_ok=True)
+os.makedirs(os.path.join(temp_hadoop_dir, "etc", "hadoop"), exist_ok=True)
+
+# Set Hadoop environment variables
+os.environ['HADOOP_HOME'] = temp_hadoop_dir
+os.environ['HADOOP_CONF_DIR'] = os.path.join(temp_hadoop_dir, "etc", "hadoop")
+os.environ['SPARK_LOCAL_IP'] = "127.0.0.1"
+os.environ['SPARK_LOCAL_DIRS'] = os.path.join(tempfile.gettempdir(), "spark-local")
+
+# Create required temp directories
+required_dirs = [
+    os.path.join(tempfile.gettempdir(), "hive"),
+    os.path.join(tempfile.gettempdir(), "spark-warehouse"),
+    os.environ['SPARK_LOCAL_DIRS']
+]
+for dir_path in required_dirs:
+    os.makedirs(dir_path, exist_ok=True)
+
+print(f"Hadoop environment configured:")
+print(f"  HADOOP_HOME: {os.environ.get('HADOOP_HOME')}")
+print(f"  HADOOP_CONF_DIR: {os.environ.get('HADOOP_CONF_DIR')}")
+print(f"  SPARK_LOCAL_IP: {os.environ.get('SPARK_LOCAL_IP')}")
+print(f"  SPARK_LOCAL_DIRS: {os.environ.get('SPARK_LOCAL_DIRS')}")
+
 # JAR paths - will be set based on environment or default to empty
 jars_path = []
 drivers_path = ""
@@ -162,7 +189,10 @@ if __name__ == "__main__":
             .config("spark.local.dir", pyspark_tmp) \
             .config("spark.ui.port", str(port)) \
             .config("spark.pyspark.python", python_executable) \
-            .config("spark.pyspark.driver.python", python_executable)
+            .config("spark.pyspark.driver.python", python_executable) \
+            .config("spark.sql.warehouse.dir", os.path.join(tempfile.gettempdir(), "spark-warehouse")) \
+            .config("spark.driver.extraJavaOptions", "-Djava.io.tmpdir=" + tempfile.gettempdir()) \
+            .config("spark.executor.extraJavaOptions", "-Djava.io.tmpdir=" + tempfile.gettempdir())
         
         # Add JAR configuration if jars_path is not empty
         if jars_path:

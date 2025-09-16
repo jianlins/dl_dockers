@@ -73,8 +73,72 @@ try {
         Write-Host "❌ Exception checking spaCy models: $_" -ForegroundColor Red
     }
 
-    # Test 5: Test basic Spark NLP functionality
-    Write-Host "Test 5: Testing basic Spark NLP functionality..." -ForegroundColor Yellow
+    # Test 5: Set up Hadoop environment for Windows
+    Write-Host "Test 5: Setting up Hadoop environment for Windows..." -ForegroundColor Yellow
+    
+    # Create temporary Hadoop directory and download required files
+    $tempHadoopDir = "$env:TEMP\hadoop_temp"
+    $hadoopBinDir = "$tempHadoopDir\bin"
+    
+    try {
+        if (-not (Test-Path $hadoopBinDir)) {
+            Write-Host "Creating temporary Hadoop directory: $hadoopBinDir" -ForegroundColor Cyan
+            New-Item -ItemType Directory -Force -Path $hadoopBinDir | Out-Null
+        }
+        
+        # Download winutils.exe if not present
+        $winutilsPath = "$hadoopBinDir\winutils.exe"
+        if (-not (Test-Path $winutilsPath)) {
+            Write-Host "Downloading winutils.exe..." -ForegroundColor Cyan
+            try {
+                Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/winutils.exe" -OutFile $winutilsPath -TimeoutSec 30
+                Write-Host "✅ Downloaded winutils.exe" -ForegroundColor Green
+            } catch {
+                Write-Host "⚠️ Failed to download winutils.exe: $_" -ForegroundColor Yellow
+                # Create a dummy winutils.exe file as fallback
+                "#!/bin/bash" | Out-File -FilePath $winutilsPath -Encoding ASCII
+            }
+        }
+        
+        # Download hadoop.dll if not present
+        $hadoopDllPath = "$hadoopBinDir\hadoop.dll"
+        if (-not (Test-Path $hadoopDllPath)) {
+            Write-Host "Downloading hadoop.dll..." -ForegroundColor Cyan
+            try {
+                Invoke-WebRequest -Uri "https://github.com/steveloughran/winutils/raw/master/hadoop-3.0.0/bin/hadoop.dll" -OutFile $hadoopDllPath -TimeoutSec 30
+                Write-Host "✅ Downloaded hadoop.dll" -ForegroundColor Green
+            } catch {
+                Write-Host "⚠️ Failed to download hadoop.dll: $_" -ForegroundColor Yellow
+            }
+        }
+        
+        # Set Hadoop environment variables
+        $env:HADOOP_HOME = $tempHadoopDir
+        $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
+        $env:PATH = "$hadoopBinDir;$env:PATH"
+        
+        Write-Host "✅ Hadoop environment configured:" -ForegroundColor Green
+        Write-Host "  HADOOP_HOME: $env:HADOOP_HOME" -ForegroundColor Cyan
+        Write-Host "  HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR" -ForegroundColor Cyan
+        
+        # Create required directories
+        $tempDirs = @("$env:TEMP\hive", "$env:TEMP\spark-warehouse")
+        foreach ($dir in $tempDirs) {
+            if (-not (Test-Path $dir)) {
+                New-Item -ItemType Directory -Force -Path $dir | Out-Null
+                Write-Host "  Created temp directory: $dir" -ForegroundColor Cyan
+            }
+        }
+        
+    } catch {
+        Write-Host "⚠️ Warning: Hadoop setup encountered issues: $_" -ForegroundColor Yellow
+        Write-Host "Continuing with basic environment variables..." -ForegroundColor Yellow
+        $env:HADOOP_HOME = $tempHadoopDir
+        $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
+    }
+
+    # Test 6: Test basic Spark NLP functionality
+    Write-Host "Test 6: Testing basic Spark NLP functionality..." -ForegroundColor Yellow
     $sparkNLPTest = @"
 import sparknlp
 try:
@@ -94,8 +158,8 @@ except Exception as e:
         Write-Host "❌ Spark NLP basic test failed: $_" -ForegroundColor Red
     }
 
-    # Test 6: Run the main spacy pandas UDF test
-    Write-Host "Test 6: Running spacy pandas UDF test..." -ForegroundColor Yellow
+    # Test 7: Run the main spacy pandas UDF test
+    Write-Host "Test 7: Running spacy pandas UDF test..." -ForegroundColor Yellow
     Write-Host "This is the main test - running test_spacy_pandas_udf.py" -ForegroundColor Cyan
     
     # Change to the script directory
@@ -185,8 +249,37 @@ except Exception as e:
                 }
             }
             
+            # Set up Hadoop environment for Windows (within job)
+            Write-Host "Setting up Hadoop environment for Spark..."
+            $tempHadoopDir = "$env:TEMP\hadoop_temp"
+            $hadoopBinDir = "$tempHadoopDir\bin"
+            
+            if (-not (Test-Path $hadoopBinDir)) {
+                New-Item -ItemType Directory -Force -Path $hadoopBinDir | Out-Null
+            }
+            
+            # Set Hadoop environment variables
+            $env:HADOOP_HOME = $tempHadoopDir
+            $env:HADOOP_CONF_DIR = "$tempHadoopDir\etc\hadoop"
+            $env:PATH = "$hadoopBinDir;$env:PATH"
+            
             # Additional Spark configuration for Windows
             $env:SPARK_LOCAL_IP = "127.0.0.1"
+            $env:SPARK_LOCAL_DIRS = "$env:TEMP\spark-local"
+            
+            # Create required directories
+            $requiredDirs = @(
+                "$env:TEMP\hive",
+                "$env:TEMP\spark-warehouse", 
+                "$env:TEMP\spark-local",
+                "$tempHadoopDir\etc\hadoop"
+            )
+            
+            foreach ($dir in $requiredDirs) {
+                if (-not (Test-Path $dir)) {
+                    New-Item -ItemType Directory -Force -Path $dir | Out-Null
+                }
+            }
             
             # Try to set JAVA_HOME
             try {
@@ -204,6 +297,9 @@ except Exception as e:
             Write-Host "PYSPARK_PYTHON: $env:PYSPARK_PYTHON"
             Write-Host "PYSPARK_DRIVER_PYTHON: $env:PYSPARK_DRIVER_PYTHON"
             Write-Host "SPARK_LOCAL_IP: $env:SPARK_LOCAL_IP"
+            Write-Host "SPARK_LOCAL_DIRS: $env:SPARK_LOCAL_DIRS"
+            Write-Host "HADOOP_HOME: $env:HADOOP_HOME"
+            Write-Host "HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR"
             Write-Host "JAVA_HOME: $env:JAVA_HOME"
             
             # First try a simple Spark test to verify the environment
