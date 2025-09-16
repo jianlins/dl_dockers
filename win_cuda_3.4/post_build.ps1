@@ -3,6 +3,14 @@ param(
     [string]$EnvPath
 )
 
+# Post-build testing script for win_cuda_3.4 environment
+# This script tests the spacy pandas UDF functionality with PySpark and Spark NLP
+# Key fixes applied:
+# 1. Set PYSPARK_PYTHON and PYSPARK_DRIVER_PYTHON environment variables
+# 2. Added preliminary Spark environment test before main test
+# 3. Enhanced error reporting and timeout handling
+# 4. Configured proper Java and Spark local IP settings
+
 Write-Host "=== Starting post-build testing for win_cuda_3.4 environment ===" -ForegroundColor Green
 Write-Host "Environment path: $EnvPath" -ForegroundColor Cyan
 
@@ -94,16 +102,70 @@ except Exception as e:
     $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
     Set-Location $scriptDir
     
+    # Get the Python executable from the activated environment
+    Write-Host "Getting Python executable path from environment..." -ForegroundColor Cyan
+    $pythonExe = & conda activate $EnvPath '&' where python 2>&1 | Select-Object -First 1
+    Write-Host "Python executable: $pythonExe" -ForegroundColor Cyan
+    
     # Run the test with timeout
     Write-Host "Executing: python test_spacy_pandas_udf.py" -ForegroundColor Cyan
     
-    # Create a job to run the test with timeout
+    # Create a job to run the test with timeout and proper environment
     $job = Start-Job -ScriptBlock {
-        param($envPath, $scriptDir)
+        param($envPath, $scriptDir, $pythonPath)
+        
         Set-Location $scriptDir
+        
+        # Activate conda environment
         conda activate $envPath
+        
+        # Set environment variables for PySpark
+        $env:PYSPARK_PYTHON = $pythonPath
+        $env:PYSPARK_DRIVER_PYTHON = $pythonPath
+        
+        # Additional Spark configuration for Windows
+        $env:SPARK_LOCAL_IP = "127.0.0.1"
+        $env:JAVA_HOME = (Get-Command java).Source | Split-Path -Parent | Split-Path -Parent
+        
+        Write-Host "Environment variables set:"
+        Write-Host "PYSPARK_PYTHON: $env:PYSPARK_PYTHON"
+        Write-Host "PYSPARK_DRIVER_PYTHON: $env:PYSPARK_DRIVER_PYTHON"
+        Write-Host "SPARK_LOCAL_IP: $env:SPARK_LOCAL_IP"
+        Write-Host "JAVA_HOME: $env:JAVA_HOME"
+        
+        # First try a simple Spark test to verify the environment
+        Write-Host "Running preliminary Spark environment test..."
+        $simpleTest = @"
+import sys
+import os
+print(f'Python path: {sys.executable}')
+print(f'PYSPARK_PYTHON: {os.environ.get(\"PYSPARK_PYTHON\", \"Not set\")}')
+
+try:
+    import pyspark
+    from pyspark.sql import SparkSession
+    import pandas as pd
+    print('✅ Basic imports successful')
+    
+    # Test simple Spark session
+    spark = SparkSession.builder.appName('SimpleTest').master('local[1]').getOrCreate()
+    df = spark.createDataFrame([(1, 'test')], ['id', 'text'])
+    count = df.count()
+    spark.stop()
+    print(f'✅ Simple Spark test passed, count: {count}')
+except Exception as e:
+    print(f'❌ Simple Spark test failed: {e}')
+    import traceback
+    traceback.print_exc()
+"@
+        
+        $simpleResult = python -c $simpleTest 2>&1
+        Write-Host "Simple test output: $simpleResult"
+        
+        # Now run the main test
+        Write-Host "Running main test: test_spacy_pandas_udf.py"
         python test_spacy_pandas_udf.py 2>&1
-    } -ArgumentList @($EnvPath, $scriptDir)
+    } -ArgumentList @($EnvPath, $scriptDir, $pythonExe)
     
     # Wait for job with timeout (10 minutes)
     $timeoutSeconds = 600

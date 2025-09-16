@@ -17,6 +17,7 @@ from pyspark.ml import Pipeline
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 import tempfile
+import subprocess
 
 # Configuration variables
 appname = "SpacyPandasUDFTest"
@@ -28,6 +29,14 @@ port = 4040
 # Create temp directory for pyspark
 pyspark_tmp = tempfile.mkdtemp(prefix="pyspark_tmp_")
 print(f"Using temp directory: {pyspark_tmp}")
+
+# Get the current Python executable path to ensure workers use the same environment
+python_executable = sys.executable
+print(f"Using Python executable: {python_executable}")
+
+# Set environment variables for PySpark workers
+os.environ['PYSPARK_PYTHON'] = python_executable
+os.environ['PYSPARK_DRIVER_PYTHON'] = python_executable
 
 # JAR paths - will be set based on environment or default to empty
 jars_path = []
@@ -122,7 +131,12 @@ if __name__ == "__main__":
         spark = sparknlp.start(
             spark32=True,  # Use Spark 3.2+ optimizations
             memory="4g",
-            real_time_output=False
+            real_time_output=False,
+            params={
+                "spark.pyspark.python": python_executable,
+                "spark.pyspark.driver.python": python_executable,
+                "spark.sql.execution.arrow.pyspark.enabled": "false"
+            }
         )
         print("Successfully started Spark using sparknlp.start()")
     except Exception as e:
@@ -146,7 +160,9 @@ if __name__ == "__main__":
             .config("spark.executor.heartbeatInterval", "300s") \
             .config("spark.network.timeout", "400s") \
             .config("spark.local.dir", pyspark_tmp) \
-            .config("spark.ui.port", str(port))
+            .config("spark.ui.port", str(port)) \
+            .config("spark.pyspark.python", python_executable) \
+            .config("spark.pyspark.driver.python", python_executable)
         
         # Add JAR configuration if jars_path is not empty
         if jars_path:

@@ -74,7 +74,7 @@ dependencies:
     - requests
     - captum==0.6.0
     - packaging
-    - pynvml
+    - nvidia-ml-py
     - pyyaml
     - ninja
     # torchserve's client
