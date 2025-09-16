@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import torch
 import os
 import pandas as pd
@@ -359,7 +359,7 @@ if __name__ == "__main__":
     valid_counts = classified_final_df['svm'].notna().sum()
     assert valid_counts > 0, "No valid sentence counts found"
     
-    print("\n✅ All tests passed successfully!")
+    print("\n[OK] All tests passed successfully!")
     print(f"Processed {classified_final_df.shape[0]} documents")
     print(f"Average sentences per document: {classified_final_df['svm'].mean():.2f}")
     
