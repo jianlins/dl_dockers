@@ -18,6 +18,8 @@ dependencies:
   - pip:
     - medspacy
     - loguru
+    - pyrush
+    - py4jrush
     - findspark
     - pyspark==3.4.2
     - spark-nlp==5.3.3
