@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory=$true)]
     [string]$EnvPath
 )
@@ -24,7 +24,7 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to activate conda environment at $EnvPath"
     }
-    Write-Host "✅ Environment activated successfully" -ForegroundColor Green
+    Write-Host "[OK] Environment activated successfully" -ForegroundColor Green
 
     # Test 2: Check Python version
     Write-Host "Test 2: Checking Python version..." -ForegroundColor Yellow
@@ -47,13 +47,13 @@ try {
         try {
             $result = python -c $package 2>&1
             if ($LASTEXITCODE -eq 0) {
-                Write-Host "✅ $result" -ForegroundColor Green
+                Write-Host "[OK] $result" -ForegroundColor Green
             } else {
-                Write-Host "❌ Failed: $package" -ForegroundColor Red
+                Write-Host "[ERROR] Failed: $package" -ForegroundColor Red
                 Write-Host "Error: $result" -ForegroundColor Red
             }
         } catch {
-            Write-Host "❌ Exception testing: $package" -ForegroundColor Red
+            Write-Host "[ERROR] Exception testing: $package" -ForegroundColor Red
             Write-Host "Error: $_" -ForegroundColor Red
         }
     }
@@ -63,12 +63,12 @@ try {
     try {
         $spacyModels = python -c "import spacy; print([model for model in spacy.util.get_installed_models()])" 2>&1
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "✅ spaCy models available: $spacyModels" -ForegroundColor Green
+            Write-Host "[OK] spaCy models available: $spacyModels" -ForegroundColor Green
         } else {
-            Write-Host "❌ Failed to check spaCy models: $spacyModels" -ForegroundColor Red
+            Write-Host "[ERROR] Failed to check spaCy models: $spacyModels" -ForegroundColor Red
         }
     } catch {
-        Write-Host "❌ Exception checking spaCy models: $_" -ForegroundColor Red
+        Write-Host "[ERROR] Exception checking spaCy models: $_" -ForegroundColor Red
     }
 
     # Test 5: Check and configure Hadoop environment for Windows
@@ -78,16 +78,16 @@ try {
     $workflowHadoop = "C:\hadoop"
     
     if (Test-Path "$workflowHadoop\bin\winutils.exe") {
-        Write-Host "✅ Found workflow-configured Hadoop at: $workflowHadoop" -ForegroundColor Green
+        Write-Host "[OK] Found workflow-configured Hadoop at: $workflowHadoop" -ForegroundColor Green
         $env:HADOOP_HOME = $workflowHadoop
         $env:HADOOP_CONF_DIR = "$workflowHadoop\etc\hadoop"
         $env:PATH = "$workflowHadoop\bin;$env:PATH"
         
-        Write-Host "✅ Using workflow Hadoop configuration:" -ForegroundColor Green
+        Write-Host "[OK] Using workflow Hadoop configuration:" -ForegroundColor Green
         Write-Host "  HADOOP_HOME: $env:HADOOP_HOME" -ForegroundColor Cyan
         Write-Host "  HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR" -ForegroundColor Cyan
     } else {
-        Write-Host "⚠️ Workflow Hadoop not found, setting up minimal configuration..." -ForegroundColor Yellow
+        Write-Host "[WARNING] Workflow Hadoop not found, setting up minimal configuration..." -ForegroundColor Yellow
         
         # Create minimal Hadoop directory structure as fallback
         $tempHadoopDir = "$env:TEMP\hadoop_temp"
@@ -105,12 +105,12 @@ try {
             
             New-Item -ItemType Directory -Force -Path "$tempHadoopDir\etc\hadoop" | Out-Null
             
-            Write-Host "✅ Minimal Hadoop environment configured:" -ForegroundColor Green
+            Write-Host "[OK] Minimal Hadoop environment configured:" -ForegroundColor Green
             Write-Host "  HADOOP_HOME: $env:HADOOP_HOME" -ForegroundColor Cyan
             Write-Host "  HADOOP_CONF_DIR: $env:HADOOP_CONF_DIR" -ForegroundColor Cyan
             
         } catch {
-            Write-Host "⚠️ Warning: Could not set up Hadoop environment: $_" -ForegroundColor Yellow
+            Write-Host "[WARNING] Warning: Could not set up Hadoop environment: $_" -ForegroundColor Yellow
         }
     }
     
@@ -139,14 +139,14 @@ try {
             $jarCount = (Get-ChildItem "$ivyPath\jars" -Filter "*.jar" -ErrorAction SilentlyContinue | Measure-Object).Count
             if ($jarCount -gt 0) {
                 $workflowIvyDir = $ivyPath
-                Write-Host "✅ Found workflow ivy jars at: $workflowIvyDir ($jarCount jars)" -ForegroundColor Green
+                Write-Host "[OK] Found workflow ivy jars at: $workflowIvyDir ($jarCount jars)" -ForegroundColor Green
                 break
             }
         }
     }
     
     if (-not $workflowIvyDir) {
-        Write-Host "⚠️ No workflow ivy jars found, will use default sparknlp.start()" -ForegroundColor Yellow
+        Write-Host "[WARNING] No workflow ivy jars found, will use default sparknlp.start()" -ForegroundColor Yellow
     }
     
     # Test Spark NLP functionality with appropriate configuration
@@ -156,11 +156,11 @@ import sparknlp
 try:
     # Use workflow ivy directory for jars
     spark = sparknlp.start(real_time_output=False, memory='4g', params={'spark.jars.ivy':'$($workflowIvyDir.Replace('\', '/'))/'})
-    print('✅ Spark NLP started successfully with workflow jars')
+    print('[OK] Spark NLP started successfully with workflow jars')
     spark.stop()
-    print('✅ Spark NLP stopped successfully')
+    print('[OK] Spark NLP stopped successfully')
 except Exception as e:
-    print(f'❌ Spark NLP test failed: {e}')
+    print(f'[ERROR] Spark NLP test failed: {e}')
     exit(1)
 "@
     } else {
@@ -168,11 +168,11 @@ except Exception as e:
 import sparknlp
 try:
     spark = sparknlp.start(real_time_output=False, memory='4g')
-    print('✅ Spark NLP started successfully (default configuration)')
+    print('[OK] Spark NLP started successfully (default configuration)')
     spark.stop()
-    print('✅ Spark NLP stopped successfully')
+    print('[OK] Spark NLP stopped successfully')
 except Exception as e:
-    print(f'❌ Spark NLP test failed: {e}')
+    print(f'[ERROR] Spark NLP test failed: {e}')
     exit(1)
 "@
     }
@@ -181,7 +181,7 @@ except Exception as e:
         $result = python -c $sparkNLPTest 2>&1
         Write-Host "$result" -ForegroundColor Cyan
     } catch {
-        Write-Host "❌ Spark NLP basic test failed: $_" -ForegroundColor Red
+        Write-Host "[ERROR] Spark NLP basic test failed: $_" -ForegroundColor Red
     }
 
     # Test 7: Run the main spacy pandas UDF test
@@ -370,16 +370,16 @@ try:
     import pyspark
     from pyspark.sql import SparkSession
     import pandas as pd
-    print('✅ Basic imports successful')
+    print('[OK] Basic imports successful')
     
     # Test simple Spark session
     spark = SparkSession.builder.appName('SimpleTest').master('local[1]').getOrCreate()
     df = spark.createDataFrame([(1, 'test')], ['id', 'text'])
     count = df.count()
     spark.stop()
-    print(f'✅ Simple Spark test passed, count: {count}')
+    print(f'[OK] Simple Spark test passed, count: {count}')
 except Exception as e:
-    print(f'❌ Simple Spark test failed: {e}')
+    print(f'[ERROR] Simple Spark test failed: {e}')
     import traceback
     traceback.print_exc()
 "@
@@ -392,7 +392,7 @@ except Exception as e:
             python test_spacy_pandas_udf.py 2>&1
             
         } catch {
-            Write-Host "❌ Error in job execution: $_"
+            Write-Host "[ERROR] Error in job execution: $_"
             throw
         }
     } -ArgumentList @($EnvPath, $scriptDir, $pythonExe)
@@ -410,39 +410,39 @@ except Exception as e:
         Write-Host "Test output:" -ForegroundColor Cyan
         Write-Host $outputStr -ForegroundColor White
         
-        if ($outputStr -match "All tests passed successfully!" -or $outputStr -match "✅") {
-            Write-Host "✅ Spacy pandas UDF test PASSED!" -ForegroundColor Green
+        if ($outputStr -match "All tests passed successfully!" -or $outputStr -match "[OK]") {
+            Write-Host "[OK] Spacy pandas UDF test PASSED!" -ForegroundColor Green
             $global:TestSuccess = $true
         } else {
-            Write-Host "❌ Spacy pandas UDF test FAILED - no success message found" -ForegroundColor Red
+            Write-Host "[ERROR] Spacy pandas UDF test FAILED - no success message found" -ForegroundColor Red
             Write-Host "Looking for error indicators..." -ForegroundColor Yellow
             
             if ($outputStr -match "Error|Exception|Failed|AssertionError") {
-                Write-Host "❌ Test failed with errors" -ForegroundColor Red
+                Write-Host "[ERROR] Test failed with errors" -ForegroundColor Red
                 $global:TestSuccess = $false
             } else {
-                Write-Host "⚠️  Test completed but success unclear" -ForegroundColor Yellow
+                Write-Host "[WARNING]  Test completed but success unclear" -ForegroundColor Yellow
                 $global:TestSuccess = $false
             }
         }
     } else {
         Remove-Job $job -Force
-        Write-Host "❌ Spacy pandas UDF test TIMED OUT after $timeoutSeconds seconds" -ForegroundColor Red
+        Write-Host "[ERROR] Spacy pandas UDF test TIMED OUT after $timeoutSeconds seconds" -ForegroundColor Red
         $global:TestSuccess = $false
     }
 
     # Test Summary
     Write-Host "`n=== POST-BUILD TEST SUMMARY ===" -ForegroundColor Green
     if ($global:TestSuccess -eq $true) {
-        Write-Host "🎉 ALL TESTS PASSED! Environment is ready for use." -ForegroundColor Green
+        Write-Host "[SUCCESS] ALL TESTS PASSED! Environment is ready for use." -ForegroundColor Green
         exit 0
     } else {
-        Write-Host "❌ SOME TESTS FAILED! Please check the output above." -ForegroundColor Red
+        Write-Host "[ERROR] SOME TESTS FAILED! Please check the output above." -ForegroundColor Red
         exit 1
     }
 
 } catch {
-    Write-Host "❌ Critical error during post-build testing: $_" -ForegroundColor Red
+    Write-Host "[ERROR] Critical error during post-build testing: $_" -ForegroundColor Red
     Write-Host "Stack trace: $($_.ScriptStackTrace)" -ForegroundColor Red
     exit 1
 } finally {
