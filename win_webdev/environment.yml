@@ -1,0 +1,44 @@
+name: win_webdev
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Python
+  - python>=3.10
+  
+  # Core dependencies available via conda
+  - pip
+  
+  # Install remaining dependencies via pip
+  - pip:
+      # Web Framework
+      - fastapi>=0.104.0
+      - uvicorn[standard]>=0.24.0
+      - python-multipart>=0.0.6
+      
+      # Database
+      - sqlalchemy>=2.0.0
+      
+      # Authentication
+      - bcrypt>=4.0.0
+      
+      # Configuration
+      - pyyaml>=6.0
+      
+      # HTTP Client
+      - httpx>=0.25.0
+      
+      # Templates & UI
+      - jinja2>=3.1.0
+      
+      # Validation
+      - pydantic>=2.0.0
+      - pydantic-settings>=2.0.0
+      
+      # Development
+      - pytest>=7.4.0
+      - pytest-asyncio>=0.21.0
+      - pytest-cov>=4.1.0
+      - ruff>=0.1.0
+      - black>=23.0.0
+      - mypy>=1.7.0
